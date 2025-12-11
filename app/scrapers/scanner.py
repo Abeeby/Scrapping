@@ -75,11 +75,13 @@ async def scrape_neighborhood(
     commune: str, 
     rue: str, 
     limit: int = 50,
-    canton: Optional[str] = None
+    canton: Optional[str] = None,
+    type_recherche: str = "person"
 ) -> List[Dict]:
     """
     Scanne une rue numero par numero pour trouver les residents.
     Supporte Geneve (GE) et Vaud (VD).
+    type_recherche: "person" (prives), "business" (entreprises), "all" (tous)
     """
     results = []
     
@@ -87,7 +89,8 @@ async def scrape_neighborhood(
     if canton is None:
         canton = get_canton(commune)
     
-    print(f"[Scanner] Demarrage scanner: {rue}, {commune} ({canton})")
+    type_label = "prives" if type_recherche == "person" else "entreprises" if type_recherche == "business" else "tous"
+    print(f"[Scanner] Demarrage scanner ({type_label}): {rue}, {commune} ({canton})")
     
     async with SearchChScraper() as scraper:
         # Generer les adresses a tester
@@ -121,7 +124,12 @@ async def scrape_neighborhood(
             # Utiliser le champ 'wo' pour l'adresse et laisser 'was' vide pour tout trouver
             # C'est la technique cle pour le reverse search
             try:
-                scan_results = await scraper.search(query="", ville=adresse_complete, limit=5)
+                scan_results = await scraper.search(
+                    query="", 
+                    ville=adresse_complete, 
+                    limit=5,
+                    type_recherche=type_recherche  # Passer le filtre prive/entreprise
+                )
             except Exception as e:
                 print(f"[Scanner] Erreur pour {adresse_complete}: {e}")
                 continue

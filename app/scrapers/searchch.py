@@ -199,28 +199,85 @@ class SearchChScraper:
                     # Lien vers la fiche originale sur search.ch
                     result['lien_rf'] = href
             
-            # FILTRE ENTREPRISES ET INDESIRABLES
-            if type_recherche != "business":
+            # FILTRE STRICT POUR PRIVES UNIQUEMENT
+            if type_recherche == "person":
+                # Liste exhaustive des mots-cles d'entreprises
                 keywords_to_exclude = [
-                    ' SA', ' S.A.', ' AG', ' Ltd', ' LLC',
-                    ' Sàrl', ' Sarl', ' GmbH', ' Sagl',
-                    'Restaurant', 'Café', 'Bistrot', 'Bar', 'Hotel', 'Hôtel',
-                    'Cabinet', 'Etude', 'Bureau', 'Agence', 'Atelier',
+                    # Formes juridiques
+                    ' SA', ' S.A.', ' AG', ' Ltd', ' LLC', ' Inc', ' Corp',
+                    ' Sàrl', ' Sarl', ' GmbH', ' Sagl', ' SNC', ' SCS',
+                    ' & Co', ' & Cie', ' et Fils', ' et Filles',
+                    # Commerces et restauration
+                    'Restaurant', 'Café', 'Bistrot', 'Bar', 'Pub', 'Brasserie',
+                    'Hotel', 'Hôtel', 'Auberge', 'Pension', 'Motel', 'Hostel',
+                    'Pizza', 'Pizzeria', 'Burger', 'Kebab', 'Sushi', 'Tacos',
+                    'Boulangerie', 'Patisserie', 'Confiserie', 'Epicerie',
+                    'Supermarché', 'Magasin', 'Boutique', 'Store', 'Shop',
+                    # Services professionnels
+                    'Cabinet', 'Etude', 'Bureau', 'Agence', 'Atelier', 'Studio',
+                    'Fiduciaire', 'Comptable', 'Avocat', 'Notaire', 'Huissier',
+                    'Architecte', 'Ingénieur', 'Consultant', 'Conseiller',
+                    # Sante
+                    'Clinique', 'Centre', 'Médical', 'Dentaire', 'Optique',
+                    'Pharmacie', 'Droguerie', 'Institut', 'Praxis', 'Therapie',
+                    'Physiothérapie', 'Chiropracteur', 'Ostéopathe',
+                    # Beaute et bien-etre
+                    'Coiffure', 'Coiffeur', 'Salon', 'Spa', 'Massage', 'Esthétique',
+                    'Onglerie', 'Barbier', 'Beauté',
+                    # Commerce et artisanat
+                    'Garage', 'Carrosserie', 'Mécanique', 'Auto', 'Moto',
+                    'Menuiserie', 'Plomberie', 'Electricité', 'Chauffage',
+                    'Peinture', 'Rénovation', 'Construction', 'Bâtiment',
+                    # Education et associations
+                    'Ecole', 'School', 'Academy', 'Cours', 'Formation',
                     'Association', 'Fondation', 'Stiftung', 'Genossenschaft',
-                    'Ecole', 'School', 'Garage', 'Boutique', 'Store', 'Shop',
-                    'Coiffure', 'Institut', 'Praxis', 'Clinique', 'Centre',
-                    'Pharmacie', 'Kiosk', 'Service', 'Services',
-                    'Pizza', 'Burger', 'Kebab', 'Sushi', 'Tacos',
-                    'Banque', 'Bank', 'Assurance', 'Insurance',
-                    'Immobilier', 'Régie', 'Fiduciaire'
+                    'Club', 'Verein', 'Société', 'Groupe', 'Holding',
+                    # Finance et immobilier
+                    'Banque', 'Bank', 'Assurance', 'Insurance', 'Courtier',
+                    'Immobilier', 'Régie', 'Gérance', 'Property', 'Estate',
+                    # IT et media
+                    'Informatique', 'Software', 'Digital', 'Tech', 'Web',
+                    'Media', 'Communication', 'Marketing', 'Publicité',
+                    # Autres
+                    'Kiosk', 'Pressing', 'Laverie', 'Nettoyage', 'Cleaning',
+                    'Transport', 'Taxi', 'Livraison', 'Déménagement',
+                    'Pompes funèbres', 'Funéraire', 'Fleuriste', 'Jardinerie',
+                    'Service', 'Services', 'Solutions', 'Entreprise', 'Company'
                 ]
                 
-                full_text = (result['nom'] + ' ' + result['adresse']).lower()
+                full_text = (result['nom'] + ' ' + result.get('adresse', '')).lower()
+                nom_original = result['nom']
                 
+                # Exclure si contient un mot-cle d'entreprise
                 for kw in keywords_to_exclude:
                     if kw.lower() in full_text:
-                        # C'est une entreprise -> on l'exclut
                         return None
+                
+                # Verification supplementaire : le nom doit ressembler a un nom de personne
+                # Un nom de personne privee a generalement 2-3 mots (prenom + nom)
+                # et ne contient pas de chiffres ni de caracteres speciaux
+                name_parts = nom_original.split()
+                
+                # Trop de mots = probablement une entreprise
+                if len(name_parts) > 4:
+                    return None
+                    
+                # Contient des chiffres = probablement une entreprise
+                if any(char.isdigit() for char in nom_original):
+                    return None
+                    
+                # Tout en majuscules = probablement une entreprise
+                if nom_original.isupper() and len(nom_original) > 10:
+                    return None
+                    
+                # Contient des caracteres speciaux suspects
+                special_chars = ['@', '#', '$', '&', '*', '+', '=', '|', '<', '>', '{', '}', '[', ']']
+                if any(char in nom_original for char in special_chars):
+                    return None
+                
+                # Nom trop court (moins de 3 caracteres) = suspect
+                if len(nom_original.replace(' ', '')) < 3:
+                    return None
                     
         except Exception as e:
             print(f"[Search.ch] Erreur extraction entree: {e}")

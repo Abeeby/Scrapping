@@ -51,10 +51,11 @@ async def fetch_with_retry(url, params=None, retries=3, delay=1, timeout=30):
 # =============================================================================
 
 class ScrapingRequest(BaseModel):
-    source: str  # sitg, rf, searchch, localch, vaud
+    source: str  # sitg, rf, searchch, localch, vaud, scanner
     commune: Optional[str] = "Genève"
     limit: Optional[int] = 100
     query: Optional[str] = ""  # Pour annuaires
+    type_recherche: Optional[str] = "person"  # person (prives), business (entreprises), all
 
 class ScrapingResult(BaseModel):
     id: str
@@ -517,12 +518,14 @@ async def scrape_scanner_endpoint(request: ScrapingRequest):
     # Le parametre 'query' contient le nom de la rue (ou 'all')
     rue = request.query or "all"
     commune = request.commune or "Bernex"
+    type_recherche = request.type_recherche or "person"
     
-    await emit_activity("scraping", f"Demarrage Scanner: {rue}, {commune}")
+    type_label = "prives" if type_recherche == "person" else "entreprises" if type_recherche == "business" else "tous"
+    await emit_activity("scraping", f"Demarrage Scanner ({type_label}): {rue}, {commune}")
     
-    results = await scrape_neighborhood(commune, rue, request.limit)
+    results = await scrape_neighborhood(commune, rue, request.limit, type_recherche=type_recherche)
     
-    await emit_activity("scraping", f"Scanner termine: {len(results)} residents trouves")
+    await emit_activity("scraping", f"Scanner termine: {len(results)} {type_label} trouves")
     
     return ScrapingResponse(
         status="completed",
@@ -616,11 +619,17 @@ async def generate_rf_links_endpoint(request: ScrapingRequest):
 @router.post("/searchch", response_model=ScrapingResponse)
 async def scrape_searchch_endpoint(request: ScrapingRequest):
     """Scrape l'annuaire Search.ch"""
-    await emit_activity("scraping", f"Démarrage scraping Search.ch - {request.query}")
+    type_label = "prives" if request.type_recherche == "person" else "entreprises" if request.type_recherche == "business" else "tous"
+    await emit_activity("scraping", f"Démarrage Search.ch ({type_label}) - {request.query}")
     
-    results = await scrape_searchch(request.query or "", request.commune, request.limit)
+    results = await scrape_searchch(
+        request.query or "", 
+        request.commune, 
+        request.limit,
+        type_recherche=request.type_recherche or "person"
+    )
     
-    await emit_activity("scraping", f"Search.ch terminé: {len(results)} résultats")
+    await emit_activity("scraping", f"Search.ch terminé: {len(results)} {type_label} trouvés")
     
     return ScrapingResponse(
         status="completed",
@@ -631,11 +640,17 @@ async def scrape_searchch_endpoint(request: ScrapingRequest):
 @router.post("/localch", response_model=ScrapingResponse)
 async def scrape_localch_endpoint(request: ScrapingRequest):
     """Scrape l'annuaire Local.ch"""
-    await emit_activity("scraping", f"Démarrage scraping Local.ch - {request.query}")
+    type_label = "prives" if request.type_recherche == "person" else "entreprises" if request.type_recherche == "business" else "tous"
+    await emit_activity("scraping", f"Démarrage Local.ch ({type_label}) - {request.query}")
     
-    results = await scrape_localch(request.query or "", request.commune, request.limit)
+    results = await scrape_localch(
+        request.query or "", 
+        request.commune, 
+        request.limit,
+        type_recherche=request.type_recherche or "person"
+    )
     
-    await emit_activity("scraping", f"Local.ch terminé: {len(results)} résultats")
+    await emit_activity("scraping", f"Local.ch terminé: {len(results)} {type_label} trouvés")
     
     return ScrapingResponse(
         status="completed",
