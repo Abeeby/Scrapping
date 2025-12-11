@@ -15,90 +15,36 @@ import sys
 
 def get_data_path():
     """Determine le chemin vers le dossier data"""
-    #region agent log
-    import json as _json
-    _log_path = r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log"
-    def _debug_log(hyp, loc, msg, data):
-        try:
-            with open(_log_path, "a", encoding="utf-8") as f:
-                f.write(_json.dumps({"hypothesisId": hyp, "location": loc, "message": msg, "data": data, "timestamp": __import__("time").time()}) + "\n")
-        except: pass
-    #endregion
-    
-    paths_tried = []
-    
     # Option 1: PyInstaller frozen
     if getattr(sys, 'frozen', False):
         base = os.path.dirname(sys.executable)
         data_path = os.path.join(base, "data", "streets.json")
-        paths_tried.append({"path": data_path, "exists": os.path.exists(data_path)})
         if os.path.exists(data_path):
-            #region agent log
-            _debug_log("H2", "scanner.py:get_data_path", "Found frozen path", {"path": data_path})
-            #endregion
             return data_path
         # Fallback: app/data
         data_path = os.path.join(base, "app", "data", "streets.json")
-        paths_tried.append({"path": data_path, "exists": os.path.exists(data_path)})
         if os.path.exists(data_path):
-            #region agent log
-            _debug_log("H2", "scanner.py:get_data_path", "Found frozen app/data path", {"path": data_path})
-            #endregion
             return data_path
     
     # Option 2: Execution normale (Railway, local dev)
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    data_path = os.path.join(base_dir, "data", "streets.json")
-    paths_tried.append({"path": data_path, "exists": os.path.exists(data_path)})
-    
-    #region agent log
-    _debug_log("H1", "scanner.py:get_data_path", "Paths tried", {"paths": paths_tried, "final": data_path, "cwd": os.getcwd(), "file_abspath": os.path.abspath(__file__)})
-    #endregion
-    
-    return data_path
+    return os.path.join(base_dir, "data", "streets.json")
 
 DATA_FILE = get_data_path()
 print(f"[Scanner] Fichier streets.json: {DATA_FILE}")
 
 def load_streets_data():
     """Charge les données des rues depuis le fichier JSON"""
-    #region agent log
-    import json as _json
-    _log_path = r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log"
-    def _debug_log(hyp, loc, msg, data):
-        try:
-            with open(_log_path, "a", encoding="utf-8") as f:
-                f.write(_json.dumps({"hypothesisId": hyp, "location": loc, "message": msg, "data": data, "timestamp": __import__("time").time()}) + "\n")
-        except: pass
-    #endregion
-    
     try:
-        file_exists = os.path.exists(DATA_FILE)
-        #region agent log
-        _debug_log("H1", "scanner.py:load_streets_data", "Checking file", {"DATA_FILE": DATA_FILE, "exists": file_exists})
-        #endregion
-        
-        if not file_exists:
+        if not os.path.exists(DATA_FILE):
             print(f"[Scanner] Fichier non trouve: {DATA_FILE}")
-            #region agent log
-            _debug_log("H1", "scanner.py:load_streets_data", "File NOT FOUND", {"path": DATA_FILE})
-            #endregion
             return {"GE": {}, "VD": {}}
-        
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
             data = json.load(f)
-            ge_count = len(data.get('GE', {}))
-            vd_count = len(data.get('VD', {}))
-            print(f"[Scanner] Donnees chargees: {ge_count} communes GE, {vd_count} communes VD")
-            #region agent log
-            _debug_log("H3", "scanner.py:load_streets_data", "Data loaded successfully", {"ge_communes": ge_count, "vd_communes": vd_count, "sample_ge": list(data.get('GE', {}).keys())[:5]})
-            #endregion
+            print(f"[Scanner] Donnees chargees: {len(data.get('GE', {}))} communes GE, {len(data.get('VD', {}))} communes VD")
             return data
     except Exception as e:
         print(f"[Scanner] Erreur chargement streets.json: {e}")
-        #region agent log
-        _debug_log("H3", "scanner.py:load_streets_data", "EXCEPTION during load", {"error": str(e), "error_type": type(e).__name__})
-        #endregion
         return {"GE": {}, "VD": {}}
 
 STREETS_DB = load_streets_data()
