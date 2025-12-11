@@ -267,7 +267,7 @@ async def generate_rf_links(commune: str, limit: int) -> List[dict]:
 # SCRAPER SEARCH.CH - REEL AVEC PLAYWRIGHT
 # =============================================================================
 
-async def scrape_searchch(query: str, ville: str, limit: int) -> List[dict]:
+async def scrape_searchch(query: str, ville: str, limit: int, type_recherche: str = "person") -> List[dict]:
     """Scrape les particuliers sur Search.ch via API"""
     results = []
     
@@ -276,12 +276,13 @@ async def scrape_searchch(query: str, ville: str, limit: int) -> List[dict]:
     search_term = f"{query} {ville}".strip() if query else ville
     lien_verification = f"https://search.ch/tel/?was={urllib.parse.quote(search_term)}"
     
-    print(f"[Search.ch] Demarrage scraping: {query} a {ville} (limit: {limit})")
+    type_label = "prives" if type_recherche == "person" else "entreprises" if type_recherche == "business" else "tous"
+    print(f"[Search.ch] Demarrage scraping ({type_label}): {query} a {ville} (limit: {limit})")
     print(f"[Search.ch] Lien verification: {lien_verification}")
     
     try:
         async with SearchChScraper() as scraper:
-            raw_results = await scraper.search(query, ville, limit)
+            raw_results = await scraper.search(query, ville, limit, type_recherche=type_recherche)
             
             await sio.emit('scraping_progress', {
                 'source': 'searchch',
@@ -321,7 +322,7 @@ async def scrape_searchch(query: str, ville: str, limit: int) -> List[dict]:
 # SCRAPER LOCAL.CH - REEL AVEC PLAYWRIGHT
 # =============================================================================
 
-async def scrape_localch(query: str, ville: str, limit: int) -> List[dict]:
+async def scrape_localch(query: str, ville: str, limit: int, type_recherche: str = "person") -> List[dict]:
     """Scrape les entreprises et particuliers sur Local.ch"""
     results = []
     
@@ -332,12 +333,13 @@ async def scrape_localch(query: str, ville: str, limit: int) -> List[dict]:
     query_slug = query.replace(' ', '-') if query else ''
     lien_verification = f"https://www.local.ch/fr/q/{ville_slug}/{query_slug}" if query else f"https://www.local.ch/fr/q/{ville_slug}"
     
-    print(f"[Local.ch] Demarrage scraping: {query} a {ville} (limit: {limit})")
+    type_label = "prives" if type_recherche == "person" else "entreprises" if type_recherche == "business" else "tous"
+    print(f"[Local.ch] Demarrage scraping ({type_label}): {query} a {ville} (limit: {limit})")
     print(f"[Local.ch] Lien verification: {lien_verification}")
     
     try:
         async with LocalChScraper() as scraper:
-            raw_results = await scraper.search(query, ville, limit)
+            raw_results = await scraper.search(query, ville, limit, type_recherche=type_recherche)
             
             await sio.emit('scraping_progress', {
                 'source': 'localch',
@@ -619,6 +621,9 @@ async def generate_rf_links_endpoint(request: ScrapingRequest):
 @router.post("/searchch", response_model=ScrapingResponse)
 async def scrape_searchch_endpoint(request: ScrapingRequest):
     """Scrape l'annuaire Search.ch"""
+    #region agent log
+    import json; open(r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log", "a").write(json.dumps({"hypothesisId":"H2","location":"scraping.py:searchch","message":"type_recherche recu","data":{"type_recherche":request.type_recherche,"query":request.query,"commune":request.commune},"timestamp":__import__("time").time()*1000,"sessionId":"debug-session"})+"\n")
+    #endregion
     type_label = "prives" if request.type_recherche == "person" else "entreprises" if request.type_recherche == "business" else "tous"
     await emit_activity("scraping", f"Démarrage Search.ch ({type_label}) - {request.query}")
     

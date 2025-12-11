@@ -55,6 +55,9 @@ class SearchChScraper:
         Recherche sur Search.ch via l'API XML
         """
         search_mode = (type_recherche or "person").lower()
+        #region agent log
+        import json; open(r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log", "a").write(json.dumps({"hypothesisId":"H3","location":"searchch.py:search","message":"Scraper demarre","data":{"query":query,"ville":ville,"type_recherche":search_mode},"timestamp":__import__("time").time()*1000,"sessionId":"debug-session"})+"\n")
+        #endregion
         print(f"[Search.ch] Recherche: '{query}' a '{ville}' (limite: {limit}, mode: {search_mode})")
         
         results = await self._api_search(query, ville, limit, search_mode)
@@ -114,11 +117,24 @@ class SearchChScraper:
                 entries = root.findall('{http://www.w3.org/2005/Atom}entry')
             
             print(f"[Search.ch] {len(entries)} entrees XML trouvees")
-            
+            #region agent log
+            filtered_count = 0
+            accepted_count = 0
+            #endregion
             for entry in entries:
                 result = self._extract_from_entry(entry, default_ville, type_recherche)
                 if result and result.get('nom'):
                     results.append(result)
+                    #region agent log
+                    accepted_count += 1
+                    #endregion
+                else:
+                    #region agent log
+                    filtered_count += 1
+                    #endregion
+            #region agent log
+            import json; open(r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log", "a").write(json.dumps({"hypothesisId":"H3","location":"searchch.py:parse","message":"Resultats filtres","data":{"total_entries":len(entries),"accepted":accepted_count,"filtered":filtered_count,"type_recherche":type_recherche},"timestamp":__import__("time").time()*1000,"sessionId":"debug-session"})+"\n")
+            #endregion
                     
         except ET.ParseError as e:
             print(f"[Search.ch] Erreur parsing XML: {e}")
