@@ -456,6 +456,42 @@ async def scrape_vaud(commune: str, limit: int) -> List[dict]:
 # ROUTES
 # =============================================================================
 
+@router.get("/debug")
+async def debug_scraping():
+    """Endpoint de debug pour diagnostiquer les problemes de scraping"""
+    import os
+    import sys
+    
+    # Verifier le fichier streets.json
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    data_path = os.path.join(base_dir, "data", "streets.json")
+    
+    # Lister les fichiers dans le dossier data
+    data_dir = os.path.join(base_dir, "data")
+    files_in_data = []
+    if os.path.exists(data_dir):
+        files_in_data = os.listdir(data_dir)
+    
+    return {
+        "status": "debug",
+        "paths": {
+            "cwd": os.getcwd(),
+            "base_dir": base_dir,
+            "data_path": data_path,
+            "data_exists": os.path.exists(data_path),
+            "data_dir_exists": os.path.exists(data_dir),
+            "files_in_data": files_in_data,
+            "__file__": os.path.abspath(__file__)
+        },
+        "scanner_state": {
+            "COMMUNES_GE_count": len(SCANNER_COMMUNES_GE),
+            "COMMUNES_VD_count": len(SCANNER_COMMUNES_VD),
+            "sample_GE": SCANNER_COMMUNES_GE[:5] if SCANNER_COMMUNES_GE else [],
+            "sample_VD": SCANNER_COMMUNES_VD[:5] if SCANNER_COMMUNES_VD else []
+        },
+        "api_communes_count": len(COMMUNES_GE)
+    }
+
 @router.get("/communes")
 async def get_communes():
     """Liste des communes disponibles pour GE et VD"""
