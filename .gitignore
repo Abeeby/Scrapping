@@ -21,9 +21,14 @@ dist/
 *.swo
 
 # Database
-data/
 *.db
 *.sqlite
+
+# Ignore root data folder but not app/data
+/data/
+!app/data/
+!app/data/*.py
+!app/data/*.json
 
 # Logs
 logs/
