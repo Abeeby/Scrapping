@@ -34,7 +34,8 @@ async def enrich_prospect_task(prospect_id: str):
             
             # Lancer le scraper
             async with SearchChScraper() as scraper:
-                results = await scraper.search_person(prospect.nom, prospect.prenom, ville)
+                # Recherche simple (Search.ch) sur prénom/nom + ville
+                results = await scraper.search(query=query, ville=ville, limit=5, type_recherche="person")
                 
                 if results:
                     best_match = results[0] # Prendre le premier résultat

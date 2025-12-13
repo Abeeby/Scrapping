@@ -1,779 +1,2398 @@
 {
   "GE": {
-    "Genève": [
-      "Chemin de la Montagne", "Chemin du Velours", "Avenue de Champel", "Avenue de la Grenade", "Chemin Rieu",
-      "Chemin du Bochet", "Chemin des Clochettes", "Chemin des Tulipiers", "Chemin de Montfleury", "Chemin Castan",
-      "Avenue de Bude", "Chemin de la Tourelle", "Avenue William-Favre", "Chemin Frank-Thomas", "Avenue de Frontenex",
-      "Route de Florissant", "Chemin des Crêts-de-Champel", "Avenue Peschier", "Avenue Krieg", "Chemin des Sports",
-      "Avenue de la Roseraie", "Boulevard des Tranchées", "Rue de Contamines", "Rue de l'Athénée", "Avenue de Miremont",
-      "Rue Michel-Chauvet", "Chemin de Malombré", "Avenue de Pictet-de-Rochemont", "Chemin de Roches", "Avenue Louis-Aubert",
-      "Chemin de la Chevillarde", "Chemin Ami-Lullin", "Boulevard Helvétique", "Rue de Vermont", "Rue Ferdinand-Hodler",
-      "Avenue du Mail", "Rue Charles-Bonnet", "Rue de l'École-de-Médecine", "Boulevard Carl-Vogt", "Rue de Carouge",
-      "Rue des Bains", "Boulevard de Saint-Georges", "Rue de la Coulouvrenière", "Rue des Deux-Ponts", "Quai Charles-Page",
-      "Rue du Stand", "Rue de Rive", "Rue du Rhône", "Rue du Marché", "Place du Molard",
-      "Rue de la Croix-d'Or", "Boulevard du Pont-d'Arve", "Avenue Henri-Dunant", "Rue Prévost-Martin", "Avenue du Lignon",
-      "Chemin de la Seymaz", "Chemin des Crêts", "Avenue de Thônex", "Chemin de Grange-Falquet", "Chemin du Pommier",
-      "Avenue de Châtelaine", "Chemin de Fossard", "Chemin de Mon-Idée", "Chemin de la Gradelle", "Chemin du Velours",
-      "Chemin de Conches", "Chemin de Sur-le-Beau", "Chemin de Pré-Bouvier", "Chemin du Nant-d'Argent", "Chemin de Ruth",
-      "Avenue de Thônex", "Chemin des Bougeries", "Chemin de la Pallanterie", "Chemin de Sur-Rang", "Chemin des Verjus",
-      "Chemin du Château-de-Bellerive", "Chemin des Hauts-Crêts", "Chemin de la Pommière", "Chemin du Grand-Montfleury",
-      "Chemin de Plein-Vent", "Chemin de la Vendée", "Chemin de Moillebeau", "Chemin de l'Impératrice", "Chemin du Reposoir",
-      "Chemin de la Petite-Boissière", "Chemin de Sous-Balme", "Chemin des Corbillettes", "Chemin de Sur-le-Bois",
-      "Chemin des Pâquerettes", "Chemin de la Roseraie", "Chemin des Sapins", "Chemin des Lilas", "Chemin des Roses",
-      "Chemin des Primevères", "Chemin des Violettes", "Chemin des Marguerites", "Chemin des Iris", "Chemin des Jonquilles"
-    ],
-    "Bernex": [
-      "Chemin des Saules", "Chemin de Saule", "Route de Chancy", "Chemin du Signal", "Chemin de la Chavanne",
-      "Chemin de la Bedaine", "Route de Soral", "Chemin des Cornaches", "Chemin de Sur-Beauvent", "Chemin des Mattines",
-      "Chemin du Stand", "Rue de Bernex", "Chemin de la Gagnagerie", "Chemin des Léchères", "Chemin du Gamay",
-      "Chemin de Magny", "Chemin des Alouettes", "Chemin de la Bergerie", "Chemin du Pont-du-Centenaire", "Chemin du Pré-Fleuri",
-      "Route de Loëx", "Chemin du Nant-Cayla", "Chemin de Lully", "Chemin des Peupliers", "Chemin de la Gravière",
-      "Chemin de Cressy", "Chemin du Petit-Bernex", "Chemin des Bois", "Chemin de la Chapelle", "Chemin des Vergers",
-      "Chemin du Grand-Champ", "Chemin de la Prairie", "Chemin des Tilleuls", "Chemin de la Ferme", "Chemin du Ruisseau",
-      "Chemin de Sous-Caran", "Chemin des Noyers", "Chemin de la Plaine", "Chemin des Cerisiers", "Chemin des Pommiers"
-    ],
-    "Collonge-Bellerive": [
-      "Chemin de la Tour-Carrée", "Chemin du Vieux-Vésenaz", "Chemin des Rayes", "Route d'Hermance", "Chemin du Rionzi",
-      "Chemin de la Gabiule", "Chemin des Falquets", "Chemin des Hauts-de-Collonges", "Chemin du Bois-de-la-Chapelle",
-      "Chemin de la Côte-d'Or", "Chemin du Pré-d'Orsat", "Chemin des Murs-Blancs", "Route de Thonon", "Chemin du Milieu",
-      "Chemin de Bellevue", "Chemin de la Capite", "Chemin du Port", "Chemin des Vignes", "Chemin du Château",
-      "Chemin de la Fontaine", "Route de Collonge", "Chemin de Saint-Maurice", "Chemin du Lac", "Chemin des Crêts",
-      "Chemin de la Gradelle", "Chemin des Sapins", "Chemin du Grand-Chemin", "Chemin de Bellerive", "Chemin du Reposoir",
-      "Chemin des Roses", "Chemin des Pâquerettes", "Chemin des Tulipes", "Chemin de la Plage", "Chemin des Mouettes",
-      "Chemin de la Corniche", "Chemin des Grèves", "Chemin du Bord-de-l'Eau", "Chemin des Nénuphars", "Chemin du Soleil"
-    ],
-    "Cologny": [
-      "Chemin de la Mairie", "Rampe de Cologny", "Chemin du Nant-d'Argent", "Route de la Capite", "Chemin de la Princesse",
-      "Chemin du Righi", "Chemin de Ruth", "Chemin des Hauts-de-Cologny", "Chemin du Pré-Langard", "Chemin de la Corne-de-Cerf",
-      "Plateau de Frontenex", "Chemin de Grange-Falquet", "Chemin du Coteau-de-Cologny", "Chemin Byron", "Chemin de la Gradelle",
-      "Chemin des Roses", "Chemin du Reposoir", "Route de Cologny", "Chemin de Bellerive", "Chemin du Port-Noir",
-      "Chemin de la Pallanterie", "Chemin des Pommiers", "Chemin du Château", "Chemin de la Tour", "Chemin des Lilas",
-      "Chemin de la Tourelle", "Chemin du Clos", "Chemin de la Vendée", "Chemin des Bougeries", "Chemin de Sur-Rang",
-      "Chemin de Plein-Soleil", "Chemin des Glycines", "Chemin du Grand-Cologny", "Chemin de la Fontaine", "Chemin du Lac",
-      "Chemin des Acacias", "Chemin des Érables", "Chemin des Chênes", "Chemin des Sapins", "Chemin des Bouleaux"
-    ],
-    "Confignon": [
-      "Chemin des Marais", "Route de Certoux", "Chemin de la Praly", "Chemin de Cressy", "Chemin des Vignes",
-      "Chemin de Vuillonnex", "Chemin de la Bertenaz", "Chemin de Sous-le-Clos", "Chemin des Bouleaux",
-      "Route de Soral", "Chemin de l'Église", "Chemin des Tilleuls", "Chemin de la Ferme", "Chemin du Moulin",
-      "Chemin des Champs", "Chemin de la Plaine", "Chemin du Petit-Clos", "Chemin des Vergers", "Chemin des Prés",
-      "Chemin des Noyers", "Chemin des Cerisiers", "Chemin des Pommiers", "Chemin des Peupliers", "Chemin des Érables",
-      "Chemin du Grand-Champ", "Chemin de la Prairie", "Chemin du Ruisseau", "Chemin des Alouettes", "Chemin des Fauvettes"
-    ],
-    "Veyrier": [
-      "Chemin des Rasses", "Avenue du Grand-Salève", "Chemin de la Tour-de-Champel", "Route de Veyrier", "Chemin des Coudriers",
-      "Chemin de l'Érugne", "Chemin des Petits-Esserts", "Chemin du Bois-Gourmand", "Avenue du Petit-Senn",
-      "Chemin des Bois", "Chemin de Vessy", "Chemin des Grands-Esserts", "Route de Troinex", "Chemin de la Vendée",
-      "Chemin du Salève", "Chemin des Roches", "Chemin de la Colline", "Chemin du Villars", "Chemin de la Gradelle",
-      "Chemin des Pins", "Chemin de la Forêt", "Chemin du Pré-Cartelier", "Chemin de Sur-Arve", "Chemin de Pinchat",
-      "Chemin de Sous-Veyrier", "Chemin du Château", "Chemin de la Fontaine", "Chemin des Vergers", "Chemin des Vignes",
-      "Chemin des Crêts", "Chemin de la Chapelle", "Chemin du Moulin", "Chemin des Prés", "Chemin de la Prairie",
-      "Chemin des Sapins", "Chemin des Chênes", "Chemin des Bouleaux", "Chemin des Érables", "Chemin des Tilleuls"
-    ],
-    "Plan-les-Ouates": [
-      "Chemin des Aulx", "Chemin du Daru", "Route de Saint-Julien", "Chemin de la Butte", "Chemin de Vers",
-      "Chemin des Chevaliers-de-Malte", "Chemin de la Mère-Voie", "Chemin du Champ-des-Filles", "Chemin de la Milice",
-      "Route de Saconnex-d'Arve", "Chemin des Arbères", "Chemin du Pont-de-Pierre", "Chemin de Pré-Bouvier",
-      "Chemin de la Bottière", "Chemin de la Praille", "Chemin du Grand-Clos", "Chemin de la Marbrerie",
-      "Chemin des Industries", "Chemin de Sous-la-Joux", "Chemin des Prés-Meunier", "Chemin des Vergers",
-      "Chemin de la Ferme", "Chemin des Champs", "Chemin du Ruisseau", "Chemin de la Prairie", "Chemin des Tilleuls",
-      "Chemin des Noyers", "Chemin des Cerisiers", "Chemin des Pommiers", "Chemin de la Fontaine"
-    ],
-    "Troinex": [
-      "Chemin de la Grande-Gorge", "Route de Troinex", "Chemin de Lullin", "Chemin du Bois-Murat", "Chemin de Saussac",
-      "Chemin des Moulins-de-Drize", "Chemin Lullin", "Chemin de la Drize", "Chemin du Creux", "Chemin de Vers-Vaux",
-      "Chemin du Château", "Chemin des Prés", "Chemin de la Fontaine", "Chemin du Village", "Route de Veyrier",
-      "Chemin de la Chapelle", "Chemin des Vergers", "Chemin des Vignes", "Chemin de la Ferme", "Chemin du Ruisseau",
-      "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Érables", "Chemin des Sapins", "Chemin des Bouleaux"
-    ],
-    "Vandoeuvres": [
-      "Chemin de la Seymaz", "Route de Meinier", "Chemin des Princes", "Chemin de la Mairie", "Chemin de l'Église",
-      "Chemin de la Blanche", "Route de Choulex", "Chemin de la Combe", "Chemin des Bois", "Chemin du Ruisseau",
-      "Chemin de la Planta", "Chemin du Château", "Chemin des Roses", "Chemin de la Grange", "Chemin de Sur-Vandoeuvres",
-      "Chemin des Crêts", "Chemin du Vallon", "Chemin de la Campagne", "Chemin des Vergers", "Chemin de la Fontaine",
-      "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux",
-      "Chemin de la Prairie", "Chemin des Prés", "Chemin du Moulin", "Chemin de la Chapelle", "Chemin des Vignes"
-    ],
-    "Chêne-Bougeries": [
-      "Chemin de la Montagne", "Chemin De-La-Montagne", "Route de Chêne", "Avenue de la Gare", "Chemin du Vallon",
-      "Chemin des Déplacés", "Chemin de Grange-Canal", "Chemin de la Fontaine", "Chemin des Voirons", "Avenue de Bel-Air",
-      "Chemin des Bougeries", "Chemin de la Gradelle", "Chemin du Pont-de-Ville", "Chemin des Glycines", "Avenue des Cavaliers",
-      "Chemin de Conches", "Avenue du Port", "Chemin du Foron", "Chemin de la Rochette", "Chemin du Velours",
-      "Chemin des Crêts", "Chemin de la Chapelle", "Chemin du Château", "Chemin des Vergers", "Chemin de la Ferme",
-      "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux",
-      "Chemin de Sur-le-Beau", "Chemin de Plein-Vent", "Chemin de la Vendée", "Chemin du Grand-Chêne", "Chemin de la Prairie"
-    ],
-    "Meyrin": [
-      "Chemin de la Citadelle", "Avenue de Vaudagne", "Chemin des Aulx", "Chemin du Grand-Puits", "Chemin des Coquelicots",
-      "Avenue de Feuillasse", "Rue de la Prulay", "Chemin de Riant-Bosson", "Avenue Sainte-Cécile", "Rue de Meyrin",
-      "Chemin de l'Ain", "Avenue Louis-Casaï", "Chemin des Ailes", "Chemin François-Lehmann", "Rue des Arbères",
-      "Chemin du Grand-Noyer", "Avenue de Mategnin", "Chemin de Maisonneuve", "Rue Jean-Daniel-Colladon",
-      "Chemin des Vergers", "Chemin de la Ferme", "Chemin du Ruisseau", "Chemin de la Prairie", "Chemin des Tilleuls",
-      "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux", "Chemin de la Fontaine",
-      "Chemin du Château", "Chemin des Vignes", "Chemin de la Chapelle", "Chemin des Prés", "Chemin des Bois"
-    ],
-    "Bellevue": [
-      "Chemin de la Golèze", "Chemin des Coteaux", "Route de Lausanne", "Chemin de la Fenêtre", "Chemin de Relion",
-      "Chemin des Limites", "Route de Colovrex", "Chemin du Château", "Chemin des Prés", "Chemin de la Fontaine",
-      "Chemin du Lac", "Chemin des Vignes", "Chemin de Valavran", "Chemin des Crêts", "Chemin de Malagny",
-      "Chemin du Port", "Chemin de la Plage", "Route de Collex", "Chemin des Noisetiers", "Chemin des Tilleuls",
-      "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux", "Chemin de la Prairie",
-      "Chemin des Vergers", "Chemin de la Ferme", "Chemin du Ruisseau", "Chemin de la Chapelle", "Chemin du Moulin"
-    ],
-    "Lancy": [
-      "Chemin des Palettes", "Route du Pont-Butin", "Avenue des Communes-Réunies", "Chemin de Surville", "Chemin des Pontets",
-      "Chemin des Mollies", "Avenue du Petit-Lancy", "Chemin des Érables", "Route de Chancy", "Chemin de la Caroline",
-      "Avenue Eugène-Lance", "Chemin du Gué-de-l'Onex", "Route du Grand-Lancy", "Chemin de Pré-Marais",
-      "Avenue du Curé-Baud", "Chemin des Troènes", "Rue de Saint-Georges", "Avenue de la Praille", "Avenue des Morgines",
-      "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Sapins", "Chemin des Bouleaux", "Chemin de la Prairie",
-      "Chemin des Vergers", "Chemin de la Ferme", "Chemin du Ruisseau", "Chemin de la Fontaine", "Chemin du Château",
-      "Chemin des Vignes", "Chemin de la Chapelle", "Chemin des Prés", "Chemin des Bois", "Chemin du Moulin"
-    ],
-    "Onex": [
-      "Chemin de la Caroline", "Route de Chancy", "Chemin du Pommier", "Chemin de la Mousse", "Chemin des Dragues",
-      "Avenue du Bois-de-la-Chapelle", "Rue des Bossons", "Avenue des Grandes-Communes", "Chemin des Colombettes",
-      "Chemin du Gué-de-l'Onex", "Chemin des Ailes", "Chemin de l'Écu", "Avenue du Gros-Chêne", "Chemin de Belle-Cour",
-      "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux",
-      "Chemin de la Prairie", "Chemin des Vergers", "Chemin de la Ferme", "Chemin du Ruisseau", "Chemin de la Fontaine"
-    ],
-    "Carouge": [
-      "Chemin de la Fontenette", "Route de Saint-Julien", "Avenue Cardinal-Mermillod", "Chemin du Vieux-Canal", "Chemin de la Gravière",
-      "Rue de la Tambourine", "Avenue de la Praille", "Rue des Caroubiers", "Place du Marché", "Rue Saint-Joseph",
-      "Rue Ancienne", "Rue Jacques-Dalphin", "Rue de Veyrier", "Avenue de Carouge", "Rue du Parc",
-      "Rue des Allobroges", "Rue de la Filature", "Chemin des Vignes", "Route de Drize", "Chemin des Tilleuls",
-      "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux", "Chemin de la Prairie"
-    ],
-    "Grand-Saconnex": [
-      "Chemin du Grand-Pré", "Route de Ferney", "Chemin de Blandonnet", "Chemin de l'Avanchet", "Chemin de Montoie",
-      "Chemin des Coudriers", "Chemin du Pommier", "Avenue Giuseppe-Motta", "Route de l'Aéroport", "Avenue de Joli-Mont",
-      "Chemin des Coquelicots", "Chemin du Jardin", "Chemin de Chabrioud", "Chemin des Crêts", "Chemin des Tilleuls",
-      "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux", "Chemin de la Prairie"
-    ],
-    "Vernier": [
-      "Route de Peney", "Chemin de Crette", "Chemin du Pommier", "Chemin des Vignes", "Route du Nant-d'Avril",
-      "Avenue de Châtelaine", "Chemin de l'Étang", "Avenue du Lignon", "Chemin des Raies", "Chemin de Joinville",
-      "Route de Vernier", "Avenue de Tronchet", "Chemin du Champ-Français", "Chemin de Cointrin",
-      "Chemin des Libellules", "Chemin de Plein-Soleil", "Chemin de Maisonnex", "Chemin de Mourlaz",
-      "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux",
-      "Chemin de la Prairie", "Chemin des Vergers", "Chemin de la Ferme", "Chemin du Ruisseau", "Chemin de la Fontaine"
-    ],
-    "Thônex": [
-      "Route de Jussy", "Chemin de la Gravière", "Chemin de Fossard", "Avenue de Thônex", "Chemin des Vollandes",
-      "Chemin de la Mousse", "Rue de Genève", "Chemin du Bois-Carrien", "Chemin du Creux-de-Genthod",
-      "Chemin du Foron", "Chemin de Mon-Idée", "Chemin de Poterie", "Avenue du Léman", "Chemin des Tilleuls",
-      "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux", "Chemin de la Prairie"
-    ],
-    "Puplinge": [
-      "Route de Puplinge", "Chemin de Mauvernay", "Chemin de la Louvière", "Chemin des Hutins", "Chemin du Pont-Bochet",
-      "Route de Cornière", "Chemin des Prés", "Chemin de la Chapelle", "Chemin du Château", "Chemin de Pré-de-l'Oie",
-      "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux"
-    ],
-    "Presinge": [
-      "Chemin du Lac", "Route de Presinge", "Chemin des Corbillettes", "Chemin de Cara", "Route de Jussy",
-      "Chemin du Château", "Chemin des Bois", "Chemin de la Fontaine", "Chemin des Vergers", "Chemin des Tilleuls"
+    "Aire-la-Ville": [
+      "Route de Saint-Julien",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin du Château",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie"
     ],
     "Anières": [
-      "Route d'Hermance", "Chemin de la Distillerie", "Chemin du Champ-Claude", "Chemin des Chevêches",
-      "Chemin du Lac", "Chemin de la Fontaine", "Chemin du Château", "Chemin des Vignes", "Route du Lac",
-      "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux"
-    ],
-    "Hermance": [
-      "Route d'Hermance", "Chemin du Vieux-Port", "Chemin de l'Arénaz", "Rue du Midi", "Chemin du Lac",
-      "Chemin des Pêcheurs", "Chemin de la Fontaine", "Chemin du Château", "Rue du Nord", "Chemin des Tilleuls"
-    ],
-    "Choulex": [
-      "Route de Choulex", "Chemin de Chevrier", "Chemin des Creuses", "Chemin des Princes", "Chemin du Château",
-      "Chemin de la Fontaine", "Chemin des Bois", "Chemin de Sur-Choulex", "Chemin des Tilleuls", "Chemin des Chênes"
-    ],
-    "Meinier": [
-      "Route de Compois", "Chemin des Boiseaux", "Chemin de Corsinge", "Route de La-Capite", "Chemin du Château",
-      "Chemin des Vignes", "Chemin de la Fontaine", "Chemin de Rouelbeau", "Chemin des Tilleuls", "Chemin des Chênes"
-    ],
-    "Gy": [
-      "Route de Gy", "Chemin des Baraques", "Chemin de Sur-Gy", "Chemin du Château", "Chemin de la Fontaine",
-      "Chemin des Prés", "Chemin du Village", "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Sapins"
-    ],
-    "Jussy": [
-      "Route de Jussy", "Chemin du Champ-Manon", "Chemin de Monniaz", "Route de Monniaz", "Chemin du Château",
-      "Chemin de la Fontaine", "Chemin des Bois", "Chemin de Gy-le-Vieux", "Chemin des Tilleuls", "Chemin des Chênes"
-    ],
-    "Genthod": [
-      "Route de Lausanne", "Chemin de Rennex", "Chemin des Moulins", "Chemin de la Pralay", "Chemin du Château",
-      "Chemin des Cèdres", "Chemin de Valérie", "Chemin du Port", "Route de Colovrex", "Chemin de la Côte",
-      "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux"
-    ],
-    "Satigny": [
-      "Route de Satigny", "Chemin des Baillets", "Chemin de Peney-Dessus", "Route du Mandement", "Chemin du Château",
-      "Chemin de la Fontaine", "Chemin des Vignes", "Route de Peney", "Chemin de Bourdigny", "Chemin des Tilleuls"
-    ],
-    "Russin": [
-      "Route du Mandement", "Chemin de Malval", "Route des Molards", "Chemin du Château", "Chemin des Vignes",
-      "Chemin de la Fontaine", "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables"
-    ],
-    "Dardagny": [
-      "Route de Dardagny", "Chemin de la Tour", "Route du Mandement", "Chemin du Château", "Chemin de la Fontaine",
-      "Chemin de La-Plaine", "Chemin des Vignes", "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Sapins"
-    ],
-    "Versoix": [
-      "Route de Suisse", "Chemin de la Bécassine", "Avenue de Choiseul", "Chemin du Vieux-Port", "Route de l'Étraz",
-      "Chemin des Colombières", "Avenue Adrien-Lachenal", "Chemin du Château", "Chemin de la Fontaine",
-      "Route de Sauverny", "Chemin des Crêts", "Chemin des Douves", "Chemin des Pins", "Chemin du Port",
-      "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux"
-    ],
-    "Chêne-Bourg": [
-      "Rue de Genève", "Avenue de Bel-Air", "Chemin de la Mousse", "Rue du Gothard", "Avenue du Petit-Senn",
-      "Rue du Nant", "Chemin de la Montagne", "Chemin du Velours", "Chemin des Prés", "Chemin des Tilleuls"
-    ],
-    "Pregny-Chambésy": [
-      "Route de Lausanne", "Route de Pregny", "Chemin des Crêts", "Chemin de l'Impératrice", "Chemin du Château",
-      "Chemin de Chambésy", "Chemin du Bois-de-la-Chapelle", "Chemin de Moillebeau", "Chemin des Tilleuls", "Chemin des Chênes"
-    ],
-    "Céligny": [
-      "Grand-Rue", "Chemin des Crêts", "Chemin du Château", "Chemin du Lac", "Route de Foundex",
-      "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux"
-    ],
-    "Collex-Bossy": [
-      "Route de Collex", "Chemin de Reculan", "Route de Vireloup", "Chemin des Crêts", "Chemin du Château",
-      "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux"
-    ],
-    "Aire-la-Ville": [
-      "Route de Saint-Julien", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin du Château", "Chemin des Tilleuls",
-      "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux", "Chemin de la Prairie"
+      "Route d'Hermance",
+      "Chemin de la Distillerie",
+      "Chemin du Champ-Claude",
+      "Chemin des Chevêches",
+      "Chemin du Lac",
+      "Chemin de la Fontaine",
+      "Chemin du Château",
+      "Chemin des Vignes",
+      "Route du Lac",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux"
     ],
     "Avully": [
-      "Route de Cartigny", "Chemin de la Fontaine", "Chemin du Château", "Chemin des Bois", "Chemin des Tilleuls",
-      "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux", "Chemin de la Prairie"
+      "Route de Cartigny",
+      "Chemin de la Fontaine",
+      "Chemin du Château",
+      "Chemin des Bois",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie"
     ],
     "Bardonnex": [
-      "Route de Bardonnex", "Chemin de la Fontaine", "Chemin du Château", "Chemin des Prés", "Chemin des Tilleuls",
-      "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux", "Chemin de la Prairie"
+      "Route de Bardonnex",
+      "Chemin de la Fontaine",
+      "Chemin du Château",
+      "Chemin des Prés",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie"
+    ],
+    "Bellevue": [
+      "Chemin de la Golèze",
+      "Chemin des Coteaux",
+      "Route de Lausanne",
+      "Chemin de la Fenêtre",
+      "Chemin de Relion",
+      "Chemin des Limites",
+      "Route de Colovrex",
+      "Chemin du Château",
+      "Chemin des Prés",
+      "Chemin de la Fontaine",
+      "Chemin du Lac",
+      "Chemin des Vignes",
+      "Chemin de Valavran",
+      "Chemin des Crêts",
+      "Chemin de Malagny",
+      "Chemin du Port",
+      "Chemin de la Plage",
+      "Route de Collex",
+      "Chemin des Noisetiers",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie",
+      "Chemin des Vergers",
+      "Chemin de la Ferme",
+      "Chemin du Ruisseau",
+      "Chemin de la Chapelle",
+      "Chemin du Moulin"
+    ],
+    "Bernex": [
+      "Chemin des Saules",
+      "Chemin de Saule",
+      "Route de Chancy",
+      "Chemin du Signal",
+      "Chemin de la Chavanne",
+      "Chemin de la Bedaine",
+      "Route de Soral",
+      "Chemin des Cornaches",
+      "Chemin de Sur-Beauvent",
+      "Chemin des Mattines",
+      "Chemin du Stand",
+      "Rue de Bernex",
+      "Chemin de la Gagnagerie",
+      "Chemin des Léchères",
+      "Chemin du Gamay",
+      "Chemin de Magny",
+      "Chemin des Alouettes",
+      "Chemin de la Bergerie",
+      "Chemin du Pont-du-Centenaire",
+      "Chemin du Pré-Fleuri",
+      "Route de Loëx",
+      "Chemin du Nant-Cayla",
+      "Chemin de Lully",
+      "Chemin des Peupliers",
+      "Chemin de la Gravière",
+      "Chemin de Cressy",
+      "Chemin du Petit-Bernex",
+      "Chemin des Bois",
+      "Chemin de la Chapelle",
+      "Chemin des Vergers",
+      "Chemin du Grand-Champ",
+      "Chemin de la Prairie",
+      "Chemin des Tilleuls",
+      "Chemin de la Ferme",
+      "Chemin du Ruisseau",
+      "Chemin de Sous-Caran",
+      "Chemin des Noyers",
+      "Chemin de la Plaine",
+      "Chemin des Cerisiers",
+      "Chemin des Pommiers"
+    ],
+    "Carouge": [
+      "Chemin de la Fontenette",
+      "Route de Saint-Julien",
+      "Avenue Cardinal-Mermillod",
+      "Chemin du Vieux-Canal",
+      "Chemin de la Gravière",
+      "Rue de la Tambourine",
+      "Avenue de la Praille",
+      "Rue des Caroubiers",
+      "Place du Marché",
+      "Rue Saint-Joseph",
+      "Rue Ancienne",
+      "Rue Jacques-Dalphin",
+      "Rue de Veyrier",
+      "Avenue de Carouge",
+      "Rue du Parc",
+      "Rue des Allobroges",
+      "Rue de la Filature",
+      "Chemin des Vignes",
+      "Route de Drize",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie"
     ],
     "Cartigny": [
-      "Route de Cartigny", "Chemin du Château", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Tilleuls",
-      "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux", "Chemin de la Prairie"
+      "Route de Cartigny",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie"
     ],
     "Chancy": [
-      "Route de Chancy", "Chemin du Château", "Chemin de la Fontaine", "Rue du Bourg", "Chemin des Tilleuls",
-      "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux", "Chemin de la Prairie"
+      "Route de Chancy",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Rue du Bourg",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie"
+    ],
+    "Choulex": [
+      "Route de Choulex",
+      "Chemin de Chevrier",
+      "Chemin des Creuses",
+      "Chemin des Princes",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Bois",
+      "Chemin de Sur-Choulex",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes"
+    ],
+    "Chêne-Bougeries": [
+      "Chemin de la Montagne",
+      "Chemin De-La-Montagne",
+      "Route de Chêne",
+      "Avenue de la Gare",
+      "Chemin du Vallon",
+      "Chemin des Déplacés",
+      "Chemin de Grange-Canal",
+      "Chemin de la Fontaine",
+      "Chemin des Voirons",
+      "Avenue de Bel-Air",
+      "Chemin des Bougeries",
+      "Chemin de la Gradelle",
+      "Chemin du Pont-de-Ville",
+      "Chemin des Glycines",
+      "Avenue des Cavaliers",
+      "Chemin de Conches",
+      "Avenue du Port",
+      "Chemin du Foron",
+      "Chemin de la Rochette",
+      "Chemin du Velours",
+      "Chemin des Crêts",
+      "Chemin de la Chapelle",
+      "Chemin du Château",
+      "Chemin des Vergers",
+      "Chemin de la Ferme",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de Sur-le-Beau",
+      "Chemin de Plein-Vent",
+      "Chemin de la Vendée",
+      "Chemin du Grand-Chêne",
+      "Chemin de la Prairie"
+    ],
+    "Chêne-Bourg": [
+      "Rue de Genève",
+      "Avenue de Bel-Air",
+      "Chemin de la Mousse",
+      "Rue du Gothard",
+      "Avenue du Petit-Senn",
+      "Rue du Nant",
+      "Chemin de la Montagne",
+      "Chemin du Velours",
+      "Chemin des Prés",
+      "Chemin des Tilleuls"
+    ],
+    "Collex-Bossy": [
+      "Route de Collex",
+      "Chemin de Reculan",
+      "Route de Vireloup",
+      "Chemin des Crêts",
+      "Chemin du Château",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux"
+    ],
+    "Collonge-Bellerive": [
+      "Chemin de la Tour-Carrée",
+      "Chemin du Vieux-Vésenaz",
+      "Chemin des Rayes",
+      "Route d'Hermance",
+      "Chemin du Rionzi",
+      "Chemin de la Gabiule",
+      "Chemin des Falquets",
+      "Chemin des Hauts-de-Collonges",
+      "Chemin du Bois-de-la-Chapelle",
+      "Chemin de la Côte-d'Or",
+      "Chemin du Pré-d'Orsat",
+      "Chemin des Murs-Blancs",
+      "Route de Thonon",
+      "Chemin du Milieu",
+      "Chemin de Bellevue",
+      "Chemin de la Capite",
+      "Chemin du Port",
+      "Chemin des Vignes",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Route de Collonge",
+      "Chemin de Saint-Maurice",
+      "Chemin du Lac",
+      "Chemin des Crêts",
+      "Chemin de la Gradelle",
+      "Chemin des Sapins",
+      "Chemin du Grand-Chemin",
+      "Chemin de Bellerive",
+      "Chemin du Reposoir",
+      "Chemin des Roses",
+      "Chemin des Pâquerettes",
+      "Chemin des Tulipes",
+      "Chemin de la Plage",
+      "Chemin des Mouettes",
+      "Chemin de la Corniche",
+      "Chemin des Grèves",
+      "Chemin du Bord-de-l'Eau",
+      "Chemin des Nénuphars",
+      "Chemin du Soleil"
+    ],
+    "Cologny": [
+      "Chemin de la Mairie",
+      "Rampe de Cologny",
+      "Chemin du Nant-d'Argent",
+      "Route de la Capite",
+      "Chemin de la Princesse",
+      "Chemin du Righi",
+      "Chemin de Ruth",
+      "Chemin des Hauts-de-Cologny",
+      "Chemin du Pré-Langard",
+      "Chemin de la Corne-de-Cerf",
+      "Plateau de Frontenex",
+      "Chemin de Grange-Falquet",
+      "Chemin du Coteau-de-Cologny",
+      "Chemin Byron",
+      "Chemin de la Gradelle",
+      "Chemin des Roses",
+      "Chemin du Reposoir",
+      "Route de Cologny",
+      "Chemin de Bellerive",
+      "Chemin du Port-Noir",
+      "Chemin de la Pallanterie",
+      "Chemin des Pommiers",
+      "Chemin du Château",
+      "Chemin de la Tour",
+      "Chemin des Lilas",
+      "Chemin de la Tourelle",
+      "Chemin du Clos",
+      "Chemin de la Vendée",
+      "Chemin des Bougeries",
+      "Chemin de Sur-Rang",
+      "Chemin de Plein-Soleil",
+      "Chemin des Glycines",
+      "Chemin du Grand-Cologny",
+      "Chemin de la Fontaine",
+      "Chemin du Lac",
+      "Chemin des Acacias",
+      "Chemin des Érables",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Bouleaux"
+    ],
+    "Confignon": [
+      "Chemin des Marais",
+      "Route de Certoux",
+      "Chemin de la Praly",
+      "Chemin de Cressy",
+      "Chemin des Vignes",
+      "Chemin de Vuillonnex",
+      "Chemin de la Bertenaz",
+      "Chemin de Sous-le-Clos",
+      "Chemin des Bouleaux",
+      "Route de Soral",
+      "Chemin de l'Église",
+      "Chemin des Tilleuls",
+      "Chemin de la Ferme",
+      "Chemin du Moulin",
+      "Chemin des Champs",
+      "Chemin de la Plaine",
+      "Chemin du Petit-Clos",
+      "Chemin des Vergers",
+      "Chemin des Prés",
+      "Chemin des Noyers",
+      "Chemin des Cerisiers",
+      "Chemin des Pommiers",
+      "Chemin des Peupliers",
+      "Chemin des Érables",
+      "Chemin du Grand-Champ",
+      "Chemin de la Prairie",
+      "Chemin du Ruisseau",
+      "Chemin des Alouettes",
+      "Chemin des Fauvettes"
     ],
     "Corsier": [
-      "Route de Corsier", "Chemin de la Fontaine", "Chemin du Château", "Route d'Hermance", "Chemin des Tilleuls",
-      "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux", "Chemin de la Prairie"
+      "Route de Corsier",
+      "Chemin de la Fontaine",
+      "Chemin du Château",
+      "Route d'Hermance",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie"
+    ],
+    "Céligny": [
+      "Grand-Rue",
+      "Chemin des Crêts",
+      "Chemin du Château",
+      "Chemin du Lac",
+      "Route de Foundex",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux"
+    ],
+    "Dardagny": [
+      "Route de Dardagny",
+      "Chemin de la Tour",
+      "Route du Mandement",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin de La-Plaine",
+      "Chemin des Vignes",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins"
+    ],
+    "Genthod": [
+      "Route de Lausanne",
+      "Chemin de Rennex",
+      "Chemin des Moulins",
+      "Chemin de la Pralay",
+      "Chemin du Château",
+      "Chemin des Cèdres",
+      "Chemin de Valérie",
+      "Chemin du Port",
+      "Route de Colovrex",
+      "Chemin de la Côte",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux"
+    ],
+    "Genève": [
+      "Chemin de la Montagne",
+      "Chemin du Velours",
+      "Avenue de Champel",
+      "Avenue de la Grenade",
+      "Chemin Rieu",
+      "Chemin du Bochet",
+      "Chemin des Clochettes",
+      "Chemin des Tulipiers",
+      "Chemin de Montfleury",
+      "Chemin Castan",
+      "Avenue de Bude",
+      "Chemin de la Tourelle",
+      "Avenue William-Favre",
+      "Chemin Frank-Thomas",
+      "Avenue de Frontenex",
+      "Route de Florissant",
+      "Chemin des Crêts-de-Champel",
+      "Avenue Peschier",
+      "Avenue Krieg",
+      "Chemin des Sports",
+      "Avenue de la Roseraie",
+      "Boulevard des Tranchées",
+      "Rue de Contamines",
+      "Rue de l'Athénée",
+      "Avenue de Miremont",
+      "Rue Michel-Chauvet",
+      "Chemin de Malombré",
+      "Avenue de Pictet-de-Rochemont",
+      "Chemin de Roches",
+      "Avenue Louis-Aubert",
+      "Chemin de la Chevillarde",
+      "Chemin Ami-Lullin",
+      "Boulevard Helvétique",
+      "Rue de Vermont",
+      "Rue Ferdinand-Hodler",
+      "Avenue du Mail",
+      "Rue Charles-Bonnet",
+      "Rue de l'École-de-Médecine",
+      "Boulevard Carl-Vogt",
+      "Rue de Carouge",
+      "Rue des Bains",
+      "Boulevard de Saint-Georges",
+      "Rue de la Coulouvrenière",
+      "Rue des Deux-Ponts",
+      "Quai Charles-Page",
+      "Rue du Stand",
+      "Rue de Rive",
+      "Rue du Rhône",
+      "Rue du Marché",
+      "Place du Molard",
+      "Rue de la Croix-d'Or",
+      "Boulevard du Pont-d'Arve",
+      "Avenue Henri-Dunant",
+      "Rue Prévost-Martin",
+      "Avenue du Lignon",
+      "Chemin de la Seymaz",
+      "Chemin des Crêts",
+      "Avenue de Thônex",
+      "Chemin de Grange-Falquet",
+      "Chemin du Pommier",
+      "Avenue de Châtelaine",
+      "Chemin de Fossard",
+      "Chemin de Mon-Idée",
+      "Chemin de la Gradelle",
+      "Chemin du Velours",
+      "Chemin de Conches",
+      "Chemin de Sur-le-Beau",
+      "Chemin de Pré-Bouvier",
+      "Chemin du Nant-d'Argent",
+      "Chemin de Ruth",
+      "Avenue de Thônex",
+      "Chemin des Bougeries",
+      "Chemin de la Pallanterie",
+      "Chemin de Sur-Rang",
+      "Chemin des Verjus",
+      "Chemin du Château-de-Bellerive",
+      "Chemin des Hauts-Crêts",
+      "Chemin de la Pommière",
+      "Chemin du Grand-Montfleury",
+      "Chemin de Plein-Vent",
+      "Chemin de la Vendée",
+      "Chemin de Moillebeau",
+      "Chemin de l'Impératrice",
+      "Chemin du Reposoir",
+      "Chemin de la Petite-Boissière",
+      "Chemin de Sous-Balme",
+      "Chemin des Corbillettes",
+      "Chemin de Sur-le-Bois",
+      "Chemin des Pâquerettes",
+      "Chemin de la Roseraie",
+      "Chemin des Sapins",
+      "Chemin des Lilas",
+      "Chemin des Roses",
+      "Chemin des Primevères",
+      "Chemin des Violettes",
+      "Chemin des Marguerites",
+      "Chemin des Iris",
+      "Chemin des Jonquilles"
+    ],
+    "Grand-Saconnex": [
+      "Chemin du Grand-Pré",
+      "Route de Ferney",
+      "Chemin de Blandonnet",
+      "Chemin de l'Avanchet",
+      "Chemin de Montoie",
+      "Chemin des Coudriers",
+      "Chemin du Pommier",
+      "Avenue Giuseppe-Motta",
+      "Route de l'Aéroport",
+      "Avenue de Joli-Mont",
+      "Chemin des Coquelicots",
+      "Chemin du Jardin",
+      "Chemin de Chabrioud",
+      "Chemin des Crêts",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie"
+    ],
+    "Gy": [
+      "Route de Gy",
+      "Chemin des Baraques",
+      "Chemin de Sur-Gy",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Prés",
+      "Chemin du Village",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins"
+    ],
+    "Hermance": [
+      "Route d'Hermance",
+      "Chemin du Vieux-Port",
+      "Chemin de l'Arénaz",
+      "Rue du Midi",
+      "Chemin du Lac",
+      "Chemin des Pêcheurs",
+      "Chemin de la Fontaine",
+      "Chemin du Château",
+      "Rue du Nord",
+      "Chemin des Tilleuls"
+    ],
+    "Jussy": [
+      "Route de Jussy",
+      "Chemin du Champ-Manon",
+      "Chemin de Monniaz",
+      "Route de Monniaz",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Bois",
+      "Chemin de Gy-le-Vieux",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes"
     ],
     "Laconnex": [
-      "Route de Laconnex", "Chemin de la Fontaine", "Chemin du Château", "Chemin des Prés", "Chemin des Tilleuls",
-      "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux", "Chemin de la Prairie"
+      "Route de Laconnex",
+      "Chemin de la Fontaine",
+      "Chemin du Château",
+      "Chemin des Prés",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie"
+    ],
+    "Lancy": [
+      "Chemin des Palettes",
+      "Route du Pont-Butin",
+      "Avenue des Communes-Réunies",
+      "Chemin de Surville",
+      "Chemin des Pontets",
+      "Chemin des Mollies",
+      "Avenue du Petit-Lancy",
+      "Chemin des Érables",
+      "Route de Chancy",
+      "Chemin de la Caroline",
+      "Avenue Eugène-Lance",
+      "Chemin du Gué-de-l'Onex",
+      "Route du Grand-Lancy",
+      "Chemin de Pré-Marais",
+      "Avenue du Curé-Baud",
+      "Chemin des Troènes",
+      "Rue de Saint-Georges",
+      "Avenue de la Praille",
+      "Avenue des Morgines",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie",
+      "Chemin des Vergers",
+      "Chemin de la Ferme",
+      "Chemin du Ruisseau",
+      "Chemin de la Fontaine",
+      "Chemin du Château",
+      "Chemin des Vignes",
+      "Chemin de la Chapelle",
+      "Chemin des Prés",
+      "Chemin des Bois",
+      "Chemin du Moulin"
+    ],
+    "Meinier": [
+      "Route de Compois",
+      "Chemin des Boiseaux",
+      "Chemin de Corsinge",
+      "Route de La-Capite",
+      "Chemin du Château",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin de Rouelbeau",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes"
+    ],
+    "Meyrin": [
+      "Chemin de la Citadelle",
+      "Avenue de Vaudagne",
+      "Chemin des Aulx",
+      "Chemin du Grand-Puits",
+      "Chemin des Coquelicots",
+      "Avenue de Feuillasse",
+      "Rue de la Prulay",
+      "Chemin de Riant-Bosson",
+      "Avenue Sainte-Cécile",
+      "Rue de Meyrin",
+      "Chemin de l'Ain",
+      "Avenue Louis-Casaï",
+      "Chemin des Ailes",
+      "Chemin François-Lehmann",
+      "Rue des Arbères",
+      "Chemin du Grand-Noyer",
+      "Avenue de Mategnin",
+      "Chemin de Maisonneuve",
+      "Rue Jean-Daniel-Colladon",
+      "Chemin des Vergers",
+      "Chemin de la Ferme",
+      "Chemin du Ruisseau",
+      "Chemin de la Prairie",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Fontaine",
+      "Chemin du Château",
+      "Chemin des Vignes",
+      "Chemin de la Chapelle",
+      "Chemin des Prés",
+      "Chemin des Bois"
+    ],
+    "Onex": [
+      "Chemin de la Caroline",
+      "Route de Chancy",
+      "Chemin du Pommier",
+      "Chemin de la Mousse",
+      "Chemin des Dragues",
+      "Avenue du Bois-de-la-Chapelle",
+      "Rue des Bossons",
+      "Avenue des Grandes-Communes",
+      "Chemin des Colombettes",
+      "Chemin du Gué-de-l'Onex",
+      "Chemin des Ailes",
+      "Chemin de l'Écu",
+      "Avenue du Gros-Chêne",
+      "Chemin de Belle-Cour",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie",
+      "Chemin des Vergers",
+      "Chemin de la Ferme",
+      "Chemin du Ruisseau",
+      "Chemin de la Fontaine"
     ],
     "Perly-Certoux": [
-      "Route de Certoux", "Chemin de Perly", "Chemin du Château", "Chemin de la Fontaine", "Route de Saint-Julien",
-      "Chemin des Tilleuls", "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux"
+      "Route de Certoux",
+      "Chemin de Perly",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Route de Saint-Julien",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux"
+    ],
+    "Plan-les-Ouates": [
+      "Chemin des Aulx",
+      "Chemin du Daru",
+      "Route de Saint-Julien",
+      "Chemin de la Butte",
+      "Chemin de Vers",
+      "Chemin des Chevaliers-de-Malte",
+      "Chemin de la Mère-Voie",
+      "Chemin du Champ-des-Filles",
+      "Chemin de la Milice",
+      "Route de Saconnex-d'Arve",
+      "Chemin des Arbères",
+      "Chemin du Pont-de-Pierre",
+      "Chemin de Pré-Bouvier",
+      "Chemin de la Bottière",
+      "Chemin de la Praille",
+      "Chemin du Grand-Clos",
+      "Chemin de la Marbrerie",
+      "Chemin des Industries",
+      "Chemin de Sous-la-Joux",
+      "Chemin des Prés-Meunier",
+      "Chemin des Vergers",
+      "Chemin de la Ferme",
+      "Chemin des Champs",
+      "Chemin du Ruisseau",
+      "Chemin de la Prairie",
+      "Chemin des Tilleuls",
+      "Chemin des Noyers",
+      "Chemin des Cerisiers",
+      "Chemin des Pommiers",
+      "Chemin de la Fontaine"
+    ],
+    "Pregny-Chambésy": [
+      "Route de Lausanne",
+      "Route de Pregny",
+      "Chemin des Crêts",
+      "Chemin de l'Impératrice",
+      "Chemin du Château",
+      "Chemin de Chambésy",
+      "Chemin du Bois-de-la-Chapelle",
+      "Chemin de Moillebeau",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes"
+    ],
+    "Presinge": [
+      "Chemin du Lac",
+      "Route de Presinge",
+      "Chemin des Corbillettes",
+      "Chemin de Cara",
+      "Route de Jussy",
+      "Chemin du Château",
+      "Chemin des Bois",
+      "Chemin de la Fontaine",
+      "Chemin des Vergers",
+      "Chemin des Tilleuls"
+    ],
+    "Puplinge": [
+      "Route de Puplinge",
+      "Chemin de Mauvernay",
+      "Chemin de la Louvière",
+      "Chemin des Hutins",
+      "Chemin du Pont-Bochet",
+      "Route de Cornière",
+      "Chemin des Prés",
+      "Chemin de la Chapelle",
+      "Chemin du Château",
+      "Chemin de Pré-de-l'Oie",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux"
+    ],
+    "Russin": [
+      "Route du Mandement",
+      "Chemin de Malval",
+      "Route des Molards",
+      "Chemin du Château",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables"
+    ],
+    "Satigny": [
+      "Route de Satigny",
+      "Chemin des Baillets",
+      "Chemin de Peney-Dessus",
+      "Route du Mandement",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Route de Peney",
+      "Chemin de Bourdigny",
+      "Chemin des Tilleuls"
     ],
     "Soral": [
-      "Route de Soral", "Chemin du Château", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Tilleuls",
-      "Chemin des Chênes", "Chemin des Sapins", "Chemin des Érables", "Chemin des Bouleaux", "Chemin de la Prairie"
+      "Route de Soral",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie"
+    ],
+    "Thônex": [
+      "Route de Jussy",
+      "Chemin de la Gravière",
+      "Chemin de Fossard",
+      "Avenue de Thônex",
+      "Chemin des Vollandes",
+      "Chemin de la Mousse",
+      "Rue de Genève",
+      "Chemin du Bois-Carrien",
+      "Chemin du Creux-de-Genthod",
+      "Chemin du Foron",
+      "Chemin de Mon-Idée",
+      "Chemin de Poterie",
+      "Avenue du Léman",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie"
+    ],
+    "Troinex": [
+      "Chemin de la Grande-Gorge",
+      "Route de Troinex",
+      "Chemin de Lullin",
+      "Chemin du Bois-Murat",
+      "Chemin de Saussac",
+      "Chemin des Moulins-de-Drize",
+      "Chemin Lullin",
+      "Chemin de la Drize",
+      "Chemin du Creux",
+      "Chemin de Vers-Vaux",
+      "Chemin du Château",
+      "Chemin des Prés",
+      "Chemin de la Fontaine",
+      "Chemin du Village",
+      "Route de Veyrier",
+      "Chemin de la Chapelle",
+      "Chemin des Vergers",
+      "Chemin des Vignes",
+      "Chemin de la Ferme",
+      "Chemin du Ruisseau",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Érables",
+      "Chemin des Sapins",
+      "Chemin des Bouleaux"
+    ],
+    "Vandoeuvres": [
+      "Chemin de la Seymaz",
+      "Route de Meinier",
+      "Chemin des Princes",
+      "Chemin de la Mairie",
+      "Chemin de l'Église",
+      "Chemin de la Blanche",
+      "Route de Choulex",
+      "Chemin de la Combe",
+      "Chemin des Bois",
+      "Chemin du Ruisseau",
+      "Chemin de la Planta",
+      "Chemin du Château",
+      "Chemin des Roses",
+      "Chemin de la Grange",
+      "Chemin de Sur-Vandoeuvres",
+      "Chemin des Crêts",
+      "Chemin du Vallon",
+      "Chemin de la Campagne",
+      "Chemin des Vergers",
+      "Chemin de la Fontaine",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie",
+      "Chemin des Prés",
+      "Chemin du Moulin",
+      "Chemin de la Chapelle",
+      "Chemin des Vignes"
+    ],
+    "Vernier": [
+      "Route de Peney",
+      "Chemin de Crette",
+      "Chemin du Pommier",
+      "Chemin des Vignes",
+      "Route du Nant-d'Avril",
+      "Avenue de Châtelaine",
+      "Chemin de l'Étang",
+      "Avenue du Lignon",
+      "Chemin des Raies",
+      "Chemin de Joinville",
+      "Route de Vernier",
+      "Avenue de Tronchet",
+      "Chemin du Champ-Français",
+      "Chemin de Cointrin",
+      "Chemin des Libellules",
+      "Chemin de Plein-Soleil",
+      "Chemin de Maisonnex",
+      "Chemin de Mourlaz",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux",
+      "Chemin de la Prairie",
+      "Chemin des Vergers",
+      "Chemin de la Ferme",
+      "Chemin du Ruisseau",
+      "Chemin de la Fontaine"
+    ],
+    "Versoix": [
+      "Route de Suisse",
+      "Chemin de la Bécassine",
+      "Avenue de Choiseul",
+      "Chemin du Vieux-Port",
+      "Route de l'Étraz",
+      "Chemin des Colombières",
+      "Avenue Adrien-Lachenal",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Route de Sauverny",
+      "Chemin des Crêts",
+      "Chemin des Douves",
+      "Chemin des Pins",
+      "Chemin du Port",
+      "Chemin des Tilleuls",
+      "Chemin des Chênes",
+      "Chemin des Sapins",
+      "Chemin des Érables",
+      "Chemin des Bouleaux"
+    ],
+    "Veyrier": [
+      "Chemin des Rasses",
+      "Avenue du Grand-Salève",
+      "Chemin de la Tour-de-Champel",
+      "Route de Veyrier",
+      "Chemin des Coudriers",
+      "Chemin de l'Érugne",
+      "Chemin des Petits-Esserts",
+      "Chemin du Bois-Gourmand",
+      "Avenue du Petit-Senn",
+      "Chemin des Bois",
+      "Chemin de Vessy",
+      "Chemin des Grands-Esserts",
+      "Route de Troinex",
+      "Chemin de la Vendée",
+      "Chemin du Salève",
+      "Chemin des Roches",
+      "Chemin de la Colline",
+      "Chemin du Villars",
+      "Chemin de la Gradelle",
+      "Chemin des Pins",
+      "Chemin de la Forêt",
+      "Chemin du Pré-Cartelier",
+      "Chemin de Sur-Arve",
+      "Chemin de Pinchat",
+      "Chemin de Sous-Veyrier",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vergers",
+      "Chemin des Vignes",
+      "Chemin des Crêts",
+      "Chemin de la Chapelle",
+      "Chemin du Moulin",
+      "Chemin des Prés",
+      "Chemin de la Prairie",
+      "Chemin des Sapins",
+      "Chemin des Chênes",
+      "Chemin des Bouleaux",
+      "Chemin des Érables",
+      "Chemin des Tilleuls"
     ]
   },
   "VD": {
-    "Lausanne": [
-      "Chemin de Boissonnet", "Avenue de Cour", "Chemin de Montelly", "Avenue de la Harpe", "Chemin des Cèdres",
-      "Avenue de Beaulieu", "Chemin de Rovereaz", "Avenue de Montchoisi", "Chemin de Bellerive", "Avenue de Rumine",
-      "Chemin de Mornex", "Avenue du Léman", "Chemin des Allinges", "Avenue de la Gare", "Chemin de Chandieu",
-      "Avenue de l'Élysée", "Avenue d'Ouchy", "Chemin du Calvaire", "Avenue de Chailly", "Route d'Oron",
-      "Chemin des Fleurettes", "Avenue de la Sallaz", "Chemin de la Vuachère", "Avenue Secrétan", "Chemin de Pierrefleur",
-      "Route de Berne", "Avenue de France", "Avenue Vinet", "Chemin du Levant", "Avenue des Bains",
-      "Avenue Mon-Repos", "Chemin de Mornex", "Avenue de Tivoli", "Avenue du Tribunal-Fédéral", "Chemin des Epinettes",
-      "Avenue Ruchonnet", "Avenue Benjamin-Constant", "Avenue de Bethusy", "Chemin de la Colline", "Avenue de Milan",
-      "Chemin de Montriond", "Avenue de Jaman", "Avenue du Servan", "Chemin de Primerose", "Avenue du Grey",
-      "Avenue de Montétan", "Chemin de Beaumont", "Avenue de Morges", "Avenue du Léman", "Place Saint-François",
-      "Chemin des Falaises", "Avenue de la Dôle", "Chemin de Praz-Séchaud", "Avenue de Savoie", "Chemin des Croisettes",
-      "Avenue de Valmont", "Chemin de la Rouvraie", "Avenue de Montoie", "Chemin de Renens", "Avenue de Provence",
-      "Chemin de la Forêt", "Avenue du Chablais", "Chemin du Closelet", "Avenue de Charmontey", "Chemin de Malley",
-      "Avenue de Sévelin", "Chemin de Bossons", "Avenue de Longemalle", "Chemin de la Fauvette", "Avenue de Valency",
-      "Chemin du Petit-Flon", "Avenue de Tivoli", "Chemin de Bellevaux", "Avenue des Jordils", "Chemin de Beau-Rivage",
-      "Avenue de la Cathédrale", "Chemin de Prélaz", "Avenue de Mon-Loisir", "Chemin de Maillefer", "Avenue des Figuiers"
-    ],
-    "Pully": [
-      "Avenue de Lavaux", "Chemin de Chamblandes", "Avenue C.-F. Ramuz", "Chemin de la Damataire", "Avenue de Rochettaz",
-      "Chemin de la Fontaine", "Avenue du Prieuré", "Chemin des Alpes", "Avenue de Montagibert", "Chemin du Calvaire",
-      "Avenue des Collèges", "Chemin du Pré-de-la-Tour", "Avenue Général-Guisan", "Chemin des Osches",
-      "Chemin du Châtaignier", "Avenue de la Rosiaz", "Chemin de la Perraudettaz", "Chemin des Fleurs",
-      "Avenue de Verdel", "Chemin de la Colline", "Avenue de Belmont", "Chemin du Château", "Avenue Samson-Reymondin",
-      "Chemin de la Plantaz", "Avenue de la Rochelle", "Chemin des Vignes", "Avenue de Pully", "Chemin du Lac",
-      "Avenue de Bellerive", "Chemin des Crêts", "Avenue du Petit-Port", "Chemin de la Terrasse", "Avenue de la Gare",
-      "Chemin des Vergers", "Avenue de Tivoli", "Chemin du Vallon", "Avenue de la Prairie", "Chemin des Sapins"
-    ],
-    "Lutry": [
-      "Route de Lavaux", "Chemin des Bossons", "Route de Savuit", "Chemin de la Conversion", "Route de la Petite-Corniche",
-      "Chemin du Daillens", "Chemin des Vignes", "Route du Village", "Chemin de la Culturaz", "Avenue du Grand-Pont",
-      "Chemin des Vernes", "Chemin de la Plantaz", "Chemin de Châtelard", "Route de Grandvaux", "Chemin du Châtaignier",
-      "Chemin de la Fontaine", "Place du Château", "Rue du Casino", "Chemin des Crêtes", "Chemin du Lac",
-      "Chemin des Cerisiers", "Chemin de la Prairie", "Chemin des Vergers", "Chemin du Vallon", "Chemin des Sapins"
-    ],
-    "Morges": [
-      "Chemin de la Grosse-Pierre", "Avenue de Riond-Bosson", "Chemin de la Cure", "Avenue de Marcelin", "Chemin des Uttins",
-      "Route de Lausanne", "Chemin de Tolochenaz", "Avenue de la Gottaz", "Rue Louis-de-Savoie", "Avenue de Lonay",
-      "Promenade Général-Guisan", "Avenue de Plan", "Chemin du Parc", "Avenue de la Gare", "Rue de Couvaloup",
-      "Chemin du Grand-Verger", "Avenue de Chanel", "Rue des Fossés", "Place de la Gare", "Chemin du Lac",
-      "Chemin des Vignes", "Chemin de la Fontaine", "Chemin du Château", "Chemin des Crêts", "Chemin des Vergers",
-      "Chemin de la Prairie", "Chemin des Sapins", "Chemin des Chênes", "Chemin des Érables", "Chemin des Tilleuls"
-    ],
-    "Nyon": [
-      "Route de Saint-Cergue", "Chemin de la Redoute", "Avenue de Bois-Bougy", "Chemin des Châtaigniers", "Route de Divonne",
-      "Chemin de Changins", "Avenue Viollier", "Chemin de Montoly", "Route de l'Étraz", "Chemin de Précossy",
-      "Avenue Alfred-Cortot", "Chemin des Plantaz", "Rue de la Gare", "Place du Château", "Rue de Rive",
-      "Avenue de la Combe", "Chemin de la Vuarpillière", "Route de Crans", "Chemin de la Côte", "Chemin du Lac",
-      "Chemin des Vignes", "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie",
-      "Chemin des Sapins", "Chemin des Chênes", "Chemin des Érables", "Chemin des Tilleuls", "Chemin des Bouleaux"
-    ],
-    "Montreux": [
-      "Avenue de Belmont", "Chemin de Sonzier", "Avenue des Alpes", "Chemin du Vallon", "Route de Glion",
-      "Avenue de Chillon", "Chemin des Gonelles", "Route de Chailly", "Grand-Rue", "Avenue du Casino",
-      "Rue du Lac", "Avenue de la Riviera", "Chemin de Caux", "Avenue de Collonge", "Chemin de la Chiesaz",
-      "Avenue des Planches", "Chemin du Midi", "Route de Blonay", "Chemin de la Printanière", "Avenue Claude-Nobs",
-      "Chemin des Vignes", "Chemin de la Fontaine", "Chemin du Château", "Chemin des Crêts", "Chemin des Vergers",
-      "Chemin de la Prairie", "Chemin des Sapins", "Chemin des Chênes", "Chemin des Érables", "Chemin des Tilleuls"
-    ],
-    "Vevey": [
-      "Avenue de Gilamont", "Chemin de Blonay", "Avenue de Corsier", "Chemin des Bosquets", "Avenue de la Gare",
-      "Chemin de la Doges", "Avenue Paul-Cérésole", "Chemin de Bergère", "Rue du Lac", "Avenue Reller",
-      "Boulevard de Charmontey", "Rue du Midi", "Place du Marché", "Rue des Deux-Marchés", "Avenue de la Plage",
-      "Chemin des Cerisiers", "Rue du Conseil", "Avenue de Lavaux", "Chemin de la Vuachère", "Chemin des Vignes",
-      "Chemin de la Fontaine", "Chemin du Château", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie"
-    ],
-    "Rolle": [
-      "Chemin des Terreaux", "Route de Gilly", "Avenue de la Gare", "Chemin de Mont-le-Grand", "Route de Lausanne",
-      "Grand-Rue", "Chemin de la Plage", "Chemin du Château", "Route de Perroy", "Chemin des Vignes",
-      "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie", "Chemin des Sapins"
-    ],
-    "Gland": [
-      "Route de Nyon", "Chemin du Marronnier", "Avenue du Mont-Blanc", "Chemin de la Falaise", "Route de Lausanne",
-      "Chemin de la Crétaux", "Chemin de Mauverney", "Chemin de la Dullive", "Chemin du Château", "Avenue de Roche",
-      "Chemin des Vignes", "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie"
-    ],
-    "Aubonne": [
-      "Chemin des Grands-Champs", "Route de Lavigny", "Chemin de Bougy", "Avenue du Château", "Chemin du Chêne",
-      "Rue de Trévelin", "Place du Marché", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Coppet": [
-      "Route Suisse", "Chemin des Hutins", "Chemin de la Petite-Prairie", "Grand-Rue", "Chemin des Perrières",
-      "Chemin du Château", "Chemin du Lac", "Chemin de Founex", "Chemin des Vignes", "Chemin de la Fontaine"
-    ],
-    "Founex": [
-      "Chemin de la Scie", "Route de Coppet", "Chemin des Fleurs", "Chemin du Châtaignier", "Chemin du Lac",
-      "Chemin de la Fontaine", "Chemin des Vignes", "Route de Crans", "Chemin des Crêts", "Chemin des Vergers"
-    ],
-    "Prangins": [
-      "Chemin de la Baroche", "Route de l'Aéroport", "Chemin des Buis", "Route du Lac", "Chemin du Château",
-      "Chemin de la Fontaine", "Chemin des Vignes", "Route de Nyon", "Chemin des Crêts", "Chemin des Vergers"
-    ],
-    "Saint-Prex": [
-      "Route de Morges", "Chemin de Perroy", "Chemin des Vignes", "Chemin de la Moraine", "Rue du Vieux-Collège",
-      "Chemin du Château", "Chemin du Lac", "Place du Temple", "Chemin de la Fontaine", "Chemin des Crêts"
-    ],
-    "Tolochenaz": [
-      "Route de la Maladière", "Chemin des Plantaz", "Route du Village", "Chemin de la Ferme", "Chemin du Parc",
-      "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie"
-    ],
-    "Préverenges": [
-      "Chemin de la Verney", "Route de Lausanne", "Chemin du Port", "Avenue de la Plage", "Chemin du Lac",
-      "Chemin des Vignes", "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie"
-    ],
-    "Ecublens": [
-      "Chemin de la Source", "Route de la Pierre", "Avenue du Tir-Fédéral", "Chemin de Bassenges", "Chemin des Esserts",
-      "Route du Bois", "Chemin de la Croix-Blanche", "Avenue du Temple", "Chemin du Château", "Chemin des Vignes",
-      "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie", "Chemin des Sapins"
-    ],
-    "Renens": [
-      "Chemin du Closelet", "Avenue de Florissant", "Chemin de la Madeleine", "Route de Prilly", "Avenue du 14-Avril",
-      "Rue de Lausanne", "Avenue de Lonay", "Chemin du Croset", "Rue du Midi", "Chemin des Vignes",
-      "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie", "Chemin des Sapins"
-    ],
-    "Prilly": [
-      "Chemin de Villard", "Route du Mont", "Avenue de Lonay", "Chemin des Creuses", "Route de Cossonay",
-      "Avenue des Tilleuls", "Chemin des Alpes", "Rue du Temple", "Chemin de Grand-Record", "Chemin des Vignes",
-      "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie", "Chemin des Sapins"
-    ],
-    "Crissier": [
-      "Chemin de la Chocolatière", "Route de Lausanne", "Chemin de la Grangette", "Route de Marcolet",
-      "Chemin du Château", "Avenue de France", "Chemin des Prés", "Chemin des Vignes", "Chemin de la Fontaine"
-    ],
-    "Chavannes-près-Renens": [
-      "Chemin des Glycines", "Route de Renens", "Chemin de la Roulière", "Avenue de la Gare", "Chemin du Lac",
-      "Chemin des Vignes", "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie"
-    ],
-    "Saint-Sulpice": [
-      "Chemin de Champittet", "Route de Lausanne", "Chemin du Débarcadère", "Chemin des Pierrettes",
-      "Chemin du Lac", "Chemin de la Venoge", "Chemin des Vignes", "Chemin de la Fontaine", "Chemin des Crêts"
-    ],
-    "Epalinges": [
-      "Chemin de la Cigale", "Route du Jorat", "Chemin de la Clergère", "Chemin des Croisettes", "Route de la Corniche",
-      "Chemin de la Forêt", "Chemin des Bois", "Avenue du Château", "Chemin des Vignes", "Chemin de la Fontaine"
-    ],
-    "Le Mont-sur-Lausanne": [
-      "Chemin des Fontanettes", "Route du Jorat", "Chemin de la Claie-aux-Moines", "Route de Lausanne",
-      "Chemin des Fleurs", "Chemin du Château", "Chemin de la Colline", "Chemin des Vignes", "Chemin de la Fontaine"
-    ],
-    "Belmont-sur-Lausanne": [
-      "Chemin de la Grange-aux-Agneaux", "Route de Lausanne", "Chemin de la Moraine", "Route des Monts-de-Lavaux",
-      "Chemin du Château", "Chemin des Vignes", "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers"
-    ],
-    "Paudex": [
-      "Chemin de la Colline", "Route du Lac", "Chemin du Rionza", "Route de la Borde", "Chemin de la Fontaine",
-      "Chemin des Vignes", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie", "Chemin des Sapins"
-    ],
-    "Blonay": [
-      "Chemin des Chevalleyres", "Route de Brent", "Chemin de Bahyse", "Route de Vevey", "Chemin du Château",
-      "Chemin des Prés", "Chemin de la Forêt", "Chemin des Vignes", "Chemin de la Fontaine", "Chemin des Crêts"
-    ],
-    "La Tour-de-Peilz": [
-      "Chemin de Brent", "Avenue de la Gare", "Chemin des Quatre-Marronniers", "Route de Saint-Légier", "Avenue des Alpes",
-      "Chemin du Cèdre", "Rue du Lac", "Avenue de la Plage", "Chemin des Vignes", "Chemin de la Fontaine"
-    ],
-    "Corsier-sur-Vevey": [
-      "Chemin de Corseaux", "Route de Chardonne", "Chemin des Cerisiers", "Route de Fenil", "Chemin du Château",
-      "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie"
-    ],
-    "Chardonne": [
-      "Chemin des Chênes", "Route de Jongny", "Chemin de l'Alpe", "Route du Vignoble", "Chemin du Château",
-      "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie"
-    ],
     "Aigle": [
-      "Avenue du Chamossaire", "Chemin des Îles", "Route de Lausanne", "Avenue de la Gare", "Place du Marché",
-      "Rue du Bourg", "Chemin du Château", "Chemin des Vignes", "Chemin de la Fontaine", "Chemin des Crêts"
-    ],
-    "Bex": [
-      "Route de Villars", "Chemin de Gryon", "Avenue de la Gare", "Route de Saint-Maurice", "Chemin du Château",
-      "Rue Centrale", "Chemin des Vignes", "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers"
-    ],
-    "Villeneuve": [
-      "Route Suisse", "Chemin de la Tinière", "Avenue des Alpes", "Grand-Rue", "Chemin du Lac", "Place du Temple",
-      "Chemin des Vignes", "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers"
-    ],
-    "Yverdon-les-Bains": [
-      "Avenue des Bains", "Rue des Jordils", "Chemin de la Plage", "Avenue Haldimand", "Rue de Neuchâtel",
-      "Avenue de Grandson", "Rue de la Plaine", "Place Pestalozzi", "Rue du Lac", "Avenue des Sports",
-      "Chemin du Château", "Rue du Midi", "Place de la Gare", "Rue du Collège", "Chemin des Vignes",
-      "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie", "Chemin des Sapins"
-    ],
-    "Payerne": [
-      "Chemin des Sports", "Route de Lausanne", "Chemin des Vignes", "Grand-Rue", "Place du Marché",
-      "Rue de la Gare", "Chemin du Château", "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers"
-    ],
-    "Moudon": [
-      "Chemin de Biolley", "Route de Lucens", "Chemin des Moines", "Grand-Rue", "Place de l'Hôtel-de-Ville",
-      "Rue du Château", "Chemin des Vignes", "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers"
-    ],
-    "Orbe": [
-      "Chemin des Moulins", "Route de Lausanne", "Chemin du Château", "Grand-Rue", "Place du Marché",
-      "Chemin des Vignes", "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie"
-    ],
-    "Echallens": [
-      "Route de Lausanne", "Chemin du Collège", "Place du Château", "Route d'Yverdon", "Grand-Rue",
-      "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie"
-    ],
-    "Grandson": [
-      "Rue Basse", "Rue Haute", "Chemin du Lac", "Route de Neuchâtel", "Place du Château", "Chemin des Vignes",
-      "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie"
-    ],
-    "Vallorbe": [
-      "Grand-Rue", "Rue de France", "Rue du Faubourg", "Chemin de la Gare", "Route de Pontarlier",
-      "Chemin des Vignes", "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie"
-    ],
-    "Sainte-Croix": [
-      "Avenue de la Gare", "Rue Neuve", "Rue des Rasses", "Grand-Rue", "Chemin de la Fontaine",
-      "Chemin des Vignes", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie", "Chemin des Sapins"
-    ],
-    "Bussigny": [
-      "Route de Lausanne", "Chemin de la Forêt", "Avenue de la Gare", "Chemin du Château", "Chemin des Vignes",
-      "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie", "Chemin des Sapins"
-    ],
-    "Puidoux": [
-      "Route de la Corniche", "Chemin de Lavaux", "Chemin des Vignes", "Route du Village", "Chemin du Château",
-      "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie", "Chemin des Sapins"
-    ],
-    "Chexbres": [
-      "Route de la Corniche", "Chemin des Vignes", "Place de la Gare", "Chemin du Lac", "Chemin du Château",
-      "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie", "Chemin des Sapins"
-    ],
-    "Cully": [
-      "Route de Lavaux", "Chemin des Vignes", "Place de la Gare", "Grand-Rue", "Chemin du Lac",
-      "Chemin de la Fontaine", "Chemin des Crêts", "Chemin des Vergers", "Chemin de la Prairie", "Chemin des Sapins"
-    ],
-    "Rivaz": [
-      "Route de la Corniche", "Chemin des Vignes", "Chemin du Lac", "Chemin de la Fontaine", "Chemin des Crêts"
-    ],
-    "Saint-Saphorin": [
-      "Route de la Corniche", "Chemin des Vignes", "Grand-Rue", "Chemin du Lac", "Chemin de la Fontaine"
-    ],
-    "Epesses": [
-      "Route de Lavaux", "Chemin des Vignes", "Grand-Rue", "Chemin du Lac", "Chemin de la Fontaine"
-    ],
-    "Riex": [
-      "Route de Lavaux", "Chemin des Vignes", "Grand-Rue", "Chemin du Lac", "Chemin de la Fontaine"
-    ],
-    "Grandvaux": [
-      "Route de Lavaux", "Chemin des Vignes", "Chemin du Lac", "Route du Village", "Chemin de la Fontaine"
-    ],
-    "Villette": [
-      "Route de Lavaux", "Chemin des Vignes", "Chemin du Lac", "Chemin de la Fontaine", "Chemin des Crêts"
-    ],
-    "Bourg-en-Lavaux": [
-      "Route de Lavaux", "Chemin des Vignes", "Place de la Gare", "Grand-Rue", "Chemin de la Fontaine"
-    ],
-    "Corseaux": [
-      "Route de Lavaux", "Chemin des Vignes", "Avenue de Lavaux", "Chemin du Lac", "Chemin de la Fontaine"
-    ],
-    "Clarens": [
-      "Avenue de Belmont", "Chemin du Lac", "Route de Chailly", "Grand-Rue", "Chemin de la Fontaine"
-    ],
-    "Territet": [
-      "Avenue du Château", "Chemin du Lac", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Veytaux": [
-      "Avenue de Chillon", "Chemin du Lac", "Chemin du Château", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Rennaz": [
-      "Route de Noville", "Chemin des Vignes", "Chemin du Lac", "Chemin de la Fontaine", "Chemin des Crêts"
-    ],
-    "Noville": [
-      "Route Suisse", "Chemin des Vignes", "Chemin du Lac", "Chemin de la Fontaine", "Chemin des Crêts"
-    ],
-    "Leysin": [
-      "Route des Hordes", "Avenue Secrétan", "Chemin de la Feuillerette", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Les Diablerets": [
-      "Route de Gstaad", "Chemin des Diablerets", "Route du Col du Pillon", "Chemin de la Fontaine"
-    ],
-    "Gryon": [
-      "Route de Villars", "Chemin des Alpes", "Chemin du Château", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Villars-sur-Ollon": [
-      "Avenue Centrale", "Chemin des Mazots", "Route de Bretaye", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Ollon": [
-      "Route de Villars", "Grand-Rue", "Place du Village", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Yvorne": [
-      "Route de Lausanne", "Chemin des Vignes", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Crêts"
-    ],
-    "Roche": [
-      "Route du Lac", "Grand-Rue", "Chemin des Vignes", "Chemin de la Fontaine", "Chemin des Crêts"
-    ],
-    "Château-d'Oex": [
-      "Grand-Rue", "Route de la Gare", "Chemin du Château", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Rossinière": [
-      "Route de Lausanne", "Grand-Rue", "Chemin du Grand-Chalet", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Rougemont": [
-      "Route de Gstaad", "Grand-Rue", "Chemin du Château", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Oron": [
-      "Route de Lausanne", "Grand-Rue", "Chemin du Château", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Corcelles-le-Jorat": [
-      "Route du Jorat", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Froideville": [
-      "Route de Lausanne", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Mézières": [
-      "Route de Moudon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Carrouge": [
-      "Route de Moudon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Bottens": [
-      "Route du Jorat", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Cugy": [
-      "Route de Lausanne", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Bretigny-sur-Morrens": [
-      "Route d'Echallens", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Morrens": [
-      "Route de Lausanne", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Romanel-sur-Lausanne": [
-      "Route de Lausanne", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Jouxtens-Mézery": [
-      "Route de Lausanne", "Chemin de Mézery", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Cheseaux-sur-Lausanne": [
-      "Route de Lausanne", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Etagnières": [
-      "Route d'Echallens", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Assens": [
-      "Route d'Echallens", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Bioley-Orjulaz": [
-      "Route d'Echallens", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Boulens": [
-      "Route d'Echallens", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Daillens": [
-      "Route de Lausanne", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Penthalaz": [
-      "Route de Lausanne", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Cossonay": [
-      "Route de Lausanne", "Grand-Rue", "Place du Château", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "La Sarraz": [
-      "Route de Lausanne", "Grand-Rue", "Place du Château", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Pompaples": [
-      "Route d'Orbe", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Chavornay": [
-      "Route d'Yverdon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Bavois": [
-      "Route d'Orbe", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Suchy": [
-      "Route d'Yverdon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Ependes": [
-      "Route d'Yverdon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Treycovagnes": [
-      "Route d'Yverdon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Chamblon": [
-      "Route d'Yverdon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Montagny-près-Yverdon": [
-      "Route d'Yverdon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Pomy": [
-      "Route d'Yverdon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Yvonand": [
-      "Route de Lausanne", "Grand-Rue", "Chemin du Lac", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Cheyres-Châbles": [
-      "Route de Lausanne", "Grand-Rue", "Chemin du Lac", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Cudrefin": [
-      "Route de Neuchâtel", "Grand-Rue", "Chemin du Lac", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Avenches": [
-      "Route de Lausanne", "Grand-Rue", "Place du Château", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Faoug": [
-      "Route de Lausanne", "Grand-Rue", "Chemin du Lac", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Salavaux": [
-      "Route de Lausanne", "Grand-Rue", "Chemin du Lac", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Chabrey": [
-      "Route de Lausanne", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Villars-le-Comte": [
-      "Route de Moudon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Curtilles": [
-      "Route de Moudon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Lucens": [
-      "Route de Moudon", "Grand-Rue", "Place du Château", "Chemin de la Fontaine", "Chemin des Vignes"
-    ],
-    "Henniez": [
-      "Route de Moudon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Seigneux": [
-      "Route de Moudon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Vuarrens": [
-      "Route d'Echallens", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Villars-le-Terroir": [
-      "Route d'Echallens", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Saint-Barthélemy": [
-      "Route de Lausanne", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Duillier": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Gingins": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Trélex": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
+      "Avenue du Chamossaire",
+      "Chemin des Îles",
+      "Route de Lausanne",
+      "Avenue de la Gare",
+      "Place du Marché",
+      "Rue du Bourg",
+      "Chemin du Château",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts"
     ],
     "Arnex-sur-Nyon": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
     ],
-    "Chéserex": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
+    "Assens": [
+      "Route d'Echallens",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
     ],
-    "Genolier": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
+    "Aubonne": [
+      "Chemin des Grands-Champs",
+      "Route de Lavigny",
+      "Chemin de Bougy",
+      "Avenue du Château",
+      "Chemin du Chêne",
+      "Rue de Trévelin",
+      "Place du Marché",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Avenches": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Place du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Bavois": [
+      "Route d'Orbe",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
     ],
     "Begnins": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
     ],
-    "Luins": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
+    "Belmont-sur-Lausanne": [
+      "Chemin de la Grange-aux-Agneaux",
+      "Route de Lausanne",
+      "Chemin de la Moraine",
+      "Route des Monts-de-Lavaux",
+      "Chemin du Château",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers"
     ],
-    "Vinzel": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
+    "Bex": [
+      "Route de Villars",
+      "Chemin de Gryon",
+      "Avenue de la Gare",
+      "Route de Saint-Maurice",
+      "Chemin du Château",
+      "Rue Centrale",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers"
     ],
-    "Bursins": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
+    "Bioley-Orjulaz": [
+      "Route d'Echallens",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
     ],
-    "Tartegnin": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Dully": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Signy-Avenex": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Eysins": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Grens": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Vich": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Coinsins": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Commugny": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Chavannes-des-Bois": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Mies": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Tannay": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
-    ],
-    "Crans-près-Céligny": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
+    "Blonay": [
+      "Chemin des Chevalleyres",
+      "Route de Brent",
+      "Chemin de Bahyse",
+      "Route de Vevey",
+      "Chemin du Château",
+      "Chemin des Prés",
+      "Chemin de la Forêt",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts"
     ],
     "Bogis-Bossey": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Bottens": [
+      "Route du Jorat",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Boulens": [
+      "Route d'Echallens",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Bourg-en-Lavaux": [
+      "Route de Lavaux",
+      "Chemin des Vignes",
+      "Place de la Gare",
+      "Grand-Rue",
+      "Chemin de la Fontaine"
+    ],
+    "Bretigny-sur-Morrens": [
+      "Route d'Echallens",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Bursins": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Bussigny": [
+      "Route de Lausanne",
+      "Chemin de la Forêt",
+      "Avenue de la Gare",
+      "Chemin du Château",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie",
+      "Chemin des Sapins"
+    ],
+    "Carrouge": [
+      "Route de Moudon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Chabrey": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Chamblon": [
+      "Route d'Yverdon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Chardonne": [
+      "Chemin des Chênes",
+      "Route de Jongny",
+      "Chemin de l'Alpe",
+      "Route du Vignoble",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie"
     ],
     "Chavannes-de-Bogis": [
-      "Route de Nyon", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Chavannes-des-Bois": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Chavannes-près-Renens": [
+      "Chemin des Glycines",
+      "Route de Renens",
+      "Chemin de la Roulière",
+      "Avenue de la Gare",
+      "Chemin du Lac",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie"
+    ],
+    "Chavornay": [
+      "Route d'Yverdon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Cheseaux-sur-Lausanne": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Chexbres": [
+      "Route de la Corniche",
+      "Chemin des Vignes",
+      "Place de la Gare",
+      "Chemin du Lac",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie",
+      "Chemin des Sapins"
+    ],
+    "Cheyres-Châbles": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin du Lac",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Château-d'Oex": [
+      "Grand-Rue",
+      "Route de la Gare",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Chéserex": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Clarens": [
+      "Avenue de Belmont",
+      "Chemin du Lac",
+      "Route de Chailly",
+      "Grand-Rue",
+      "Chemin de la Fontaine"
+    ],
+    "Coinsins": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Commugny": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Coppet": [
+      "Route Suisse",
+      "Chemin des Hutins",
+      "Chemin de la Petite-Prairie",
+      "Grand-Rue",
+      "Chemin des Perrières",
+      "Chemin du Château",
+      "Chemin du Lac",
+      "Chemin de Founex",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine"
+    ],
+    "Corcelles-le-Jorat": [
+      "Route du Jorat",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Corseaux": [
+      "Route de Lavaux",
+      "Chemin des Vignes",
+      "Avenue de Lavaux",
+      "Chemin du Lac",
+      "Chemin de la Fontaine"
+    ],
+    "Corsier-sur-Vevey": [
+      "Chemin de Corseaux",
+      "Route de Chardonne",
+      "Chemin des Cerisiers",
+      "Route de Fenil",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie"
+    ],
+    "Cossonay": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Place du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Crans-près-Céligny": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Crissier": [
+      "Chemin de la Chocolatière",
+      "Route de Lausanne",
+      "Chemin de la Grangette",
+      "Route de Marcolet",
+      "Chemin du Château",
+      "Avenue de France",
+      "Chemin des Prés",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine"
+    ],
+    "Cudrefin": [
+      "Route de Neuchâtel",
+      "Grand-Rue",
+      "Chemin du Lac",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Cugy": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Cully": [
+      "Route de Lavaux",
+      "Chemin des Vignes",
+      "Place de la Gare",
+      "Grand-Rue",
+      "Chemin du Lac",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie",
+      "Chemin des Sapins"
+    ],
+    "Curtilles": [
+      "Route de Moudon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Daillens": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
     ],
     "Divonne-les-Bains": [
-      "Avenue de Genève", "Grand-Rue", "Chemin de la Fontaine", "Chemin des Vignes", "Chemin des Crêts"
+      "Avenue de Genève",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Duillier": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Dully": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Echallens": [
+      "Route de Lausanne",
+      "Chemin du Collège",
+      "Place du Château",
+      "Route d'Yverdon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie"
+    ],
+    "Ecublens": [
+      "Chemin de la Source",
+      "Route de la Pierre",
+      "Avenue du Tir-Fédéral",
+      "Chemin de Bassenges",
+      "Chemin des Esserts",
+      "Route du Bois",
+      "Chemin de la Croix-Blanche",
+      "Avenue du Temple",
+      "Chemin du Château",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie",
+      "Chemin des Sapins"
+    ],
+    "Epalinges": [
+      "Chemin de la Cigale",
+      "Route du Jorat",
+      "Chemin de la Clergère",
+      "Chemin des Croisettes",
+      "Route de la Corniche",
+      "Chemin de la Forêt",
+      "Chemin des Bois",
+      "Avenue du Château",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine"
+    ],
+    "Ependes": [
+      "Route d'Yverdon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Epesses": [
+      "Route de Lavaux",
+      "Chemin des Vignes",
+      "Grand-Rue",
+      "Chemin du Lac",
+      "Chemin de la Fontaine"
+    ],
+    "Etagnières": [
+      "Route d'Echallens",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Eysins": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Faoug": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin du Lac",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Founex": [
+      "Chemin de la Scie",
+      "Route de Coppet",
+      "Chemin des Fleurs",
+      "Chemin du Châtaignier",
+      "Chemin du Lac",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Route de Crans",
+      "Chemin des Crêts",
+      "Chemin des Vergers"
+    ],
+    "Froideville": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Genolier": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Gingins": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Gland": [
+      "Route de Nyon",
+      "Chemin du Marronnier",
+      "Avenue du Mont-Blanc",
+      "Chemin de la Falaise",
+      "Route de Lausanne",
+      "Chemin de la Crétaux",
+      "Chemin de Mauverney",
+      "Chemin de la Dullive",
+      "Chemin du Château",
+      "Avenue de Roche",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie"
+    ],
+    "Grandson": [
+      "Rue Basse",
+      "Rue Haute",
+      "Chemin du Lac",
+      "Route de Neuchâtel",
+      "Place du Château",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie"
+    ],
+    "Grandvaux": [
+      "Route de Lavaux",
+      "Chemin des Vignes",
+      "Chemin du Lac",
+      "Route du Village",
+      "Chemin de la Fontaine"
+    ],
+    "Grens": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Gryon": [
+      "Route de Villars",
+      "Chemin des Alpes",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Henniez": [
+      "Route de Moudon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Jouxtens-Mézery": [
+      "Route de Lausanne",
+      "Chemin de Mézery",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "La Sarraz": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Place du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "La Tour-de-Peilz": [
+      "Chemin de Brent",
+      "Avenue de la Gare",
+      "Chemin des Quatre-Marronniers",
+      "Route de Saint-Légier",
+      "Avenue des Alpes",
+      "Chemin du Cèdre",
+      "Rue du Lac",
+      "Avenue de la Plage",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine"
+    ],
+    "Lausanne": [
+      "Chemin de Boissonnet",
+      "Avenue de Cour",
+      "Chemin de Montelly",
+      "Avenue de la Harpe",
+      "Chemin des Cèdres",
+      "Avenue de Beaulieu",
+      "Chemin de Rovereaz",
+      "Avenue de Montchoisi",
+      "Chemin de Bellerive",
+      "Avenue de Rumine",
+      "Chemin de Mornex",
+      "Avenue du Léman",
+      "Chemin des Allinges",
+      "Avenue de la Gare",
+      "Chemin de Chandieu",
+      "Avenue de l'Élysée",
+      "Avenue d'Ouchy",
+      "Chemin du Calvaire",
+      "Avenue de Chailly",
+      "Route d'Oron",
+      "Chemin des Fleurettes",
+      "Avenue de la Sallaz",
+      "Chemin de la Vuachère",
+      "Avenue Secrétan",
+      "Chemin de Pierrefleur",
+      "Route de Berne",
+      "Avenue de France",
+      "Avenue Vinet",
+      "Chemin du Levant",
+      "Avenue des Bains",
+      "Avenue Mon-Repos",
+      "Chemin de Mornex",
+      "Avenue de Tivoli",
+      "Avenue du Tribunal-Fédéral",
+      "Chemin des Epinettes",
+      "Avenue Ruchonnet",
+      "Avenue Benjamin-Constant",
+      "Avenue de Bethusy",
+      "Chemin de la Colline",
+      "Avenue de Milan",
+      "Chemin de Montriond",
+      "Avenue de Jaman",
+      "Avenue du Servan",
+      "Chemin de Primerose",
+      "Avenue du Grey",
+      "Avenue de Montétan",
+      "Chemin de Beaumont",
+      "Avenue de Morges",
+      "Avenue du Léman",
+      "Place Saint-François",
+      "Chemin des Falaises",
+      "Avenue de la Dôle",
+      "Chemin de Praz-Séchaud",
+      "Avenue de Savoie",
+      "Chemin des Croisettes",
+      "Avenue de Valmont",
+      "Chemin de la Rouvraie",
+      "Avenue de Montoie",
+      "Chemin de Renens",
+      "Avenue de Provence",
+      "Chemin de la Forêt",
+      "Avenue du Chablais",
+      "Chemin du Closelet",
+      "Avenue de Charmontey",
+      "Chemin de Malley",
+      "Avenue de Sévelin",
+      "Chemin de Bossons",
+      "Avenue de Longemalle",
+      "Chemin de la Fauvette",
+      "Avenue de Valency",
+      "Chemin du Petit-Flon",
+      "Avenue de Tivoli",
+      "Chemin de Bellevaux",
+      "Avenue des Jordils",
+      "Chemin de Beau-Rivage",
+      "Avenue de la Cathédrale",
+      "Chemin de Prélaz",
+      "Avenue de Mon-Loisir",
+      "Chemin de Maillefer",
+      "Avenue des Figuiers"
+    ],
+    "Le Mont-sur-Lausanne": [
+      "Chemin des Fontanettes",
+      "Route du Jorat",
+      "Chemin de la Claie-aux-Moines",
+      "Route de Lausanne",
+      "Chemin des Fleurs",
+      "Chemin du Château",
+      "Chemin de la Colline",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine"
+    ],
+    "Les Diablerets": [
+      "Route de Gstaad",
+      "Chemin des Diablerets",
+      "Route du Col du Pillon",
+      "Chemin de la Fontaine"
+    ],
+    "Leysin": [
+      "Route des Hordes",
+      "Avenue Secrétan",
+      "Chemin de la Feuillerette",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Lucens": [
+      "Route de Moudon",
+      "Grand-Rue",
+      "Place du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Luins": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Lutry": [
+      "Route de Lavaux",
+      "Chemin des Bossons",
+      "Route de Savuit",
+      "Chemin de la Conversion",
+      "Route de la Petite-Corniche",
+      "Chemin du Daillens",
+      "Chemin des Vignes",
+      "Route du Village",
+      "Chemin de la Culturaz",
+      "Avenue du Grand-Pont",
+      "Chemin des Vernes",
+      "Chemin de la Plantaz",
+      "Chemin de Châtelard",
+      "Route de Grandvaux",
+      "Chemin du Châtaignier",
+      "Chemin de la Fontaine",
+      "Place du Château",
+      "Rue du Casino",
+      "Chemin des Crêtes",
+      "Chemin du Lac",
+      "Chemin des Cerisiers",
+      "Chemin de la Prairie",
+      "Chemin des Vergers",
+      "Chemin du Vallon",
+      "Chemin des Sapins"
+    ],
+    "Mies": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Montagny-près-Yverdon": [
+      "Route d'Yverdon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Montreux": [
+      "Avenue de Belmont",
+      "Chemin de Sonzier",
+      "Avenue des Alpes",
+      "Chemin du Vallon",
+      "Route de Glion",
+      "Avenue de Chillon",
+      "Chemin des Gonelles",
+      "Route de Chailly",
+      "Grand-Rue",
+      "Avenue du Casino",
+      "Rue du Lac",
+      "Avenue de la Riviera",
+      "Chemin de Caux",
+      "Avenue de Collonge",
+      "Chemin de la Chiesaz",
+      "Avenue des Planches",
+      "Chemin du Midi",
+      "Route de Blonay",
+      "Chemin de la Printanière",
+      "Avenue Claude-Nobs",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin du Château",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie",
+      "Chemin des Sapins",
+      "Chemin des Chênes",
+      "Chemin des Érables",
+      "Chemin des Tilleuls"
+    ],
+    "Morges": [
+      "Chemin de la Grosse-Pierre",
+      "Avenue de Riond-Bosson",
+      "Chemin de la Cure",
+      "Avenue de Marcelin",
+      "Chemin des Uttins",
+      "Route de Lausanne",
+      "Chemin de Tolochenaz",
+      "Avenue de la Gottaz",
+      "Rue Louis-de-Savoie",
+      "Avenue de Lonay",
+      "Promenade Général-Guisan",
+      "Avenue de Plan",
+      "Chemin du Parc",
+      "Avenue de la Gare",
+      "Rue de Couvaloup",
+      "Chemin du Grand-Verger",
+      "Avenue de Chanel",
+      "Rue des Fossés",
+      "Place de la Gare",
+      "Chemin du Lac",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin du Château",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie",
+      "Chemin des Sapins",
+      "Chemin des Chênes",
+      "Chemin des Érables",
+      "Chemin des Tilleuls"
+    ],
+    "Morrens": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Moudon": [
+      "Chemin de Biolley",
+      "Route de Lucens",
+      "Chemin des Moines",
+      "Grand-Rue",
+      "Place de l'Hôtel-de-Ville",
+      "Rue du Château",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers"
+    ],
+    "Mézières": [
+      "Route de Moudon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Noville": [
+      "Route Suisse",
+      "Chemin des Vignes",
+      "Chemin du Lac",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts"
+    ],
+    "Nyon": [
+      "Route de Saint-Cergue",
+      "Chemin de la Redoute",
+      "Avenue de Bois-Bougy",
+      "Chemin des Châtaigniers",
+      "Route de Divonne",
+      "Chemin de Changins",
+      "Avenue Viollier",
+      "Chemin de Montoly",
+      "Route de l'Étraz",
+      "Chemin de Précossy",
+      "Avenue Alfred-Cortot",
+      "Chemin des Plantaz",
+      "Rue de la Gare",
+      "Place du Château",
+      "Rue de Rive",
+      "Avenue de la Combe",
+      "Chemin de la Vuarpillière",
+      "Route de Crans",
+      "Chemin de la Côte",
+      "Chemin du Lac",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie",
+      "Chemin des Sapins",
+      "Chemin des Chênes",
+      "Chemin des Érables",
+      "Chemin des Tilleuls",
+      "Chemin des Bouleaux"
+    ],
+    "Ollon": [
+      "Route de Villars",
+      "Grand-Rue",
+      "Place du Village",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Orbe": [
+      "Chemin des Moulins",
+      "Route de Lausanne",
+      "Chemin du Château",
+      "Grand-Rue",
+      "Place du Marché",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie"
+    ],
+    "Oron": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Paudex": [
+      "Chemin de la Colline",
+      "Route du Lac",
+      "Chemin du Rionza",
+      "Route de la Borde",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie",
+      "Chemin des Sapins"
+    ],
+    "Payerne": [
+      "Chemin des Sports",
+      "Route de Lausanne",
+      "Chemin des Vignes",
+      "Grand-Rue",
+      "Place du Marché",
+      "Rue de la Gare",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers"
+    ],
+    "Penthalaz": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Pompaples": [
+      "Route d'Orbe",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Pomy": [
+      "Route d'Yverdon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Prangins": [
+      "Chemin de la Baroche",
+      "Route de l'Aéroport",
+      "Chemin des Buis",
+      "Route du Lac",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Route de Nyon",
+      "Chemin des Crêts",
+      "Chemin des Vergers"
+    ],
+    "Prilly": [
+      "Chemin de Villard",
+      "Route du Mont",
+      "Avenue de Lonay",
+      "Chemin des Creuses",
+      "Route de Cossonay",
+      "Avenue des Tilleuls",
+      "Chemin des Alpes",
+      "Rue du Temple",
+      "Chemin de Grand-Record",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie",
+      "Chemin des Sapins"
+    ],
+    "Préverenges": [
+      "Chemin de la Verney",
+      "Route de Lausanne",
+      "Chemin du Port",
+      "Avenue de la Plage",
+      "Chemin du Lac",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie"
+    ],
+    "Puidoux": [
+      "Route de la Corniche",
+      "Chemin de Lavaux",
+      "Chemin des Vignes",
+      "Route du Village",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie",
+      "Chemin des Sapins"
+    ],
+    "Pully": [
+      "Avenue de Lavaux",
+      "Chemin de Chamblandes",
+      "Avenue C.-F. Ramuz",
+      "Chemin de la Damataire",
+      "Avenue de Rochettaz",
+      "Chemin de la Fontaine",
+      "Avenue du Prieuré",
+      "Chemin des Alpes",
+      "Avenue de Montagibert",
+      "Chemin du Calvaire",
+      "Avenue des Collèges",
+      "Chemin du Pré-de-la-Tour",
+      "Avenue Général-Guisan",
+      "Chemin des Osches",
+      "Chemin du Châtaignier",
+      "Avenue de la Rosiaz",
+      "Chemin de la Perraudettaz",
+      "Chemin des Fleurs",
+      "Avenue de Verdel",
+      "Chemin de la Colline",
+      "Avenue de Belmont",
+      "Chemin du Château",
+      "Avenue Samson-Reymondin",
+      "Chemin de la Plantaz",
+      "Avenue de la Rochelle",
+      "Chemin des Vignes",
+      "Avenue de Pully",
+      "Chemin du Lac",
+      "Avenue de Bellerive",
+      "Chemin des Crêts",
+      "Avenue du Petit-Port",
+      "Chemin de la Terrasse",
+      "Avenue de la Gare",
+      "Chemin des Vergers",
+      "Avenue de Tivoli",
+      "Chemin du Vallon",
+      "Avenue de la Prairie",
+      "Chemin des Sapins"
+    ],
+    "Renens": [
+      "Chemin du Closelet",
+      "Avenue de Florissant",
+      "Chemin de la Madeleine",
+      "Route de Prilly",
+      "Avenue du 14-Avril",
+      "Rue de Lausanne",
+      "Avenue de Lonay",
+      "Chemin du Croset",
+      "Rue du Midi",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie",
+      "Chemin des Sapins"
+    ],
+    "Rennaz": [
+      "Route de Noville",
+      "Chemin des Vignes",
+      "Chemin du Lac",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts"
+    ],
+    "Riex": [
+      "Route de Lavaux",
+      "Chemin des Vignes",
+      "Grand-Rue",
+      "Chemin du Lac",
+      "Chemin de la Fontaine"
+    ],
+    "Rivaz": [
+      "Route de la Corniche",
+      "Chemin des Vignes",
+      "Chemin du Lac",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts"
+    ],
+    "Roche": [
+      "Route du Lac",
+      "Grand-Rue",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts"
+    ],
+    "Rolle": [
+      "Chemin des Terreaux",
+      "Route de Gilly",
+      "Avenue de la Gare",
+      "Chemin de Mont-le-Grand",
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin de la Plage",
+      "Chemin du Château",
+      "Route de Perroy",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie",
+      "Chemin des Sapins"
+    ],
+    "Romanel-sur-Lausanne": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Rossinière": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin du Grand-Chalet",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Rougemont": [
+      "Route de Gstaad",
+      "Grand-Rue",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Saint-Barthélemy": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Saint-Prex": [
+      "Route de Morges",
+      "Chemin de Perroy",
+      "Chemin des Vignes",
+      "Chemin de la Moraine",
+      "Rue du Vieux-Collège",
+      "Chemin du Château",
+      "Chemin du Lac",
+      "Place du Temple",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts"
+    ],
+    "Saint-Saphorin": [
+      "Route de la Corniche",
+      "Chemin des Vignes",
+      "Grand-Rue",
+      "Chemin du Lac",
+      "Chemin de la Fontaine"
+    ],
+    "Saint-Sulpice": [
+      "Chemin de Champittet",
+      "Route de Lausanne",
+      "Chemin du Débarcadère",
+      "Chemin des Pierrettes",
+      "Chemin du Lac",
+      "Chemin de la Venoge",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts"
+    ],
+    "Sainte-Croix": [
+      "Avenue de la Gare",
+      "Rue Neuve",
+      "Rue des Rasses",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie",
+      "Chemin des Sapins"
+    ],
+    "Salavaux": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin du Lac",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Seigneux": [
+      "Route de Moudon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Signy-Avenex": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Suchy": [
+      "Route d'Yverdon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Tannay": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Tartegnin": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Territet": [
+      "Avenue du Château",
+      "Chemin du Lac",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Tolochenaz": [
+      "Route de la Maladière",
+      "Chemin des Plantaz",
+      "Route du Village",
+      "Chemin de la Ferme",
+      "Chemin du Parc",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie"
+    ],
+    "Treycovagnes": [
+      "Route d'Yverdon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Trélex": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Vallorbe": [
+      "Grand-Rue",
+      "Rue de France",
+      "Rue du Faubourg",
+      "Chemin de la Gare",
+      "Route de Pontarlier",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie"
+    ],
+    "Vevey": [
+      "Avenue de Gilamont",
+      "Chemin de Blonay",
+      "Avenue de Corsier",
+      "Chemin des Bosquets",
+      "Avenue de la Gare",
+      "Chemin de la Doges",
+      "Avenue Paul-Cérésole",
+      "Chemin de Bergère",
+      "Rue du Lac",
+      "Avenue Reller",
+      "Boulevard de Charmontey",
+      "Rue du Midi",
+      "Place du Marché",
+      "Rue des Deux-Marchés",
+      "Avenue de la Plage",
+      "Chemin des Cerisiers",
+      "Rue du Conseil",
+      "Avenue de Lavaux",
+      "Chemin de la Vuachère",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin du Château",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie"
+    ],
+    "Veytaux": [
+      "Avenue de Chillon",
+      "Chemin du Lac",
+      "Chemin du Château",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Vich": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Villars-le-Comte": [
+      "Route de Moudon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Villars-le-Terroir": [
+      "Route d'Echallens",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Villars-sur-Ollon": [
+      "Avenue Centrale",
+      "Chemin des Mazots",
+      "Route de Bretaye",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Villeneuve": [
+      "Route Suisse",
+      "Chemin de la Tinière",
+      "Avenue des Alpes",
+      "Grand-Rue",
+      "Chemin du Lac",
+      "Place du Temple",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers"
+    ],
+    "Villette": [
+      "Route de Lavaux",
+      "Chemin des Vignes",
+      "Chemin du Lac",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts"
+    ],
+    "Vinzel": [
+      "Route de Nyon",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Vuarrens": [
+      "Route d'Echallens",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes",
+      "Chemin des Crêts"
+    ],
+    "Yverdon-les-Bains": [
+      "Avenue des Bains",
+      "Rue des Jordils",
+      "Chemin de la Plage",
+      "Avenue Haldimand",
+      "Rue de Neuchâtel",
+      "Avenue de Grandson",
+      "Rue de la Plaine",
+      "Place Pestalozzi",
+      "Rue du Lac",
+      "Avenue des Sports",
+      "Chemin du Château",
+      "Rue du Midi",
+      "Place de la Gare",
+      "Rue du Collège",
+      "Chemin des Vignes",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts",
+      "Chemin des Vergers",
+      "Chemin de la Prairie",
+      "Chemin des Sapins"
+    ],
+    "Yvonand": [
+      "Route de Lausanne",
+      "Grand-Rue",
+      "Chemin du Lac",
+      "Chemin de la Fontaine",
+      "Chemin des Vignes"
+    ],
+    "Yvorne": [
+      "Route de Lausanne",
+      "Chemin des Vignes",
+      "Grand-Rue",
+      "Chemin de la Fontaine",
+      "Chemin des Crêts"
     ]
   }
 }

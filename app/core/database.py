@@ -54,6 +54,9 @@ else:
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 Base = declarative_base()
 
+# Compat: certains modules attendent `async_session` (factory)
+async_session = AsyncSessionLocal
+
 # =============================================================================
 # MODELS
 # =============================================================================

@@ -7,8 +7,9 @@ import uuid
 import json
 import os
 from typing import List, Dict, Optional
-from app.scrapers.searchch import SearchChScraper
+from app.scrapers.searchch import SearchChScraper, SearchChScraperError
 from app.core.websocket import sio, emit_activity
+from app.core.logger import scraping_logger
 
 # Chargement de la base de données des rues
 import sys
@@ -84,6 +85,10 @@ async def scrape_neighborhood(
     type_recherche: "person" (prives), "business" (entreprises), "all" (tous)
     """
     results = []
+    seen = set()  # Deduplication locale
+    success_calls = 0
+    error_calls = 0
+    last_error: SearchChScraperError | None = None
     
     # Determiner le canton si non specifie
     if canton is None:
@@ -127,17 +132,30 @@ async def scrape_neighborhood(
                 scan_results = await scraper.search(
                     query="", 
                     ville=adresse_complete, 
-                    limit=5,
+                    # Important: 5 est souvent trop bas (les entrées avec téléphone
+                    # ne sont pas forcément dans les 5 premiers résultats).
+                    limit=20,
                     type_recherche=type_recherche  # Passer le filtre prive/entreprise
                 )
+                success_calls += 1
+            except SearchChScraperError as e:
+                error_calls += 1
+                last_error = e
+                scraping_logger.warning(f"[Scanner] Search.ch erreur pour {adresse_complete}: {e}")
+                continue
             except Exception as e:
-                print(f"[Scanner] Erreur pour {adresse_complete}: {e}")
+                error_calls += 1
+                last_error = SearchChScraperError(str(e))
+                scraping_logger.error(f"[Scanner] Erreur pour {adresse_complete}: {e}", exc_info=True)
                 continue
             
             for res in scan_results:
                 # Le scraper searchch.py a deja un filtre anti-entreprise
                 # On ajoute une couche supplementaire de validation
-                if res and res.get('nom') and res.get('telephone'):
+                # Ne pas filtrer sur le téléphone: beaucoup d'entrées privées n'ont
+                # pas de numéro public. On garde la fiche et l'utilisateur peut
+                # enrichir ensuite.
+                if res and res.get('nom'):
                     # Ajouter l'info "Source: Scanner"
                     res['source'] = f"Scanner {canton}"
                     res['notes'] = f"Trouve a l'adresse: {adresse_complete}"
@@ -147,11 +165,15 @@ async def scrape_neighborhood(
                     if not res.get('id'):
                         res['id'] = str(uuid.uuid4())
                     
-                    # Deduplication locale (nom + telephone)
-                    dedup_key = f"{res.get('nom', '')}-{res.get('telephone', '')}"
-                    existing_keys = [f"{r.get('nom', '')}-{r.get('telephone', '')}" for r in results]
-                    if dedup_key not in existing_keys:
-                        results.append(res)
+                    # Deduplication locale: privilégier le lien (souvent unique),
+                    # sinon fallback sur un identifiant composite.
+                    dedup_key = res.get('lien_rf') or (
+                        f"{res.get('nom', '')}|{res.get('adresse', '')}|{res.get('code_postal', '')}|{res.get('ville', '')}"
+                    )
+                    if dedup_key in seen:
+                        continue
+                    seen.add(dedup_key)
+                    results.append(res)
             
             # Progression
             if i % 2 == 0:
@@ -163,12 +185,19 @@ async def scrape_neighborhood(
                 })
                 
             # Petit delai pour ne pas spammer
-            await asyncio.sleep(0.3)
+            await asyncio.sleep(0.25)
             
             # Si on a assez de resultats, on arrete
             if len(results) >= limit:
                 break
                 
+    # Si tout a échoué côté Search.ch, remonter une erreur explicite (au lieu de 0 résultat silencieux)
+    if len(results) == 0 and success_calls == 0 and error_calls > 0 and last_error is not None:
+        raise SearchChScraperError(
+            f"Scanner: impossible de contacter Search.ch ({last_error})",
+            status_code=getattr(last_error, "status_code", None),
+        )
+
     print(f"[Scanner] Termine: {len(results)} residents trouves")
     return results
 

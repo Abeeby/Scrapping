@@ -105,15 +105,9 @@ async def startup():
     logger.info("[START] Demarrage de Prospection Pro API v5.1...")
     try:
         await init_db()
-        #region agent log
-        import json; open(r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log", "a").write(json.dumps({"hypothesisId":"H5","location":"main.py:startup","message":"Database initialisee","data":{"status":"success"},"timestamp":__import__("time").time()*1000,"sessionId":"debug-session"})+"\n")
-        #endregion
         logger.info("[OK] Base de donnees initialisee")
         logger.info(f"[OK] API prete sur le port {PORT}")
     except Exception as e:
-        #region agent log
-        import json; open(r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log", "a").write(json.dumps({"hypothesisId":"H5","location":"main.py:startup","message":"Database erreur","data":{"error":str(e)},"timestamp":__import__("time").time()*1000,"sessionId":"debug-session"})+"\n")
-        #endregion
         logger.critical(f"[ERREUR] Echec du demarrage: {e}", exc_info=True)
         raise e
 
@@ -129,9 +123,6 @@ async def shutdown():
 @app.get("/api/health")
 async def health():
     """Health check pour Railway/Render"""
-    #region agent log
-    import json; open(r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log", "a").write(json.dumps({"hypothesisId":"H4","location":"main.py:health","message":"Health check appele","data":{"status":"ok"},"timestamp":__import__("time").time()*1000,"sessionId":"debug-session"})+"\n")
-    #endregion
     return {"status": "ok", "version": "5.1.0"}
 
 @app.get("/")

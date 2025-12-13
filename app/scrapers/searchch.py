@@ -3,13 +3,17 @@
 # =============================================================================
 
 import asyncio
+import os
 import random
 import re
+import time
 import xml.etree.ElementTree as ET
 from typing import List, Dict, Optional
 from dataclasses import dataclass
 
 import aiohttp
+
+from app.core.logger import scraping_logger
 
 # =============================================================================
 # USER AGENTS
@@ -31,6 +35,14 @@ NS = {
 # =============================================================================
 # SCRAPER CLASS
 # =============================================================================
+
+class SearchChScraperError(Exception):
+    """Erreur explicite Search.ch (réseau, HTTP, parsing, etc.)."""
+
+    def __init__(self, message: str, status_code: int | None = None):
+        super().__init__(message)
+        self.status_code = status_code
+
 
 class SearchChScraper:
     """Scraper pour Search.ch via API XML"""
@@ -55,32 +67,48 @@ class SearchChScraper:
         Recherche sur Search.ch via l'API XML
         """
         search_mode = (type_recherche or "person").lower()
-        #region agent log
-        import json; open(r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log", "a").write(json.dumps({"hypothesisId":"H3","location":"searchch.py:search","message":"Scraper demarre","data":{"query":query,"ville":ville,"type_recherche":search_mode},"timestamp":__import__("time").time()*1000,"sessionId":"debug-session"})+"\n")
-        #endregion
-        print(f"[Search.ch] Recherche: '{query}' a '{ville}' (limite: {limit}, mode: {search_mode})")
+        scraping_logger.info(
+            "Search.ch: recherche start query=%r ville=%r limit=%s mode=%s",
+            query,
+            ville,
+            limit,
+            search_mode,
+        )
         
         results = await self._api_search(query, ville, limit, search_mode)
         
-        print(f"[Search.ch] {len(results)} resultats trouves")
+        scraping_logger.info("Search.ch: recherche done results=%s", len(results))
         return results
     
     async def _api_search(self, query: str, ville: str, limit: int, type_recherche: str) -> List[Dict]:
         """Recherche via l'API tel.search.ch (format XML Atom)"""
-        results = []
-        
+        results: List[Dict] = []
         try:
             # Construire les parametres de recherche
             search_term = query
             
             # URL de base
-            url = f"https://tel.search.ch/api/"
+            # Spec officielle: https://search.ch/tel/api/help.en.html
+            url = "https://search.ch/tel/api/"
             params = {
                 'was': search_term,
-                'maxnum': min(limit, 50)  # Max 50 par requete
+                'maxnum': min(max(int(limit), 1), 50)  # 50 = perf/sécurité
             }
             if ville:
                 params['wo'] = ville
+
+            # Filtre upstream (plus robuste que le filtrage par mots-clés)
+            if type_recherche == "person":
+                params["privat"] = 1
+                params["firma"] = 0
+            elif type_recherche == "business":
+                params["privat"] = 0
+                params["firma"] = 1
+
+            # Clé API (optionnelle). Améliore la stabilité + quotas.
+            api_key = os.environ.get("SEARCHCH_API_KEY")
+            if api_key:
+                params["key"] = api_key
             
             headers = {
                 'User-Agent': random.choice(USER_AGENTS),
@@ -88,20 +116,50 @@ class SearchChScraper:
                 'Accept-Language': 'fr-CH,fr;q=0.9,de;q=0.8',
             }
             
+            start = time.monotonic()
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, params=params, headers=headers, timeout=aiohttp.ClientTimeout(total=30)) as response:
-                    if response.status == 200:
-                        text = await response.text()
-                        results = self._parse_atom_feed(text, ville, type_recherche)
-                        print(f"[Search.ch API] {len(results)} entrees parsees")
-                    else:
-                        print(f"[Search.ch API] Status {response.status}")
+                    elapsed_ms = int((time.monotonic() - start) * 1000)
+                    text = await response.text()
+
+                    if response.status != 200:
+                        # Remonter une erreur explicite (au lieu de renvoyer 0 résultat)
+                        scraping_logger.warning(
+                            "Search.ch API HTTP %s in %sms (was=%r wo=%r)",
+                            response.status,
+                            elapsed_ms,
+                            search_term,
+                            ville,
+                        )
+                        if response.status == 429:
+                            message = "Search.ch: trop de requêtes (429). Attendez 1-2 minutes puis réessayez."
+                        elif response.status == 403:
+                            message = "Search.ch: accès refusé (403). Vérifiez la configuration/clé API."
+                        else:
+                            message = f"Search.ch: erreur HTTP {response.status} (essayez plus tard)."
+                        raise SearchChScraperError(
+                            message,
+                            status_code=response.status,
+                        )
+
+                    results = self._parse_atom_feed(text, ville, type_recherche)
+                    scraping_logger.info(
+                        "Search.ch API OK in %sms parsed=%s (was=%r wo=%r)",
+                        elapsed_ms,
+                        len(results),
+                        search_term,
+                        ville,
+                    )
+                    return results
                         
         except asyncio.TimeoutError:
-            print("[Search.ch API] Timeout")
+            raise SearchChScraperError("Search.ch: timeout (réessayez).", status_code=504)
         except Exception as e:
-            print(f"[Search.ch API] Erreur: {e}")
-            
+            if isinstance(e, SearchChScraperError):
+                raise
+            raise SearchChScraperError(f"Search.ch: erreur réseau/parsing ({e})")
+
+        # Par sécurité (ne devrait pas arriver), renvoyer une liste
         return results
     
     def _parse_atom_feed(self, xml_text: str, default_ville: str, type_recherche: str) -> List[Dict]:
@@ -116,30 +174,28 @@ class SearchChScraper:
             if not entries:
                 entries = root.findall('{http://www.w3.org/2005/Atom}entry')
             
-            print(f"[Search.ch] {len(entries)} entrees XML trouvees")
-            #region agent log
             filtered_count = 0
             accepted_count = 0
-            #endregion
             for entry in entries:
                 result = self._extract_from_entry(entry, default_ville, type_recherche)
                 if result and result.get('nom'):
                     results.append(result)
-                    #region agent log
                     accepted_count += 1
-                    #endregion
                 else:
-                    #region agent log
                     filtered_count += 1
-                    #endregion
-            #region agent log
-            import json; open(r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log", "a").write(json.dumps({"hypothesisId":"H3","location":"searchch.py:parse","message":"Resultats filtres","data":{"total_entries":len(entries),"accepted":accepted_count,"filtered":filtered_count,"type_recherche":type_recherche},"timestamp":__import__("time").time()*1000,"sessionId":"debug-session"})+"\n")
-            #endregion
+
+            scraping_logger.debug(
+                "Search.ch parse: entries=%s accepted=%s filtered=%s mode=%s",
+                len(entries),
+                accepted_count,
+                filtered_count,
+                type_recherche,
+            )
                     
         except ET.ParseError as e:
-            print(f"[Search.ch] Erreur parsing XML: {e}")
+            raise SearchChScraperError(f"Search.ch: réponse XML invalide ({e})")
         except Exception as e:
-            print(f"[Search.ch] Erreur traitement: {e}")
+            raise SearchChScraperError(f"Search.ch: erreur parsing ({e})")
             
         return results
     
@@ -293,7 +349,7 @@ class SearchChScraper:
                 
                 # Nom trop court (moins de 3 caracteres) = suspect
                 if len(nom_original.replace(' ', '')) < 3:
-                    return None
+                        return None
                     
         except Exception as e:
             print(f"[Search.ch] Erreur extraction entree: {e}")

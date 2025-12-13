@@ -334,7 +334,7 @@ class LocalChScraper:
                 
                 # Nom trop court (moins de 3 caracteres) = suspect
                 if len(nom_original.replace(' ', '')) < 3:
-                    return None
+                        return None
                     
         except Exception as e:
             print(f"[Local.ch] Erreur extraction element: {e}")

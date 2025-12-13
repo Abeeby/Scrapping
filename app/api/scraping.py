@@ -15,8 +15,8 @@ from app.core.database import get_db, Prospect
 from app.core.websocket import sio, emit_activity
 from app.core.logger import scraping_logger
 
-# Import des scrapers réels avec Playwright
-from app.scrapers.searchch import SearchChScraper
+# Import des scrapers réels (Search.ch API + Local.ch)
+from app.scrapers.searchch import SearchChScraper, SearchChScraperError
 from app.scrapers.localch import LocalChScraper
 from app.scrapers.scanner import scrape_neighborhood, get_available_communes, get_rues_for_commune, COMMUNES_GE as SCANNER_COMMUNES_GE, COMMUNES_VD as SCANNER_COMMUNES_VD
 
@@ -277,8 +277,8 @@ async def scrape_searchch(query: str, ville: str, limit: int, type_recherche: st
     lien_verification = f"https://search.ch/tel/?was={urllib.parse.quote(search_term)}"
     
     type_label = "prives" if type_recherche == "person" else "entreprises" if type_recherche == "business" else "tous"
-    print(f"[Search.ch] Demarrage scraping ({type_label}): {query} a {ville} (limit: {limit})")
-    print(f"[Search.ch] Lien verification: {lien_verification}")
+    scraping_logger.info(f"[Search.ch] Demarrage scraping ({type_label}): {query} a {ville} (limit: {limit})")
+    scraping_logger.info(f"[Search.ch] Lien verification: {lien_verification}")
     
     try:
         async with SearchChScraper() as scraper:
@@ -311,10 +311,14 @@ async def scrape_searchch(query: str, ville: str, limit: int, type_recherche: st
                     "source": entry.get("source", "Search.ch")
                 })
                 
-        print(f"[Search.ch] Termine: {len(results)} resultats")
+        scraping_logger.info(f"[Search.ch] Termine: {len(results)} resultats")
         
+    except SearchChScraperError:
+        # Remonter l'erreur au routeur (pour afficher un toast rouge côté UI)
+        raise
     except Exception as e:
-        print(f"[Search.ch] Erreur: {e}")
+        scraping_logger.error(f"[Search.ch] Erreur interne: {e}", exc_info=True)
+        raise SearchChScraperError(f"Search.ch: erreur interne ({e})")
     
     return results
 
@@ -334,8 +338,8 @@ async def scrape_localch(query: str, ville: str, limit: int, type_recherche: str
     lien_verification = f"https://www.local.ch/fr/q/{ville_slug}/{query_slug}" if query else f"https://www.local.ch/fr/q/{ville_slug}"
     
     type_label = "prives" if type_recherche == "person" else "entreprises" if type_recherche == "business" else "tous"
-    print(f"[Local.ch] Demarrage scraping ({type_label}): {query} a {ville} (limit: {limit})")
-    print(f"[Local.ch] Lien verification: {lien_verification}")
+    scraping_logger.info(f"[Local.ch] Demarrage scraping ({type_label}): {query} a {ville} (limit: {limit})")
+    scraping_logger.info(f"[Local.ch] Lien verification: {lien_verification}")
     
     try:
         async with LocalChScraper() as scraper:
@@ -366,10 +370,13 @@ async def scrape_localch(query: str, ville: str, limit: int, type_recherche: str
                     "source": entry.get("source", "Local.ch")
                 })
                 
-        print(f"[Local.ch] Termine: {len(results)} resultats")
+        scraping_logger.info(f"[Local.ch] Termine: {len(results)} resultats")
         
+    except SearchChScraperError:
+        raise
     except Exception as e:
-        print(f"[Local.ch] Erreur: {e}")
+        scraping_logger.error(f"[Local.ch] Erreur interne: {e}", exc_info=True)
+        raise SearchChScraperError(f"Local.ch: erreur interne ({e})")
     
     return results
 
@@ -525,7 +532,13 @@ async def scrape_scanner_endpoint(request: ScrapingRequest):
     type_label = "prives" if type_recherche == "person" else "entreprises" if type_recherche == "business" else "tous"
     await emit_activity("scraping", f"Demarrage Scanner ({type_label}): {rue}, {commune}")
     
-    results = await scrape_neighborhood(commune, rue, request.limit, type_recherche=type_recherche)
+    try:
+        results = await scrape_neighborhood(commune, rue, request.limit, type_recherche=type_recherche)
+    except SearchChScraperError as e:
+        status = e.status_code if getattr(e, "status_code", None) else 502
+        if status not in (400, 401, 403, 404, 408, 409, 422, 429, 500, 502, 503, 504):
+            status = 502
+        raise HTTPException(status_code=status, detail=str(e))
     
     await emit_activity("scraping", f"Scanner termine: {len(results)} {type_label} trouves")
     
@@ -621,18 +634,22 @@ async def generate_rf_links_endpoint(request: ScrapingRequest):
 @router.post("/searchch", response_model=ScrapingResponse)
 async def scrape_searchch_endpoint(request: ScrapingRequest):
     """Scrape l'annuaire Search.ch"""
-    #region agent log
-    import json; open(r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log", "a").write(json.dumps({"hypothesisId":"H2","location":"scraping.py:searchch","message":"type_recherche recu","data":{"type_recherche":request.type_recherche,"query":request.query,"commune":request.commune},"timestamp":__import__("time").time()*1000,"sessionId":"debug-session"})+"\n")
-    #endregion
     type_label = "prives" if request.type_recherche == "person" else "entreprises" if request.type_recherche == "business" else "tous"
     await emit_activity("scraping", f"Démarrage Search.ch ({type_label}) - {request.query}")
     
-    results = await scrape_searchch(
-        request.query or "", 
-        request.commune, 
-        request.limit,
-        type_recherche=request.type_recherche or "person"
-    )
+    try:
+        results = await scrape_searchch(
+            request.query or "", 
+            request.commune, 
+            request.limit,
+            type_recherche=request.type_recherche or "person"
+        )
+    except SearchChScraperError as e:
+        status = e.status_code if getattr(e, "status_code", None) else 502
+        # 429 -> rate limit, 504 -> timeout, sinon 502
+        if status not in (400, 401, 403, 404, 408, 409, 422, 429, 500, 502, 503, 504):
+            status = 502
+        raise HTTPException(status_code=status, detail=str(e))
     
     await emit_activity("scraping", f"Search.ch terminé: {len(results)} {type_label} trouvés")
     
@@ -648,12 +665,18 @@ async def scrape_localch_endpoint(request: ScrapingRequest):
     type_label = "prives" if request.type_recherche == "person" else "entreprises" if request.type_recherche == "business" else "tous"
     await emit_activity("scraping", f"Démarrage Local.ch ({type_label}) - {request.query}")
     
-    results = await scrape_localch(
-        request.query or "", 
-        request.commune, 
-        request.limit,
-        type_recherche=request.type_recherche or "person"
-    )
+    try:
+        results = await scrape_localch(
+            request.query or "", 
+            request.commune, 
+            request.limit,
+            type_recherche=request.type_recherche or "person"
+        )
+    except SearchChScraperError as e:
+        status = e.status_code if getattr(e, "status_code", None) else 502
+        if status not in (400, 401, 403, 404, 408, 409, 422, 429, 500, 502, 503, 504):
+            status = 502
+        raise HTTPException(status_code=status, detail=str(e))
     
     await emit_activity("scraping", f"Local.ch terminé: {len(results)} {type_label} trouvés")
     
