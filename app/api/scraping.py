@@ -985,6 +985,61 @@ async def scrape_homegate_endpoint(request: PropertySearchRequest):
 
 
 # =============================================================================
+# SWISS REALESTATE - Alternative via APIs publiques (GeoAdmin)
+# =============================================================================
+
+@router.post("/swiss-addresses", response_model=ScrapingResponse)
+async def scrape_swiss_addresses(request: PropertySearchRequest):
+    """
+    Alternative stable via GeoAdmin/Swisstopo.
+    Utilise les APIs fédérales suisses (pas de blocage anti-bot).
+    """
+    await emit_activity("scraping", f"Démarrage Swiss Addresses - {request.location}")
+    
+    try:
+        from app.scrapers.swiss_realestate import SwissRealestateClient
+        
+        # Déterminer le canton depuis la location
+        location = request.location.lower()
+        canton = ""
+        if "genève" in location or "geneve" in location or location in ["ge", "geneva"]:
+            canton = "GE"
+        elif "lausanne" in location or "vaud" in location or location == "vd":
+            canton = "VD"
+        
+        async with SwissRealestateClient() as client:
+            if canton:
+                # Recherche par commune
+                properties = await client.search_addresses_in_commune(
+                    commune=request.location,
+                    canton=canton,
+                    limit=request.limit or 100
+                )
+            else:
+                # Recherche générale
+                properties = await client.search_by_location(
+                    city=request.location,
+                    canton=canton,
+                    limit=request.limit or 50
+                )
+        
+        results = [p.to_prospect_format() for p in properties]
+        
+        await emit_activity("success", f"Swiss Addresses terminé: {len(results)} adresses trouvées")
+        
+        return ScrapingResponse(
+            status="completed",
+            count=len(results),
+            results=[ScrapingResult(**r) for r in results]
+        )
+        
+    except Exception as e:
+        scraping_logger.error(f"[SwissAddresses] Erreur: {e}")
+        await emit_activity("error", f"Erreur Swiss Addresses: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# =============================================================================
 # CADASTRES CANTONAUX (NE, FR, VS, BE)
 # =============================================================================
 
