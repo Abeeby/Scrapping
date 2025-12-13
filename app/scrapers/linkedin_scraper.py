@@ -676,3 +676,4 @@ async def extract_linkedin_contact(profile_url: str) -> Dict[str, str]:
         await scraper.close()
     
     return result
+

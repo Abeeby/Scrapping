@@ -740,3 +740,4 @@ async def get_matching_stats() -> Dict[str, Any]:
             "match_rate": (matched / total * 100) if total > 0 else 0,
             "average_score": round(avg_score, 2),
         }
+

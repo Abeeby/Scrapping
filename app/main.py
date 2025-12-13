@@ -16,18 +16,41 @@ import time
 from app.api import prospects, emails, bots, campaigns, proxies, stats, scraping, export, quality, brochures
 
 # Import conditionnel du module prospection avancée
+# #region agent log
+import traceback as _tb_debug
+# #endregion
 try:
+    # #region agent log
+    print("[DEBUG-A] Attempting to import app.api.prospection...", flush=True)
+    # #endregion
     from app.api import prospection
     PROSPECTION_MODULE_AVAILABLE = True
-except ImportError:
+    # #region agent log
+    print("[DEBUG-A] SUCCESS: prospection module imported", flush=True)
+    # #endregion
+except Exception as _e_prospection:
     PROSPECTION_MODULE_AVAILABLE = False
+    # #region agent log
+    print(f"[DEBUG-A] FAILED to import prospection: {type(_e_prospection).__name__}: {_e_prospection}", flush=True)
+    print(f"[DEBUG-A] Traceback: {_tb_debug.format_exc()}", flush=True)
+    # #endregion
 
 # Import conditionnel du module biens en vente
 try:
+    # #region agent log
+    print("[DEBUG-B] Attempting to import app.api.biens...", flush=True)
+    # #endregion
     from app.api import biens
     BIENS_MODULE_AVAILABLE = True
-except ImportError:
+    # #region agent log
+    print("[DEBUG-B] SUCCESS: biens module imported", flush=True)
+    # #endregion
+except Exception as _e_biens:
     BIENS_MODULE_AVAILABLE = False
+    # #region agent log
+    print(f"[DEBUG-B] FAILED to import biens: {type(_e_biens).__name__}: {_e_biens}", flush=True)
+    print(f"[DEBUG-B] Traceback: {_tb_debug.format_exc()}", flush=True)
+    # #endregion
 from app.core.database import init_db
 from app.core.websocket import sio
 from app.core.logger import logger
@@ -150,6 +173,21 @@ async def shutdown():
 async def health():
     """Health check pour Railway/Render"""
     return {"status": "ok", "version": "5.1.0"}
+
+# #region agent log
+@app.get("/api/debug/modules")
+async def debug_modules():
+    """Debug endpoint to check module import status"""
+    routes_count = len([r for r in app.routes if hasattr(r, 'path')])
+    prospection_routes = [r.path for r in app.routes if hasattr(r, 'path') and 'prospection' in r.path]
+    return {
+        "PROSPECTION_MODULE_AVAILABLE": PROSPECTION_MODULE_AVAILABLE,
+        "BIENS_MODULE_AVAILABLE": BIENS_MODULE_AVAILABLE,
+        "total_routes": routes_count,
+        "prospection_routes_count": len(prospection_routes),
+        "prospection_routes": prospection_routes[:10],  # First 10
+    }
+# #endregion
 
 @app.get("/api/health")
 async def health_api():

@@ -743,3 +743,4 @@ async def batch_enrich_mobiles(
         return result.to_dict()
     finally:
         await service.close()
+

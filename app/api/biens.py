@@ -758,3 +758,4 @@ async def export_biens_csv(
             "Content-Disposition": f"attachment; filename=biens_export_{datetime.utcnow().strftime('%Y%m%d')}.csv"
         }
     )
+

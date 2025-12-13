@@ -772,3 +772,4 @@ async def batch_mobile_lookup(
         await scraper.close()
     
     return results
+

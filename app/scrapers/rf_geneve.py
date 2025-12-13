@@ -596,3 +596,4 @@ def get_communes_geneve() -> Dict[int, str]:
 def get_parcelles_estimate(commune: int) -> int:
     """Retourne une estimation du nombre de parcelles pour une commune."""
     return PARCELLES_PAR_COMMUNE.get(commune, 500)
+

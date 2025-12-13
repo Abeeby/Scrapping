@@ -898,3 +898,4 @@ async def batch_merge_profiles(profiles: List[Dict[str, Any]]) -> Dict[str, Any]
             stats["errors"] += 1
     
     return stats
+

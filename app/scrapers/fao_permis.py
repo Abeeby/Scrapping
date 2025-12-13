@@ -544,3 +544,4 @@ async def fao_permis_to_prospects(
                 prospects.append(p.to_prospect_dict())
         
         return prospects
+

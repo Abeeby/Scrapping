@@ -484,3 +484,4 @@ def get_communes_vaud() -> Dict[str, Dict[str, Any]]:
 def get_districts_vaud() -> Dict[str, List[str]]:
     """Retourne les districts avec leurs communes."""
     return DISTRICTS_VD.copy()
+
