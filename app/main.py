@@ -18,6 +18,7 @@ from app.api import prospects, emails, bots, campaigns, proxies, stats, scraping
 # Import conditionnel du module prospection avancée
 # #region agent log
 import traceback as _tb_debug
+_prospection_import_error = None
 # #endregion
 try:
     # #region agent log
@@ -31,8 +32,8 @@ try:
 except Exception as _e_prospection:
     PROSPECTION_MODULE_AVAILABLE = False
     # #region agent log
-    print(f"[DEBUG-A] FAILED to import prospection: {type(_e_prospection).__name__}: {_e_prospection}", flush=True)
-    print(f"[DEBUG-A] Traceback: {_tb_debug.format_exc()}", flush=True)
+    _prospection_import_error = f"{type(_e_prospection).__name__}: {_e_prospection}\n{_tb_debug.format_exc()}"
+    print(f"[DEBUG-A] FAILED to import prospection: {_prospection_import_error}", flush=True)
     # #endregion
 
 # Import conditionnel du module biens en vente
@@ -183,6 +184,7 @@ async def debug_modules():
     return {
         "PROSPECTION_MODULE_AVAILABLE": PROSPECTION_MODULE_AVAILABLE,
         "BIENS_MODULE_AVAILABLE": BIENS_MODULE_AVAILABLE,
+        "prospection_import_error": _prospection_import_error,
         "total_routes": routes_count,
         "prospection_routes_count": len(prospection_routes),
         "prospection_routes": prospection_routes[:10],  # First 10
