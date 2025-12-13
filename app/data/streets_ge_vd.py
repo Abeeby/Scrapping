@@ -6,9 +6,35 @@
 # =============================================================================
 
 from typing import List, Optional, Dict
+import json
+import os
 
 # =============================================================================
-# GENÈVE - Rues principales par commune
+# CHARGEMENT DEPUIS streets.json (source principale - 44 communes GE, 137 VD)
+# =============================================================================
+
+_STREETS_JSON_PATH = os.path.join(os.path.dirname(__file__), "streets.json")
+_STREETS_DATA = {}
+
+def _load_streets_json():
+    """Charge les données depuis streets.json si disponible."""
+    global _STREETS_DATA
+    if _STREETS_DATA:
+        return _STREETS_DATA
+    try:
+        if os.path.exists(_STREETS_JSON_PATH):
+            with open(_STREETS_JSON_PATH, 'r', encoding='utf-8') as f:
+                _STREETS_DATA = json.load(f)
+                print(f"[streets_ge_vd] Loaded {len(_STREETS_DATA.get('GE', {}))} GE communes, {len(_STREETS_DATA.get('VD', {}))} VD communes from streets.json")
+    except Exception as e:
+        print(f"[streets_ge_vd] Warning: Could not load streets.json: {e}")
+    return _STREETS_DATA
+
+# Charger au démarrage
+_load_streets_json()
+
+# =============================================================================
+# GENÈVE - Rues principales par commune (fallback si streets.json manquant)
 # =============================================================================
 
 STREETS_GE = {
@@ -259,9 +285,32 @@ STREETS_VD = {
 # FONCTIONS D'ACCÈS
 # =============================================================================
 
+def _normalize_name(name: str) -> str:
+    """Normalise un nom pour la comparaison (minuscules, sans accents problématiques)."""
+    import unicodedata
+    # Normaliser et convertir en minuscules
+    name = name.lower().strip()
+    # Remplacer les caractères spéciaux courants
+    replacements = {
+        'é': 'e', 'è': 'e', 'ê': 'e', 'ë': 'e',
+        'à': 'a', 'â': 'a', 'ä': 'a',
+        'î': 'i', 'ï': 'i',
+        'ô': 'o', 'ö': 'o',
+        'ù': 'u', 'û': 'u', 'ü': 'u',
+        'ç': 'c',
+        'œ': 'oe', 'æ': 'ae',
+        '\xe8': 'e', '\xe9': 'e',  # è, é encoded differently
+        '\xc8': 'e', '\xc9': 'e',  # È, É
+    }
+    for old, new in replacements.items():
+        name = name.replace(old, new)
+    return name
+
+
 def get_streets(canton: str, commune: Optional[str] = None) -> List[str]:
     """
     Retourne la liste des rues pour un canton et optionnellement une commune.
+    Utilise streets.json en priorité, puis les données en dur en fallback.
     
     Args:
         canton: Code canton (GE ou VD)
@@ -272,6 +321,26 @@ def get_streets(canton: str, commune: Optional[str] = None) -> List[str]:
     """
     canton_upper = canton.upper()
     
+    # Essayer d'abord avec streets.json (plus complet: 44 communes GE, 137 VD)
+    json_data = _load_streets_json()
+    if canton_upper in json_data and json_data[canton_upper]:
+        streets_dict = json_data[canton_upper]
+        
+        if commune:
+            # Recherche avec normalisation (gère les problèmes d'encodage)
+            commune_norm = _normalize_name(commune)
+            for key in streets_dict:
+                if _normalize_name(key) == commune_norm:
+                    return streets_dict[key]
+            return []
+        else:
+            # Toutes les rues du canton
+            all_streets = []
+            for commune_streets in streets_dict.values():
+                all_streets.extend(commune_streets)
+            return list(set(all_streets))
+    
+    # Fallback: données en dur (moins complètes)
     if canton_upper == "GE":
         streets_dict = STREETS_GE
     elif canton_upper == "VD":
@@ -280,9 +349,10 @@ def get_streets(canton: str, commune: Optional[str] = None) -> List[str]:
         return []
     
     if commune:
-        # Recherche insensible à la casse
+        # Recherche avec normalisation
+        commune_norm = _normalize_name(commune)
         for key in streets_dict:
-            if key.lower() == commune.lower():
+            if _normalize_name(key) == commune_norm:
                 return streets_dict[key]
         return []
     else:
@@ -296,6 +366,7 @@ def get_streets(canton: str, commune: Optional[str] = None) -> List[str]:
 def get_communes(canton: str) -> List[str]:
     """
     Retourne la liste des communes disponibles pour un canton.
+    Utilise streets.json en priorité (44 communes GE, 137 VD).
     
     Args:
         canton: Code canton (GE ou VD)
@@ -305,6 +376,12 @@ def get_communes(canton: str) -> List[str]:
     """
     canton_upper = canton.upper()
     
+    # Essayer d'abord avec streets.json
+    json_data = _load_streets_json()
+    if canton_upper in json_data and json_data[canton_upper]:
+        return list(json_data[canton_upper].keys())
+    
+    # Fallback
     if canton_upper == "GE":
         return list(STREETS_GE.keys())
     elif canton_upper == "VD":
@@ -328,7 +405,28 @@ def get_street_count(canton: str, commune: Optional[str] = None) -> int:
     return len(get_streets(canton, commune))
 
 
-# Statistiques
+def get_stats() -> Dict:
+    """Retourne les statistiques de la base de rues (utilise streets.json en priorité)."""
+    json_data = _load_streets_json()
+    
+    stats = {}
+    for canton in ["GE", "VD"]:
+        if canton in json_data and json_data[canton]:
+            stats[canton] = {
+                "communes": len(json_data[canton]),
+                "streets": sum(len(s) for s in json_data[canton].values()),
+            }
+        else:
+            # Fallback
+            fallback = STREETS_GE if canton == "GE" else STREETS_VD
+            stats[canton] = {
+                "communes": len(fallback),
+                "streets": sum(len(s) for s in fallback.values()),
+            }
+    return stats
+
+
+# Statistiques (fallback)
 STATS = {
     "GE": {
         "communes": len(STREETS_GE),
@@ -339,9 +437,4 @@ STATS = {
         "streets": sum(len(s) for s in STREETS_VD.values()),
     },
 }
-
-
-def get_stats() -> Dict:
-    """Retourne les statistiques de la base de rues."""
-    return STATS
 
