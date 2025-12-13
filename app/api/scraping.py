@@ -1040,6 +1040,75 @@ async def scrape_swiss_addresses(request: PropertySearchRequest):
 
 
 # =============================================================================
+# STEALTH BROWSER - Scraping avec Playwright anti-détection
+# =============================================================================
+
+class StealthScrapingRequest(BaseModel):
+    source: str  # immoscout24, homegate
+    location: str
+    transaction_type: Optional[str] = "rent"
+    limit: Optional[int] = 50
+    proxy_server: Optional[str] = None  # host:port
+    proxy_username: Optional[str] = None
+    proxy_password: Optional[str] = None
+
+
+@router.post("/stealth", response_model=ScrapingResponse)
+async def scrape_with_stealth_browser(request: StealthScrapingRequest):
+    """
+    Scraping avec navigateur Playwright anti-détection.
+    
+    Techniques utilisées:
+    - Fingerprint randomization
+    - Comportement humain (scroll, délais, mouvements souris)
+    - Scripts anti-détection
+    - Support proxy résidentiel
+    
+    Sources supportées: immoscout24, homegate
+    """
+    await emit_activity("scraping", f"Démarrage Stealth Browser - {request.source} - {request.location}")
+    
+    try:
+        from app.scrapers.stealth_browser import scrape_with_stealth, ProxyConfig
+        
+        # Configurer le proxy si fourni
+        proxy = None
+        if request.proxy_server:
+            proxy = ProxyConfig(
+                server=request.proxy_server,
+                username=request.proxy_username,
+                password=request.proxy_password,
+            )
+        
+        results = await scrape_with_stealth(
+            source=request.source,
+            location=request.location,
+            transaction_type=request.transaction_type or "rent",
+            limit=request.limit or 50,
+            proxy=proxy,
+        )
+        
+        await emit_activity("success", f"Stealth Browser terminé: {len(results)} annonces trouvées")
+        
+        return ScrapingResponse(
+            status="completed",
+            count=len(results),
+            results=[ScrapingResult(**r) for r in results]
+        )
+        
+    except ImportError:
+        await emit_activity("error", "Playwright non installé. Exécutez: pip install playwright && playwright install chromium")
+        raise HTTPException(
+            status_code=501,
+            detail="Playwright non installé. Exécutez: pip install playwright && playwright install chromium"
+        )
+    except Exception as e:
+        scraping_logger.error(f"[StealthBrowser] Erreur: {e}")
+        await emit_activity("error", f"Erreur Stealth Browser: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# =============================================================================
 # CADASTRES CANTONAUX (NE, FR, VS, BE)
 # =============================================================================
 

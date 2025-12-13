@@ -23,6 +23,7 @@ psycopg2-binary==2.9.9
 # Scraping
 beautifulsoup4==4.12.2
 lxml==4.9.3
+playwright==1.40.0
 
 # Email
 aiosmtplib==3.0.1
