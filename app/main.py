@@ -13,7 +13,7 @@ import uvicorn
 import os
 import time
 
-from app.api import prospects, emails, bots, campaigns, proxies, stats, scraping, export
+from app.api import prospects, emails, bots, campaigns, proxies, stats, scraping, export, quality, brochures
 from app.core.database import init_db
 from app.core.websocket import sio
 from app.core.logger import logger
@@ -79,6 +79,8 @@ app.include_router(proxies.router, prefix="/api/proxies", tags=["Proxies"])
 app.include_router(stats.router, prefix="/api/stats", tags=["Stats"])
 app.include_router(scraping.router, prefix="/api/scraping", tags=["Scraping"])
 app.include_router(export.router, prefix="/api/export", tags=["Export"])
+app.include_router(quality.router, prefix="/api/quality", tags=["Quality"])
+app.include_router(brochures.router, prefix="/api/brochures", tags=["Brochures"])
 
 # =============================================================================
 # FRONTEND SERVING

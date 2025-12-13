@@ -72,15 +72,25 @@ def _check_non_empty_payload(case: ApiCase, payload: Any) -> Optional[str]:
 async def _run_case(client: httpx.AsyncClient, base_url: str, case: ApiCase) -> CaseResult:
     url = _build_url(base_url, case.path)
 
-    try:
-        response = await client.request(
-            case.method,
-            url,
-            params=case.query,
-            json=case.json,
-        )
-    except Exception as e:
-        return CaseResult(case_id=case.id, ok=False, error=f"Erreur réseau: {e}")
+    # Retry léger sur 429 (rate limit) pour les tests scraping
+    response = None
+    for attempt in range(3):
+        try:
+            response = await client.request(
+                case.method,
+                url,
+                params=case.query,
+                json=case.json,
+            )
+        except Exception as e:
+            return CaseResult(case_id=case.id, ok=False, error=f"Erreur réseau: {e}")
+
+        if response.status_code != 429:
+            break
+        # backoff: 1s, 2s, 4s
+        await asyncio.sleep([1, 2, 4][attempt])
+
+    assert response is not None
 
     if response.status_code != case.expect_status:
         # Essayer d’extraire un message d’erreur JSON si présent
@@ -187,3 +197,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

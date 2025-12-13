@@ -11,10 +11,9 @@ from datetime import datetime
 import uuid
 import asyncio
 
-from app.core.database import get_db, Prospect
-from app.api.scraping import scrape_searchch, scrape_localch
+from app.core.database import get_db, Prospect, async_session
 from app.core.logger import logger
-from app.core.notifications import notification_manager
+from app.services.enrichment import run_quality_pipeline_task
 
 router = APIRouter()
 
@@ -59,10 +58,16 @@ class ProspectResponse(BaseModel):
     code_postal: Optional[str]
     ville: Optional[str]
     canton: Optional[str]
+    lien_rf: Optional[str] = None
     type_bien: Optional[str]
     surface: Optional[float]
     prix: Optional[float]
     score: int
+    quality_score: Optional[int] = None
+    quality_flags: Optional[dict] = None
+    enrichment_status: Optional[str] = None
+    is_duplicate: Optional[bool] = None
+    merged_into_id: Optional[str] = None
     statut: str
     source: Optional[str]
     notes: Optional[str]
@@ -84,40 +89,8 @@ class ManualEnrichRequest(BaseModel):
     notes: Optional[str] = ""
 
 async def enrich_prospect_task(prospect_id: str, db_session_factory):
-    """Tâche d'enrichissement automatique"""
-    logger.info(f"Début enrichissement prospect {prospect_id}")
-    
-    async with db_session_factory() as db:
-        result = await db.execute(select(Prospect).where(Prospect.id == prospect_id))
-        prospect = result.scalar_one_or_none()
-        
-        if not prospect:
-            logger.error(f"Prospect {prospect_id} introuvable pour enrichissement")
-            return
-
-        # Recherche téléphone
-        results_search = await scrape_searchch(f"{prospect.prenom} {prospect.nom}", prospect.ville, 1)
-        
-        phone = ""
-        if results_search and results_search[0].get('telephone'):
-            phone = results_search[0]['telephone']
-        else:
-            # Fallback Local.ch
-            results_local = await scrape_localch(f"{prospect.prenom} {prospect.nom}", prospect.ville, 1)
-            if results_local and results_local[0].get('telephone'):
-                phone = results_local[0]['telephone']
-        
-        if phone:
-            prospect.telephone = phone
-            prospect.score += 20 # Bonus téléphone trouvé
-            prospect.updated_at = datetime.utcnow()
-            await db.commit()
-            logger.info(f"Prospect {prospect_id} enrichi avec succès: {phone}")
-            
-            # Notification Telegram
-            await notification_manager.notify_new_prospect(prospect)
-        else:
-            logger.info(f"Aucun téléphone trouvé pour prospect {prospect_id}")
+    """Compat: délègue au pipeline qualité (normalisation/enrichissement/dédup/scoring)."""
+    await run_quality_pipeline_task(prospect_id, db_session_factory=db_session_factory)
 
 @router.get("/incomplete", response_model=List[ProspectResponse])
 async def get_incomplete_prospects(
@@ -160,10 +133,8 @@ async def manual_enrich_prospect(
     await db.commit()
     await db.refresh(prospect)
     
-    # Lancer l'enrichissement auto (téléphone)
-    # Note: On doit passer une factory de session car la session actuelle sera fermée
-    from app.core.database import async_session
-    background_tasks.add_task(enrich_prospect_task, prospect_id, async_session)
+    # Lancer le pipeline qualité
+    background_tasks.add_task(run_quality_pipeline_task, prospect_id, async_session)
     
     return prospect
 
@@ -178,12 +149,17 @@ async def list_prospects(
     statut: Optional[str] = None,
     ville: Optional[str] = None,
     search: Optional[str] = None,
+    include_merged: bool = False,
     sort_by: str = "created_at",
     sort_order: str = "desc",
     db: AsyncSession = Depends(get_db)
 ):
     """Liste les prospects avec filtres et pagination"""
     query = select(Prospect)
+
+    # Par défaut, on masque les doublons déjà fusionnés
+    if not include_merged:
+        query = query.where(Prospect.merged_into_id.is_(None))
     
     if statut:
         query = query.where(Prospect.statut == statut)
@@ -224,7 +200,11 @@ async def count_prospects(
 @router.get("/pipeline")
 async def get_pipeline(db: AsyncSession = Depends(get_db)):
     """Retourne le pipeline (compte par statut)"""
-    query = select(Prospect.statut, func.count(Prospect.id)).group_by(Prospect.statut)
+    query = (
+        select(Prospect.statut, func.count(Prospect.id))
+        .where(Prospect.merged_into_id.is_(None))
+        .group_by(Prospect.statut)
+    )
     result = await db.execute(query)
     
     pipeline = {}
@@ -245,7 +225,11 @@ async def get_prospect(prospect_id: str, db: AsyncSession = Depends(get_db)):
     return prospect
 
 @router.post("/", response_model=ProspectResponse)
-async def create_prospect(data: ProspectCreate, db: AsyncSession = Depends(get_db)):
+async def create_prospect(
+    data: ProspectCreate,
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db),
+):
     """Crée un nouveau prospect"""
     prospect = Prospect(
         id=str(uuid.uuid4())[:12],
@@ -255,6 +239,9 @@ async def create_prospect(data: ProspectCreate, db: AsyncSession = Depends(get_d
     db.add(prospect)
     await db.commit()
     await db.refresh(prospect)
+
+    # Pipeline qualité post-création
+    background_tasks.add_task(run_quality_pipeline_task, prospect.id, async_session)
     
     return prospect
 

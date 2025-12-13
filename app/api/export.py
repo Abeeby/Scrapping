@@ -371,6 +371,11 @@ async def export_scraping_results(
     """Exporte les résultats de scraping"""
     
     df = pd.DataFrame(request.results)
+
+    # Forcer certains champs en texte (évite Excel qui supprime les 0 au début)
+    for col in ("telephone", "email", "code_postal", "parcelle", "lien_rf", "url_annonce"):
+        if col in df.columns:
+            df[col] = df[col].fillna("").astype(str)
     
     # Renommer colonnes pour export
     column_mapping = {
@@ -386,6 +391,17 @@ async def export_scraping_results(
         "surface": "Surface (m²)",
         "zone": "Zone",
         "lien_rf": "Lien Registre Foncier",
+        "url_annonce": "URL annonce",
+        "titre": "Titre annonce",
+        "type_bien": "Type de bien",
+        "pieces": "Pièces",
+        "nombre_etages": "Nombre d'étages",
+        "surface_habitable_m2": "Surface habitable (m²)",
+        "surface_terrain_m2": "Surface terrain (m²)",
+        "annee_construction": "Année construction",
+        "annee_renovation": "Année rénovation",
+        "disponibilite": "Disponibilité",
+        "prix_vente_chf": "Prix vente (CHF)",
         "source": "Source"
     }
     df = df.rename(columns=column_mapping)

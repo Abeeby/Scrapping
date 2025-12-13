@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import random
 import uuid
 
-from app.core.database import get_db, Prospect, EmailAccount, Bot, Campaign, Activity, Proxy
+from app.core.database import get_db, Prospect, EmailAccount, Bot, Campaign, Activity, Proxy, ProspectDuplicateCandidate
 
 router = APIRouter()
 
@@ -51,6 +51,25 @@ async def get_dashboard_stats(db: AsyncSession = Depends(get_db)):
     
     # Score moyen
     avg_score = await db.execute(select(func.avg(Prospect.score)))
+
+    # Qualité (post-import)
+    avg_quality = await db.execute(select(func.avg(Prospect.quality_score)))
+    with_phone = await db.execute(
+        select(func.count(Prospect.id)).where(Prospect.telephone_norm != None).where(Prospect.telephone_norm != "")
+    )
+    with_email = await db.execute(
+        select(func.count(Prospect.id)).where(Prospect.email_norm != None).where(Prospect.email_norm != "")
+    )
+    duplicates_merged = await db.execute(
+        select(func.count(Prospect.id)).where(Prospect.merged_into_id != None).where(Prospect.merged_into_id != "")
+    )
+    duplicate_candidates_pending = await db.execute(
+        select(func.count(ProspectDuplicateCandidate.id)).where(ProspectDuplicateCandidate.status == "pending")
+    )
+    enrichment_rows = await db.execute(
+        select(Prospect.enrichment_status, func.count(Prospect.id)).group_by(Prospect.enrichment_status)
+    )
+    enrichment_status = {str(row[0] or "unknown"): row[1] for row in enrichment_rows.all()}
     
     return {
         "prospects": {
@@ -76,6 +95,15 @@ async def get_dashboard_stats(db: AsyncSession = Depends(get_db)):
             "active": campaigns_active
         },
         "score_moyen": round(avg_score.scalar() or 0, 1)
+        ,
+        "quality": {
+            "avg_quality_score": round(float(avg_quality.scalar() or 0), 2),
+            "with_phone": with_phone.scalar() or 0,
+            "with_email": with_email.scalar() or 0,
+            "duplicates_merged": duplicates_merged.scalar() or 0,
+            "duplicate_candidates_pending": duplicate_candidates_pending.scalar() or 0,
+            "enrichment_status": enrichment_status,
+        }
     }
 
 @router.get("/prospects/by-day")

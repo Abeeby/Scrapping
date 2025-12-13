@@ -220,6 +220,16 @@ class SearchChScraper:
                 if el is None:
                     el = entry.find(f'{{{NS["atom"]}}}{tag}')
                 return el.text.strip() if el is not None and el.text else ""
+
+            def find_text_ns(prefix: str, tag: str) -> str:
+                """Trouve <prefix:tag> dans l'entry (ex: tel:phone)."""
+                ns_uri = NS.get(prefix)
+                if not ns_uri:
+                    return ""
+                el = entry.find(f"{prefix}:{tag}", NS)
+                if el is None:
+                    el = entry.find(f"{{{ns_uri}}}{tag}")
+                return el.text.strip() if el is not None and el.text else ""
             
             # Titre = Nom complet
             title = find_text('title')
@@ -270,6 +280,38 @@ class SearchChScraper:
                 elif rel == 'alternate' and 'text/html' in link_type:
                     # Lien vers la fiche originale sur search.ch
                     result['lien_rf'] = href
+
+            # Champs dédiés Search.ch (namespace tel:*)
+            # NOTE: souvent plus fiable que le parsing de <content>
+            if not result.get("telephone"):
+                phone = (
+                    find_text_ns("tel", "phone")
+                    or find_text_ns("tel", "tel")
+                    or find_text_ns("tel", "phonenumber")
+                )
+                if phone:
+                    result["telephone"] = re.sub(r"\s+", "", phone)
+
+            if not result.get("email"):
+                email = find_text_ns("tel", "email")
+                if email:
+                    result["email"] = email
+
+            # Adresse structurée
+            if not result.get("adresse"):
+                street = find_text_ns("tel", "street") or find_text_ns("tel", "streetAddress")
+                if street:
+                    result["adresse"] = street
+
+            if not result.get("code_postal"):
+                zip_code = find_text_ns("tel", "zip") or find_text_ns("tel", "postalCode")
+                if zip_code:
+                    result["code_postal"] = zip_code
+
+            if (not result.get("ville")) or (result.get("ville") == default_ville):
+                city = find_text_ns("tel", "city") or find_text_ns("tel", "locality")
+                if city:
+                    result["ville"] = city
             
             # FILTRE STRICT POUR PRIVES UNIQUEMENT
             if type_recherche == "person":

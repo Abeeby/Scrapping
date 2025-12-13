@@ -374,6 +374,39 @@ API_CASES: List[ApiCase] = [
         expect_status=200,
         expect_json_keys=["total", "running", "completed", "total_sent", "total_responses", "avg_response_rate"],
     ),
+    # Quality
+    ApiCase(
+        id="quality_summary",
+        category="quality",
+        title="Résumé qualité",
+        method="GET",
+        path="/api/quality/summary",
+        description="KPIs qualité (complétude/joignabilité/doublons/enrichissement).",
+        expect_status=200,
+        expect_json_keys=[
+            "total",
+            "avg_quality_score",
+            "with_phone",
+            "with_email",
+            "duplicates_flagged",
+            "duplicates_merged",
+            "duplicate_candidates_pending",
+            "enrichment_status",
+            "by_source",
+        ],
+    ),
+    ApiCase(
+        id="quality_duplicates",
+        category="quality",
+        title="Doublons suggérés",
+        method="GET",
+        path="/api/quality/duplicates",
+        description="Liste des candidats doublons (match partiel).",
+        query={"status": "pending", "min_confidence": 0.7, "limit": 50},
+        expect_status=200,
+        expect_json_keys=None,  # liste JSON
+        allow_empty=True,
+    ),
     # Exports (binary)
     ApiCase(
         id="export_prospects_xlsx",

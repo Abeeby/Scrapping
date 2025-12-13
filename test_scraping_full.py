@@ -2,9 +2,12 @@
 
 import httpx
 import sys
+import time
+import os
 
 def main():
     base = sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:8000"
+    strict_external = os.environ.get("STRICT_EXTERNAL", "0") == "1"
     
     print(f"=== TEST COMPLET SCRAPING - {base} ===")
     print()
@@ -22,6 +25,26 @@ def main():
             results["ko"] += 1
             results["details"].append((name, "KO", str(e)))
             print(f"[KO] {name}: {e}")
+
+    def _extract_detail(response: httpx.Response) -> str:
+        try:
+            data = response.json()
+            if isinstance(data, dict) and data.get("detail"):
+                return str(data.get("detail"))
+        except Exception:
+            pass
+        return response.text[:200] if response.text else ""
+
+    def post_with_retry(path: str, payload: dict, timeout: int, retries: int = 3) -> httpx.Response:
+        """Retry simple sur 429 (rate limit)."""
+        delays = [2, 4, 8]
+        last = None
+        for attempt in range(retries):
+            last = httpx.post(f"{base}{path}", json=payload, timeout=timeout)
+            if last.status_code != 429:
+                return last
+            time.sleep(delays[min(attempt, len(delays) - 1)])
+        return last  # type: ignore[return-value]
     
     # 1. Communes
     def test_communes():
@@ -45,9 +68,15 @@ def main():
     
     # 3. Search.ch person
     def test_searchch_person():
-        r = httpx.post(f"{base}/api/scraping/searchch", 
-                       json={"source": "searchch", "commune": "Genève", "query": "Muller", "limit": 5, "type_recherche": "person"},
-                       timeout=60)
+        r = post_with_retry(
+            "/api/scraping/searchch",
+            {"source": "searchch", "commune": "Genève", "query": "Muller", "limit": 5, "type_recherche": "person"},
+            timeout=60,
+        )
+        if r.status_code == 429 and not strict_external:
+            return True, f"SKIP 429 — {_extract_detail(r)}"
+        if r.status_code != 200:
+            return False, f"HTTP {r.status_code} — {_extract_detail(r)}"
         data = r.json()
         count = data.get("count", 0)
         sample = data.get("results", [{}])[0].get("nom", "") if data.get("results") else ""
@@ -56,9 +85,15 @@ def main():
     
     # 4. Search.ch business
     def test_searchch_business():
-        r = httpx.post(f"{base}/api/scraping/searchch", 
-                       json={"source": "searchch", "commune": "Genève", "query": "Restaurant", "limit": 5, "type_recherche": "business"},
-                       timeout=60)
+        r = post_with_retry(
+            "/api/scraping/searchch",
+            {"source": "searchch", "commune": "Genève", "query": "Restaurant", "limit": 5, "type_recherche": "business"},
+            timeout=60,
+        )
+        if r.status_code == 429 and not strict_external:
+            return True, f"SKIP 429 — {_extract_detail(r)}"
+        if r.status_code != 200:
+            return False, f"HTTP {r.status_code} — {_extract_detail(r)}"
         data = r.json()
         count = data.get("count", 0)
         return count > 0, f"{count} résultats"
@@ -66,9 +101,15 @@ def main():
     
     # 5. Local.ch
     def test_localch():
-        r = httpx.post(f"{base}/api/scraping/localch", 
-                       json={"source": "localch", "commune": "Genève", "query": "Muller", "limit": 5, "type_recherche": "person"},
-                       timeout=60)
+        r = post_with_retry(
+            "/api/scraping/localch",
+            {"source": "localch", "commune": "Genève", "query": "Muller", "limit": 5, "type_recherche": "person"},
+            timeout=60,
+        )
+        if r.status_code == 429 and not strict_external:
+            return True, f"SKIP 429 — {_extract_detail(r)}"
+        if r.status_code != 200:
+            return False, f"HTTP {r.status_code} — {_extract_detail(r)}"
         data = r.json()
         count = data.get("count", 0)
         return count > 0, f"{count} résultats"
@@ -76,9 +117,15 @@ def main():
     
     # 6. Scanner (query=all) - CRITIQUE
     def test_scanner_all():
-        r = httpx.post(f"{base}/api/scraping/scanner", 
-                       json={"source": "scanner", "commune": "Genève", "query": "all", "limit": 10, "type_recherche": "person"},
-                       timeout=120)
+        r = post_with_retry(
+            "/api/scraping/scanner",
+            {"source": "scanner", "commune": "Genève", "query": "all", "limit": 10, "type_recherche": "person"},
+            timeout=120,
+        )
+        if r.status_code == 429 and not strict_external:
+            return True, f"SKIP 429 — {_extract_detail(r)}"
+        if r.status_code != 200:
+            return False, f"HTTP {r.status_code} — {_extract_detail(r)}"
         data = r.json()
         count = data.get("count", 0)
         sample = ""
@@ -90,9 +137,15 @@ def main():
     
     # 7. Scanner (rue spécifique)
     def test_scanner_rue():
-        r = httpx.post(f"{base}/api/scraping/scanner", 
-                       json={"source": "scanner", "commune": "Genève", "query": "Rue de Contamine", "limit": 10, "type_recherche": "person"},
-                       timeout=120)
+        r = post_with_retry(
+            "/api/scraping/scanner",
+            {"source": "scanner", "commune": "Genève", "query": "Rue de Contamine", "limit": 10, "type_recherche": "person"},
+            timeout=120,
+        )
+        if r.status_code == 429 and not strict_external:
+            return True, f"SKIP 429 — {_extract_detail(r)}"
+        if r.status_code != 200:
+            return False, f"HTTP {r.status_code} — {_extract_detail(r)}"
         data = r.json()
         count = data.get("count", 0)
         return count > 0, f"{count} résultats"
@@ -200,6 +253,79 @@ def main():
         data = r.json()
         return data.get("status") == "ok", f"v{data.get('version')}"
     test("Health check", test_health)
+
+    # 21. Quality summary
+    def test_quality_summary():
+        r = httpx.get(f"{base}/api/quality/summary", timeout=30)
+        data = r.json()
+        ok = r.status_code == 200 and "total" in data and "avg_quality_score" in data and "enrichment_status" in data
+        return ok, f"avg={data.get('avg_quality_score')} total={data.get('total')}"
+    test("Quality summary", test_quality_summary)
+
+    # 22. Pipeline qualité post-création (score + flags)
+    def test_quality_pipeline_on_create():
+        suffix = str(int(time.time() * 1000))[-7:]
+        payload = {
+            "nom": "TestQualiteE2E",
+            "prenom": "Jean",
+            "ville": "Genève",
+            "telephone": f"078{suffix}",
+            "email": f"jean.test+{suffix}@example.com",
+            "adresse": "Rue de Test 1",
+            "code_postal": "1200",
+            "source": "E2E-Quality",
+        }
+        created = httpx.post(f"{base}/api/prospects/", json=payload, timeout=30).json()
+        pid = created.get("id")
+        if not pid:
+            return False, "Impossible de créer prospect test"
+        deadline = time.time() + 12
+        qs = None
+        p = None
+        while time.time() < deadline:
+            p = httpx.get(f"{base}/api/prospects/{pid}", timeout=30).json()
+            qs = p.get("quality_score")
+            if p.get("merged_into_id"):
+                return False, f"Prospect fusionné vers {p.get('merged_into_id')} (attendu: non fusionné)"
+            if isinstance(qs, int) and qs > 0:
+                break
+            time.sleep(1)
+        ok = isinstance(qs, int) and qs >= 60
+        return ok, f"quality_score={qs} enrichment_status={(p or {}).get('enrichment_status')}"
+    test("Quality pipeline (create)", test_quality_pipeline_on_create)
+
+    # 23. Dédup exact (auto-merge téléphone)
+    def test_quality_dedup_exact():
+        suffix = str(int(time.time() * 1000))[-7:]
+        phone = f"079{suffix}"
+        p1 = {
+            "nom": "QualDedupE2E",
+            "prenom": "Alice",
+            "ville": "Genève",
+            "telephone": phone,
+            "email": f"alice.dedup+{suffix}@example.com",
+            "adresse": "Rue Master 1",
+            "code_postal": "1200",
+            "source": "E2E-Dedup",
+        }
+        p2 = {
+            "nom": "QualDedupE2E",
+            "prenom": "Alice",
+            "ville": "Genève",
+            "telephone": phone,
+            "email": f"alice.dedup2+{suffix}@example.com",
+            "source": "E2E-Dedup",
+        }
+        id1 = httpx.post(f"{base}/api/prospects/", json=p1, timeout=30).json().get("id")
+        id2 = httpx.post(f"{base}/api/prospects/", json=p2, timeout=30).json().get("id")
+        if not id1 or not id2:
+            return False, "Création prospects dedup impossible"
+        time.sleep(5)
+        p2f = httpx.get(f"{base}/api/prospects/{id2}", timeout=30).json()
+        merged_into = p2f.get("merged_into_id")
+        ok = bool(merged_into) and merged_into == id1
+        return ok, f"merged_into_id={merged_into}"
+    test("Quality dedup exact (auto-merge)", test_quality_dedup_exact)
     
     print()
     print(f"=== RÉSULTAT: {results['ok']}/{results['ok']+results['ko']} OK ===")
@@ -214,3 +340,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+

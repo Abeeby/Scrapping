@@ -11,9 +11,10 @@ import asyncio
 import aiohttp
 import json
 
-from app.core.database import get_db, Prospect
+from app.core.database import get_db, Prospect, async_session
 from app.core.websocket import sio, emit_activity
 from app.core.logger import scraping_logger
+from app.services.enrichment import run_quality_pipeline_task
 
 # Import des scrapers réels (Search.ch API + Local.ch)
 from app.scrapers.searchch import SearchChScraper, SearchChScraperError
@@ -70,12 +71,29 @@ class ScrapingResult(BaseModel):
     surface: Optional[float] = 0
     zone: Optional[str] = ""
     lien_rf: Optional[str] = ""
+    # URL annonce (Comparis / autres portails)
+    url_annonce: Optional[str] = ""
+    # Détails bien (portails)
+    titre: Optional[str] = ""
+    type_bien: Optional[str] = ""
+    pieces: Optional[float] = None
+    nombre_etages: Optional[int] = None
+    surface_habitable_m2: Optional[float] = None
+    surface_terrain_m2: Optional[float] = None
+    annee_construction: Optional[int] = None
+    annee_renovation: Optional[int] = None
+    disponibilite: Optional[str] = ""
+    prix_vente_chf: Optional[int] = None
     source: str
 
 class ScrapingResponse(BaseModel):
     status: str
     count: int
     results: List[ScrapingResult]
+
+
+class ComparisDetailsRequest(BaseModel):
+    url: str
 
 # =============================================================================
 # COMMUNES GENEVE
@@ -504,12 +522,19 @@ async def debug_scraping():
 
 @router.get("/communes")
 async def get_communes():
-    """Liste des communes disponibles pour GE et VD"""
+    """Liste des communes disponibles pour tous les cantons"""
+    from app.scrapers.cadastre_ch import COMMUNES_NE, COMMUNES_FR, COMMUNES_VS, COMMUNES_BE
+    
     return {
         "geneve": list(COMMUNES_GE.keys()),
         "vaud": SCANNER_COMMUNES_VD,
         "scanner_ge": get_available_communes("GE"),
-        "scanner_vd": get_available_communes("VD")
+        "scanner_vd": get_available_communes("VD"),
+        # Nouveaux cantons
+        "neuchatel": COMMUNES_NE,
+        "fribourg": COMMUNES_FR,
+        "valais": COMMUNES_VS,
+        "berne": COMMUNES_BE,
     }
 
 @router.get("/rues")
@@ -686,6 +711,53 @@ async def scrape_localch_endpoint(request: ScrapingRequest):
         results=[ScrapingResult(**r) for r in results]
     )
 
+
+@router.post("/comparis-details", response_model=ScrapingResponse)
+async def scrape_comparis_details_endpoint(request: ComparisDetailsRequest):
+    """Récupère les caractéristiques d'une annonce Comparis via son URL."""
+    await emit_activity("scraping", f"Démarrage Comparis (détails annonce) - {request.url}")
+
+    try:
+        from app.scrapers.comparis import ComparisScraper, ComparisScraperError
+
+        async with ComparisScraper() as scraper:
+            details = await scraper.extract_details(request.url)
+    except Exception as e:
+        if getattr(e, "status_code", None):
+            status = int(getattr(e, "status_code") or 502)
+        else:
+            status = 502
+        if status not in (400, 401, 403, 404, 408, 409, 422, 429, 500, 501, 502, 503, 504):
+            status = 502
+        raise HTTPException(status_code=status, detail=str(e))
+
+    result = {
+        "id": details.get("listing_id") or "comparis",
+        "source": "Comparis",
+        "url_annonce": details.get("url_annonce") or request.url,
+        # Pour l’affichage existant (table), on met le titre dans `nom`
+        "nom": details.get("titre") or f"Annonce Comparis {details.get('listing_id') or ''}".strip(),
+        # Détails
+        "titre": details.get("titre") or "",
+        "type_bien": details.get("type_bien") or "",
+        "pieces": details.get("pieces"),
+        "nombre_etages": details.get("nombre_etages"),
+        "surface_habitable_m2": details.get("surface_habitable_m2"),
+        "surface_terrain_m2": details.get("surface_terrain_m2"),
+        "annee_construction": details.get("annee_construction"),
+        "annee_renovation": details.get("annee_renovation"),
+        "disponibilite": details.get("disponibilite") or "",
+        "prix_vente_chf": details.get("prix_vente_chf"),
+        # `surface` = surface habitable pour compat export/table
+        "surface": details.get("surface_habitable_m2") or 0,
+        # Compat action UI (ouvrir un lien)
+        "lien_rf": details.get("url_annonce") or request.url,
+    }
+
+    await emit_activity("scraping", "Comparis terminé: 1 annonce")
+
+    return ScrapingResponse(status="completed", count=1, results=[ScrapingResult(**result)])
+
 @router.post("/vaud", response_model=ScrapingResponse)
 async def scrape_vaud_endpoint(request: ScrapingRequest):
     """Scrape le cadastre vaudois"""
@@ -704,6 +776,7 @@ async def scrape_vaud_endpoint(request: ScrapingRequest):
 @router.post("/add-to-prospects")
 async def add_results_to_prospects(
     results: List[ScrapingResult],
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db)
 ):
     """Ajoute les résultats de scraping aux prospects avec déduplication intelligente"""
@@ -711,6 +784,7 @@ async def add_results_to_prospects(
     
     added = 0
     duplicates = 0
+    created_ids: List[str] = []
     
     for result in results:
         # Critères de déduplication : Nom + Ville OU Id identique
@@ -747,13 +821,19 @@ async def add_results_to_prospects(
             ville=result.ville or "",
             telephone=result.telephone or "",
             email=result.email or "",
+            lien_rf=result.lien_rf or "",
             source=result.source,
             notes=f"Parcelle: {result.parcelle}\nLien RF: {result.lien_rf}" if result.parcelle else ""
         )
         db.add(prospect)
         added += 1
+        created_ids.append(prospect.id)
     
     await db.commit()
+
+    # Pipeline qualité post-import (asynchrone)
+    for pid in created_ids:
+        background_tasks.add_task(run_quality_pipeline_task, pid, async_session)
     
     # Notifier
     if added > 0:
@@ -763,3 +843,325 @@ async def add_results_to_prospects(
 
     return {"added": added, "duplicates": duplicates}
 
+
+# =============================================================================
+# NOUVEAUX SCRAPERS - Zefix, Immoscout24, Homegate
+# =============================================================================
+
+class ZefixSearchRequest(BaseModel):
+    name: str
+    canton: Optional[str] = None
+    limit: Optional[int] = 50
+
+
+class PropertySearchRequest(BaseModel):
+    location: str
+    transaction_type: Optional[str] = "rent"  # rent, buy
+    property_type: Optional[str] = "apartment"
+    limit: Optional[int] = 50
+    price_max: Optional[int] = None
+
+
+@router.post("/zefix", response_model=ScrapingResponse)
+async def scrape_zefix_endpoint(request: ZefixSearchRequest):
+    """Recherche dans le registre du commerce suisse (Zefix)."""
+    await emit_activity("scraping", f"Démarrage Zefix - {request.name}")
+    
+    try:
+        from app.scrapers.zefix import ZefixClient, ZefixError
+        
+        async with ZefixClient() as client:
+            companies = await client.search(
+                name=request.name,
+                canton=request.canton,
+                limit=request.limit or 50
+            )
+        
+        results = []
+        for i, company in enumerate(companies):
+            # Convertir en format ScrapingResult
+            results.append({
+                "id": f"zefix-{company.uid.replace('.', '-')}",
+                "nom": company.name,
+                "prenom": "",
+                "adresse": company.address or "",
+                "code_postal": company.zip_code or "",
+                "ville": company.city or "",
+                "telephone": "",
+                "email": "",
+                "lien_rf": f"https://www.zefix.admin.ch/fr/search/entity/list?name={company.name.replace(' ', '+')}&searchType=exact",
+                "source": f"Zefix ({company.canton})",
+                "zone": company.legal_form,
+                "notes": f"UID: {company.uid}\nStatut: {company.status}"
+            })
+        
+        await emit_activity("scraping", f"Zefix terminé: {len(results)} entreprises")
+        
+        return ScrapingResponse(
+            status="completed",
+            count=len(results),
+            results=[ScrapingResult(**r) for r in results]
+        )
+        
+    except Exception as e:
+        scraping_logger.error(f"[Zefix] Erreur: {e}")
+        raise HTTPException(status_code=502, detail=str(e))
+
+
+@router.post("/immoscout24", response_model=ScrapingResponse)
+async def scrape_immoscout24_endpoint(request: PropertySearchRequest):
+    """Recherche sur Immoscout24.ch (annonces immobilières)."""
+    await emit_activity("scraping", f"Démarrage Immoscout24 - {request.location} ({request.transaction_type})")
+    
+    try:
+        from app.scrapers.immoscout24 import Immoscout24Scraper, Immoscout24Error
+        
+        async with Immoscout24Scraper() as scraper:
+            listings = await scraper.search(
+                location=request.location,
+                transaction_type=request.transaction_type or "rent",
+                property_type=request.property_type or "apartment",
+                limit=request.limit or 50,
+                price_max=request.price_max
+            )
+        
+        results = []
+        for listing in listings:
+            prospect_data = listing.to_prospect_format()
+            results.append(prospect_data)
+        
+        await emit_activity("scraping", f"Immoscout24 terminé: {len(results)} annonces")
+        
+        return ScrapingResponse(
+            status="completed",
+            count=len(results),
+            results=[ScrapingResult(**r) for r in results]
+        )
+        
+    except Exception as e:
+        scraping_logger.error(f"[Immoscout24] Erreur: {e}")
+        status = getattr(e, "status_code", None) or 502
+        raise HTTPException(status_code=status, detail=str(e))
+
+
+@router.post("/homegate", response_model=ScrapingResponse)
+async def scrape_homegate_endpoint(request: PropertySearchRequest):
+    """Recherche sur Homegate.ch (annonces immobilières)."""
+    await emit_activity("scraping", f"Démarrage Homegate - {request.location} ({request.transaction_type})")
+    
+    try:
+        from app.scrapers.homegate import HomegateScraper, HomegateError
+        
+        async with HomegateScraper() as scraper:
+            listings = await scraper.search(
+                location=request.location,
+                transaction_type=request.transaction_type or "rent",
+                property_type=request.property_type or "apartment",
+                limit=request.limit or 50,
+                price_max=request.price_max
+            )
+        
+        results = []
+        for listing in listings:
+            prospect_data = listing.to_prospect_format()
+            results.append(prospect_data)
+        
+        await emit_activity("scraping", f"Homegate terminé: {len(results)} annonces")
+        
+        return ScrapingResponse(
+            status="completed",
+            count=len(results),
+            results=[ScrapingResult(**r) for r in results]
+        )
+        
+    except Exception as e:
+        scraping_logger.error(f"[Homegate] Erreur: {e}")
+        status = getattr(e, "status_code", None) or 502
+        raise HTTPException(status_code=status, detail=str(e))
+
+
+# =============================================================================
+# CADASTRES CANTONAUX (NE, FR, VS, BE)
+# =============================================================================
+
+class CadastreRequest(BaseModel):
+    canton: str  # NE, FR, VS, BE
+    commune: str
+    limit: Optional[int] = 100
+
+
+@router.post("/cadastre", response_model=ScrapingResponse)
+async def scrape_cadastre_endpoint(request: CadastreRequest):
+    """Scrape les cadastres cantonaux (NE, FR, VS, BE)."""
+    await emit_activity("scraping", f"Démarrage Cadastre {request.canton} - {request.commune}")
+    
+    try:
+        from app.scrapers.cadastre_ch import scrape_cadastre, CadastreError
+        
+        results = await scrape_cadastre(
+            canton=request.canton,
+            commune=request.commune,
+            limit=request.limit or 100
+        )
+        
+        await emit_activity("scraping", f"Cadastre {request.canton} terminé: {len(results)} parcelles")
+        
+        return ScrapingResponse(
+            status="completed",
+            count=len(results),
+            results=[ScrapingResult(**r) for r in results]
+        )
+        
+    except Exception as e:
+        scraping_logger.error(f"[Cadastre] Erreur: {e}")
+        status = getattr(e, "status_code", None) or 400
+        raise HTTPException(status_code=status, detail=str(e))
+
+
+@router.get("/cadastre/communes")
+async def get_cadastre_communes(canton: str):
+    """Liste des communes disponibles pour un canton."""
+    from app.scrapers.cadastre_ch import get_communes_for_canton
+    communes = get_communes_for_canton(canton)
+    return {"canton": canton.upper(), "communes": communes}
+
+
+# =============================================================================
+# SCRAPING MASSIF - Rues GE/VD
+# =============================================================================
+
+class MassScrapingRequest(BaseModel):
+    canton: str  # GE, VD
+    commune: Optional[str] = None  # Commune spécifique ou None pour toutes
+    source: Optional[str] = "searchch"  # searchch, localch
+    delay_seconds: Optional[int] = 2
+    save_to_prospects: Optional[bool] = True
+
+
+class StreetScrapingRequest(BaseModel):
+    street: str
+    ville: str
+    canton: Optional[str] = "GE"
+    save: Optional[bool] = True
+
+
+@router.get("/mass-scraper/streets")
+async def get_mass_scraper_streets(canton: str, commune: Optional[str] = None):
+    """Liste des rues disponibles pour le scraping massif."""
+    from app.data.streets_ge_vd import get_streets, get_communes, get_stats
+    
+    streets = get_streets(canton, commune)
+    communes_list = get_communes(canton)
+    stats = get_stats()
+    
+    return {
+        "canton": canton.upper(),
+        "commune": commune,
+        "streets_count": len(streets),
+        "streets": streets[:100],  # Limiter pour l'API
+        "communes": communes_list,
+        "stats": stats.get(canton.upper(), {})
+    }
+
+
+@router.post("/mass-scraper/job")
+async def create_mass_scraper_job(request: MassScrapingRequest, background_tasks: BackgroundTasks):
+    """Crée et lance un job de scraping massif."""
+    from app.services.mass_scraper import MassScraperService, MassScraperError
+    
+    service = MassScraperService()
+    
+    try:
+        job_id = await service.create_job(
+            canton=request.canton,
+            commune=request.commune,
+            source=request.source or "searchch",
+        )
+        
+        # Lancer le job en arrière-plan
+        async def run_job_bg():
+            await service.run_job(
+                job_id=job_id,
+                delay_seconds=request.delay_seconds or 2,
+                save_to_prospects=request.save_to_prospects,
+            )
+        
+        background_tasks.add_task(run_job_bg)
+        
+        return {
+            "job_id": job_id,
+            "status": "started",
+            "message": f"Job de scraping massif créé et lancé"
+        }
+        
+    except MassScraperError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.get("/mass-scraper/jobs")
+async def list_mass_scraper_jobs(limit: int = 20):
+    """Liste les jobs de scraping massif."""
+    from app.services.mass_scraper import MassScraperService
+    
+    service = MassScraperService()
+    jobs = await service.list_jobs(limit=limit)
+    return {"jobs": jobs}
+
+
+@router.get("/mass-scraper/job/{job_id}")
+async def get_mass_scraper_job(job_id: int):
+    """Récupère le statut d'un job."""
+    from app.services.mass_scraper import MassScraperService
+    
+    service = MassScraperService()
+    job = await service.get_job_status(job_id)
+    
+    if not job:
+        raise HTTPException(status_code=404, detail="Job non trouvé")
+    
+    return job
+
+
+@router.post("/mass-scraper/job/{job_id}/stop")
+async def stop_mass_scraper_job(job_id: int):
+    """Arrête un job de scraping massif."""
+    from app.services.mass_scraper import MassScraperService
+    from app.core.database import MassScrapingJob
+    from sqlalchemy import update
+    
+    async with AsyncSessionLocal() as db:
+        await db.execute(
+            update(MassScrapingJob)
+            .where(MassScrapingJob.id == job_id)
+            .values(status="paused")
+        )
+        await db.commit()
+    
+    return {"message": "Job arrêté"}
+
+
+@router.post("/mass-scraper/street")
+async def scrape_single_street(request: StreetScrapingRequest):
+    """Scrape une seule rue rapidement."""
+    from app.services.mass_scraper import quick_scrape_street
+    
+    try:
+        result = await quick_scrape_street(
+            street=request.street,
+            ville=request.ville,
+            canton=request.canton or "GE",
+            save=request.save or True,
+        )
+        return result
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/mass-scraper/coverage/{canton}")
+async def get_mass_scraper_coverage(canton: str):
+    """Récupère la couverture de scraping pour un canton."""
+    from app.services.mass_scraper import get_scraping_coverage
+    
+    coverage = await get_scraping_coverage(canton)
+    return coverage
