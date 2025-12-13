@@ -621,3 +621,354 @@ async def reset_daily_quotas():
         )
         await db.commit()
         logger.info("[Brochure] Quotas email réinitialisés")
+
+
+# =============================================================================
+# PIPELINE BROCHURE COMPLET - Email Parser + Matching
+# =============================================================================
+
+async def process_brochure_responses(days_back: int = 7) -> Dict[str, Any]:
+    """
+    Pipeline complet de traitement des réponses brochures:
+    1. Parse les emails de réponse
+    2. Extrait les adresses
+    3. Matche avec le Registre Foncier
+    4. Enrichit les contacts propriétaires
+    5. Met à jour les ScrapedListings
+    
+    Returns:
+        Statistiques du pipeline
+    """
+    from app.services.email_parser_service import EmailParserService
+    from app.services.matching_service import MatchingService
+    
+    stats = {
+        "emails_parsed": 0,
+        "addresses_extracted": 0,
+        "owners_matched": 0,
+        "listings_updated": 0,
+        "errors": [],
+    }
+    
+    try:
+        # Étape 1: Parser les emails
+        logger.info("[BrochurePipeline] Étape 1: Parsing des emails...")
+        email_service = EmailParserService()
+        parse_result = await email_service.parse_all_accounts(days_back=days_back)
+        
+        stats["emails_parsed"] = parse_result.get("total_emails", 0)
+        stats["addresses_extracted"] = parse_result.get("addresses_extracted", 0)
+        
+        # Étape 2: Pour chaque adresse extraite, lancer le matching
+        if stats["addresses_extracted"] > 0:
+            logger.info(f"[BrochurePipeline] Étape 2: Matching de {stats['addresses_extracted']} adresses...")
+            async with MatchingService() as matching_service:
+                async with AsyncSessionLocal() as db:
+                    # Récupérer les listings qui ont une adresse extraite mais pas de proprio
+                    from sqlalchemy import select
+                    
+                    query = (
+                        select(ScrapedListing)
+                        .where(ScrapedListing.extracted_address.isnot(None))
+                        .where(ScrapedListing.owner_name.is_(None))
+                    )
+                    result = await db.execute(query)
+                    listings = result.scalars().all()
+                    
+                    for listing in listings:
+                        try:
+                            address = listing.extracted_address or listing.address
+                            if not address:
+                                continue
+                            
+                            match_result = await matching_service.match_from_address(
+                                adresse=address,
+                                code_postal=listing.npa or "",
+                                ville=listing.city or "",
+                                canton=listing.canton or "",
+                            )
+                            
+                            if match_result and match_result.confidence >= 0.5 and match_result.status in ("matched", "partial"):
+                                listing.match_status = match_result.status
+                                listing.match_score = match_result.confidence
+                                listing.owner_name = f"{match_result.prenom or ''} {match_result.nom or ''}".strip() or None
+                                listing.owner_phone = match_result.telephone or None
+                                listing.match_meta = match_result.to_dict()
+                                listing.matched_at = datetime.utcnow()
+                                listing.doubling_status = listing.doubling_status or "pending"
+                                
+                                stats["owners_matched"] += 1
+                                stats["listings_updated"] += 1
+                                
+                                await emit_activity(
+                                    "match",
+                                    f"Propriétaire trouvé: {listing.owner_name} ({address})"
+                                )
+                            else:
+                                listing.match_status = "no_match"
+                                
+                        except Exception as e:
+                            logger.warning(f"[BrochurePipeline] Erreur matching {listing.id}: {e}")
+                            stats["errors"].append(str(e))
+                    
+                    await db.commit()
+        
+        await emit_activity(
+            "pipeline",
+            f"Pipeline terminé: {stats['owners_matched']} propriétaires trouvés"
+        )
+        
+    except Exception as e:
+        logger.error(f"[BrochurePipeline] Erreur pipeline: {e}")
+        stats["errors"].append(str(e))
+    
+    return stats
+
+
+async def auto_match_listings_without_owner(
+    canton: Optional[str] = None,
+    limit: int = 50,
+) -> Dict[str, Any]:
+    """
+    Matche automatiquement les annonces qui ont une adresse mais pas de propriétaire.
+    
+    Args:
+        canton: Filtrer par canton
+        limit: Nombre max à traiter
+        
+    Returns:
+        Statistiques
+    """
+    from app.services.matching_service import MatchingService
+    
+    stats = {
+        "processed": 0,
+        "matched": 0,
+        "no_match": 0,
+        "errors": 0,
+    }
+    
+    async with MatchingService() as matching_service:
+        async with AsyncSessionLocal() as db:
+            query = (
+                select(ScrapedListing)
+                .where(ScrapedListing.address.isnot(None))
+                .where(ScrapedListing.owner_name.is_(None))
+                .where(
+                    (ScrapedListing.match_status.is_(None)) |
+                    (ScrapedListing.match_status == "pending")
+                )
+            )
+            
+            if canton:
+                query = query.where(ScrapedListing.canton == canton)
+            
+            query = query.limit(limit)
+            
+            result = await db.execute(query)
+            listings = result.scalars().all()
+            
+            for listing in listings:
+                stats["processed"] += 1
+                
+                try:
+                    address = listing.extracted_address or listing.address
+                    if not address:
+                        continue
+                    
+                    match_result = await matching_service.match_from_address(
+                        adresse=address,
+                        code_postal=listing.npa or "",
+                        ville=listing.city or "",
+                        canton=listing.canton or "",
+                    )
+                    
+                    if match_result and match_result.confidence >= 0.5 and match_result.status in ("matched", "partial"):
+                        listing.match_status = match_result.status
+                        listing.match_score = match_result.confidence
+                        listing.owner_name = f"{match_result.prenom or ''} {match_result.nom or ''}".strip() or None
+                        listing.owner_phone = match_result.telephone or None
+                        listing.match_meta = match_result.to_dict()
+                        listing.matched_at = datetime.utcnow()
+                        listing.doubling_status = listing.doubling_status or "pending"
+                        
+                        stats["matched"] += 1
+                    else:
+                        listing.match_status = "no_match"
+                        stats["no_match"] += 1
+                        
+                except Exception as e:
+                    logger.warning(f"[AutoMatch] Erreur listing {listing.id}: {e}")
+                    stats["errors"] += 1
+            
+            await db.commit()
+    
+    return stats
+
+
+async def enrich_owner_mobile(listing_id: int) -> Optional[str]:
+    """
+    Enrichit un listing avec le numéro mobile du propriétaire.
+    
+    Returns:
+        Numéro mobile trouvé ou None
+    """
+    from app.services.mobile_enrich_service import MobileEnrichService
+    
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(
+            select(ScrapedListing).where(ScrapedListing.id == listing_id)
+        )
+        listing = result.scalar_one_or_none()
+        
+        if not listing or not listing.owner_name:
+            return None
+        
+        # Rechercher le mobile
+        mobile_service = MobileEnrichService()
+        
+        try:
+            search_result = await mobile_service.search_mobile(
+                name=listing.owner_name,
+                city=listing.city or "",
+                canton=listing.canton or "",
+            )
+            
+            if search_result.mobile_found:
+                listing.owner_mobile = search_result.mobile_found
+                await db.commit()
+                
+                await emit_activity(
+                    "mobile",
+                    f"Mobile trouvé pour {listing.owner_name}: {search_result.formatted_mobile}"
+                )
+                
+                return search_result.mobile_found
+                
+        except Exception as e:
+            logger.warning(f"[EnrichMobile] Erreur listing {listing_id}: {e}")
+        finally:
+            await mobile_service.close()
+    
+    return None
+
+
+async def batch_enrich_mobiles(
+    canton: Optional[str] = None,
+    limit: int = 20,
+) -> Dict[str, Any]:
+    """
+    Enrichit en batch les numéros mobiles des propriétaires.
+    
+    Args:
+        canton: Filtrer par canton
+        limit: Nombre max à traiter
+        
+    Returns:
+        Statistiques
+    """
+    stats = {
+        "processed": 0,
+        "found": 0,
+        "errors": 0,
+    }
+    
+    async with AsyncSessionLocal() as db:
+        query = (
+            select(ScrapedListing)
+            .where(ScrapedListing.owner_name.isnot(None))
+            .where(ScrapedListing.owner_mobile.is_(None))
+        )
+        
+        if canton:
+            query = query.where(ScrapedListing.canton == canton)
+        
+        query = query.limit(limit)
+        
+        result = await db.execute(query)
+        listings = result.scalars().all()
+    
+    for listing in listings:
+        stats["processed"] += 1
+        
+        try:
+            mobile = await enrich_owner_mobile(listing.id)
+            if mobile:
+                stats["found"] += 1
+        except Exception as e:
+            logger.warning(f"[BatchMobile] Erreur: {e}")
+            stats["errors"] += 1
+        
+        # Délai entre chaque recherche
+        await asyncio.sleep(1)
+    
+    await emit_activity(
+        "mobile",
+        f"Enrichissement terminé: {stats['found']}/{stats['processed']} mobiles trouvés"
+    )
+    
+    return stats
+
+
+async def run_full_brochure_pipeline(
+    days_back: int = 7,
+    auto_match: bool = True,
+    enrich_mobiles: bool = True,
+    canton: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Exécute le pipeline brochure complet:
+    1. Parse les emails de réponse
+    2. Extrait et matche les adresses
+    3. Enrichit avec les mobiles
+    
+    Args:
+        days_back: Jours d'emails à parser
+        auto_match: Lancer le matching automatique
+        enrich_mobiles: Enrichir les mobiles
+        canton: Filtrer par canton
+        
+    Returns:
+        Statistiques complètes
+    """
+    logger.info("[FullPipeline] Démarrage du pipeline brochure complet...")
+    
+    full_stats = {
+        "email_parsing": {},
+        "auto_matching": {},
+        "mobile_enrichment": {},
+        "total_duration_seconds": 0,
+    }
+    
+    start_time = datetime.utcnow()
+    
+    # Étape 1: Parser les emails
+    full_stats["email_parsing"] = await process_brochure_responses(days_back=days_back)
+    
+    # Étape 2: Auto-matching si activé
+    if auto_match:
+        full_stats["auto_matching"] = await auto_match_listings_without_owner(
+            canton=canton,
+            limit=100,
+        )
+    
+    # Étape 3: Enrichissement mobiles si activé
+    if enrich_mobiles:
+        full_stats["mobile_enrichment"] = await batch_enrich_mobiles(
+            canton=canton,
+            limit=30,
+        )
+    
+    end_time = datetime.utcnow()
+    full_stats["total_duration_seconds"] = (end_time - start_time).total_seconds()
+    
+    logger.info(f"[FullPipeline] Pipeline terminé en {full_stats['total_duration_seconds']:.1f}s")
+    
+    await emit_activity(
+        "pipeline",
+        f"Pipeline complet terminé: {full_stats['auto_matching'].get('matched', 0)} matchés, "
+        f"{full_stats['mobile_enrichment'].get('found', 0)} mobiles"
+    )
+    
+    return full_stats
+

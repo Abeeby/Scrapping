@@ -68,6 +68,10 @@ class ProspectResponse(BaseModel):
     enrichment_status: Optional[str] = None
     is_duplicate: Optional[bool] = None
     merged_into_id: Optional[str] = None
+    do_not_contact: Optional[bool] = None
+    do_not_contact_reason: Optional[str] = None
+    consent_status: Optional[str] = None
+    consent_updated_at: Optional[datetime] = None
     statut: str
     source: Optional[str]
     notes: Optional[str]
@@ -87,6 +91,12 @@ class ManualEnrichRequest(BaseModel):
     prenom: Optional[str] = ""
     adresse: Optional[str] = ""
     notes: Optional[str] = ""
+
+
+class DoNotContactRequest(BaseModel):
+    do_not_contact: bool = True
+    reason: Optional[str] = None
+    consent_status: Optional[str] = None  # consented, optout, legitimate_interest, unknown
 
 async def enrich_prospect_task(prospect_id: str, db_session_factory):
     """Compat: délègue au pipeline qualité (normalisation/enrichissement/dédup/scoring)."""
@@ -222,6 +232,37 @@ async def get_prospect(prospect_id: str, db: AsyncSession = Depends(get_db)):
     if not prospect:
         raise HTTPException(status_code=404, detail="Prospect not found")
     
+    return prospect
+
+
+@router.post("/{prospect_id}/do-not-contact", response_model=ProspectResponse)
+async def set_do_not_contact(
+    prospect_id: str,
+    payload: DoNotContactRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """Marque un prospect en opt-out / ne pas contacter."""
+    result = await db.execute(select(Prospect).where(Prospect.id == prospect_id))
+    prospect = result.scalar_one_or_none()
+
+    if not prospect:
+        raise HTTPException(status_code=404, detail="Prospect not found")
+
+    prospect.do_not_contact = payload.do_not_contact
+    prospect.do_not_contact_reason = payload.reason
+    # Si on met en DNC, on force optout
+    if payload.do_not_contact:
+        prospect.consent_status = "optout"
+    elif payload.consent_status:
+        prospect.consent_status = payload.consent_status
+    else:
+        # revenir à unknown si on retire le DNC sans préciser
+        prospect.consent_status = prospect.consent_status or "unknown"
+
+    prospect.consent_updated_at = datetime.utcnow()
+    prospect.updated_at = datetime.utcnow()
+    await db.commit()
+    await db.refresh(prospect)
     return prospect
 
 @router.post("/", response_model=ProspectResponse)

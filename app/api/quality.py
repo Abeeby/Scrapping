@@ -35,6 +35,9 @@ class QualitySummaryResponse(BaseModel):
     avg_quality_score: float
     with_phone: int
     with_email: int
+    contactable: int
+    do_not_contact: int
+    consent_status: Dict[str, int]
     duplicates_flagged: int
     duplicates_merged: int
     duplicate_candidates_pending: int
@@ -103,6 +106,34 @@ async def quality_summary(db: AsyncSession = Depends(get_db)):
         (await db.execute(select(func.count(Prospect.id)).where(Prospect.email_norm != None).where(Prospect.email_norm != "")))
     ).scalar() or 0
 
+    # Opt-out / DNC
+    do_not_contact = (
+        (await db.execute(select(func.count(Prospect.id)).where(Prospect.do_not_contact == True)))
+    ).scalar() or 0
+
+    # Répartition consentement
+    consent_rows = (await db.execute(select(Prospect.consent_status, func.count(Prospect.id)).group_by(Prospect.consent_status))).all()
+    consent_status: Dict[str, int] = {}
+    for cs, cnt in consent_rows:
+        consent_status[str(cs or "unknown")] = int(cnt)
+
+    # Contactables = joignables (tel/email) ET pas DNC
+    contactable = (
+        (
+            await db.execute(
+                select(func.count(Prospect.id)).where(
+                    or_(Prospect.do_not_contact.is_(None), Prospect.do_not_contact == False)
+                ).where(
+                    or_(
+                        and_(Prospect.telephone_norm != None, Prospect.telephone_norm != ""),
+                        and_(Prospect.email_norm != None, Prospect.email_norm != ""),
+                    )
+                )
+            )
+        ).scalar()
+        or 0
+    )
+
     duplicates_flagged = (
         (await db.execute(select(func.count(Prospect.id)).where(Prospect.is_duplicate == True)))
     ).scalar() or 0
@@ -155,6 +186,9 @@ async def quality_summary(db: AsyncSession = Depends(get_db)):
         avg_quality_score=round(avg_q, 2),
         with_phone=int(with_phone),
         with_email=int(with_email),
+        contactable=int(contactable),
+        do_not_contact=int(do_not_contact),
+        consent_status=consent_status,
         duplicates_flagged=int(duplicates_flagged),
         duplicates_merged=int(duplicates_merged),
         duplicate_candidates_pending=int(duplicate_candidates_pending),

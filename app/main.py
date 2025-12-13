@@ -14,6 +14,20 @@ import os
 import time
 
 from app.api import prospects, emails, bots, campaigns, proxies, stats, scraping, export, quality, brochures
+
+# Import conditionnel du module prospection avancée
+try:
+    from app.api import prospection
+    PROSPECTION_MODULE_AVAILABLE = True
+except ImportError:
+    PROSPECTION_MODULE_AVAILABLE = False
+
+# Import conditionnel du module biens en vente
+try:
+    from app.api import biens
+    BIENS_MODULE_AVAILABLE = True
+except ImportError:
+    BIENS_MODULE_AVAILABLE = False
 from app.core.database import init_db
 from app.core.websocket import sio
 from app.core.logger import logger
@@ -82,6 +96,16 @@ app.include_router(export.router, prefix="/api/export", tags=["Export"])
 app.include_router(quality.router, prefix="/api/quality", tags=["Quality"])
 app.include_router(brochures.router, prefix="/api/brochures", tags=["Brochures"])
 
+# Module prospection avancée (RF, FOSC, FAO, Matching)
+if PROSPECTION_MODULE_AVAILABLE:
+    app.include_router(prospection.router)
+    logger.info("[OK] Module Prospection avancée chargé")
+
+# Module biens en vente (listings + matching propriétaires)
+if BIENS_MODULE_AVAILABLE:
+    app.include_router(biens.router)
+    logger.info("[OK] Module Biens en Vente chargé")
+
 # =============================================================================
 # FRONTEND SERVING
 # =============================================================================
@@ -119,12 +143,17 @@ async def shutdown():
     logger.info("[STOP] Arret du serveur...")
 
 # =============================================================================
-# ROUTES PRINCIPALES
+# ROUTES PRINCIPALES (health check)
 # =============================================================================
 
-@app.get("/api/health")
+@app.get("/health")
 async def health():
     """Health check pour Railway/Render"""
+    return {"status": "ok", "version": "5.1.0"}
+
+@app.get("/api/health")
+async def health_api():
+    """Health check (alternative path)"""
     return {"status": "ok", "version": "5.1.0"}
 
 @app.get("/")
@@ -141,9 +170,12 @@ async def root():
         "docs": "/api/docs"
     }
 
-# Route catch-all pour le SPA React (doit etre APRES les routes API)
-@app.get("/{full_path:path}")
-async def catch_all(full_path: str):
+# =============================================================================
+# CATCH-ALL POUR FRONTEND SPA
+# Doit etre la derniere route enregistree pour ne pas bloquer les API routes
+# =============================================================================
+
+async def catch_all_handler(full_path: str):
     """Catch-all pour servir le frontend React"""
     # Ne jamais intercepter les routes API ou socket.io
     if full_path.startswith("api/") or full_path.startswith("socket.io"):
@@ -163,6 +195,9 @@ async def catch_all(full_path: str):
     
     # Pas de frontend, 404
     raise HTTPException(status_code=404, detail="Not found")
+
+# Enregistrer catch-all EN DERNIER pour qu'il n'interfere pas avec les routes API
+app.add_api_route("/{full_path:path}", catch_all_handler, methods=["GET"])
 
 # =============================================================================
 # MAIN (developpement local uniquement)

@@ -232,6 +232,8 @@ class GeoAdminClient:
         # Approximation simple pour la Suisse
         # Pour plus de précision, utiliser une vraie transformation
         
+        # NOTE: l'endpoint Identify requiert désormais imageDisplay + mapExtent.
+        extent = self._make_map_extent(lon, lat, delta=0.01)
         params = {
             "geometry": f"{lon},{lat}",
             "geometryType": "esriGeometryPoint",
@@ -239,6 +241,8 @@ class GeoAdminClient:
             "layers": "all:ch.bfs.gebaeude_wohnungs_register",
             "tolerance": 50,
             "returnGeometry": "false",
+            "imageDisplay": "600,550,96",
+            "mapExtent": extent,
             "f": "json",
         }
 
@@ -267,6 +271,72 @@ class GeoAdminClient:
             parts.append(f"{zip_code} {city}".strip())
 
         return ", ".join(parts) if parts else None
+
+    def _make_map_extent(self, lon: float, lat: float, delta: float = 0.01) -> str:
+        """Construit un mapExtent (minx,miny,maxx,maxy) autour d'un point (WGS84)."""
+        return f"{lon - delta},{lat - delta},{lon + delta},{lat + delta}"
+
+    async def identify(
+        self,
+        lon: float,
+        lat: float,
+        layers: str,
+        sr: str = "4326",
+        tolerance: int = 5,
+        return_geometry: bool = False,
+    ) -> List[Dict[str, Any]]:
+        """
+        Wrapper Identify ArcGIS (GeoAdmin) pour récupérer les entités à un point.
+        """
+        extent = self._make_map_extent(lon, lat, delta=0.01)
+        params = {
+            "geometry": f"{lon},{lat}",
+            "geometryType": "esriGeometryPoint",
+            "sr": sr,
+            "layers": layers,
+            "tolerance": int(tolerance),
+            "returnGeometry": "true" if return_geometry else "false",
+            "imageDisplay": "600,550,96",
+            "mapExtent": extent,
+            "f": "json",
+        }
+        data = await self._get(self.IDENTIFY_URL, params)
+        return data.get("results", []) or []
+
+    async def identify_parcel(self, lon: float, lat: float) -> Optional[Dict[str, Any]]:
+        """
+        Identifie la parcelle cadastrale à un point (retourne EGRID + numéro).
+
+        Utilise la couche GeoAdmin:
+        - ch.kantone.cadastralwebmap-farbe
+        """
+        results = await self.identify(
+            lon=lon,
+            lat=lat,
+            layers="all:ch.kantone.cadastralwebmap-farbe",
+            sr="4326",
+            tolerance=5,
+            return_geometry=False,
+        )
+        if not results:
+            return None
+
+        # Prendre le premier résultat qui contient un EGRID
+        for r in results:
+            attrs = r.get("attributes", {}) or {}
+            egrid = attrs.get("egris_egrid") or attrs.get("egrid") or attrs.get("EGRID")
+            if egrid:
+                return {
+                    "egrid": egrid,
+                    "parcel_number": str(attrs.get("number") or "").strip(),
+                    "ak": (attrs.get("ak") or "").strip(),  # canton (ex: GE, VD, BE)
+                    "identnd": (attrs.get("identnd") or "").strip(),  # identifiant admin (si dispo)
+                    "geoportal_url": (attrs.get("geoportal_url") or "").strip(),
+                    "label": (attrs.get("label") or "").strip(),
+                    "raw": attrs,
+                }
+
+        return None
 
     async def normalize_address(
         self,
@@ -343,10 +413,14 @@ class GeoAdminClient:
             best_score = 0.5
 
         attrs = best_match.get("attrs", {})
-        detail = attrs.get("detail", "") or attrs.get("label", "")
+        # GeoAdmin renvoie souvent un `label` plus propre (peut contenir du HTML),
+        # et un `detail` plus "technique". On préfère le label.
+        label = attrs.get("label", "") or ""
+        detail = attrs.get("detail", "") or ""
+        to_parse = label or detail
 
         # Parser l'adresse normalisée
-        parsed = self._parse_swiss_address(detail)
+        parsed = self._parse_swiss_address(to_parse)
         
         # Ajouter les coordonnées
         lat = attrs.get("lat") or attrs.get("y")
@@ -384,8 +458,9 @@ class GeoAdminClient:
         if not address_str:
             return result
 
-        # Nettoyer
-        addr = address_str.strip()
+        # Nettoyer (supprimer HTML du label GeoAdmin)
+        addr = re.sub(r"<[^>]+>", " ", (address_str or "")).strip()
+        addr = " ".join(addr.split())
 
         # Extraire le canton (XX) à la fin
         canton_match = re.search(r'\(([A-Z]{2})\)\s*$', addr)
@@ -398,13 +473,39 @@ class GeoAdminClient:
         if zip_match:
             result["zip_code"] = zip_match.group(1)
 
-        # Séparer par virgule
-        parts = [p.strip() for p in addr.split(",")]
+        # Fallback robuste: format sans virgule "Rue 1 1200 Ville"
+        if "," not in addr and result["zip_code"]:
+            m = re.search(rf"^(?P<street>.+?)\s+{result['zip_code']}\s+(?P<city>.+)$", addr)
+            if m:
+                street_part = m.group("street").strip()
+                city_part = m.group("city").strip()
+                city_part = re.sub(r"\bCH\b\s*\b[A-Z]{2}\b\s*$", "", city_part).strip()
+
+                num_match = re.search(r"\b(\d+[a-zA-Z]?)\s*$", street_part)
+                if num_match:
+                    result["house_number"] = num_match.group(1)
+                    result["street"] = street_part[:num_match.start()].strip()
+                else:
+                    result["street"] = street_part
+
+                result["city"] = city_part
+                return result
+
+        # Séparer par virgule si présent (format classique)
+        if "," in addr:
+            parts = [p.strip() for p in addr.split(",")]
+        else:
+            # Fallback: format sans virgule: "Rue 1 1200 Ville"
+            parts = [addr]
 
         for part in parts:
             # Si contient le code postal, c'est ville + NPA
             if result["zip_code"] and result["zip_code"] in part:
-                city_part = part.replace(result["zip_code"], "").strip()
+                # Ex: "1200 Genève" ou "Rue 1 1200 Genève"
+                # On ne garde que ce qui suit le NPA
+                city_part = part.split(result["zip_code"], 1)[-1].strip()
+                # Nettoyer les suffixes éventuels "CH XX"
+                city_part = re.sub(r"\bCH\b\s*\b[A-Z]{2}\b\s*$", "", city_part).strip()
                 if city_part:
                     result["city"] = city_part
             else:

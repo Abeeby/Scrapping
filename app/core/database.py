@@ -92,6 +92,11 @@ class Prospect(Base):
     is_duplicate = Column(Boolean, default=False)
     duplicate_group_id = Column(String)
     merged_into_id = Column(String)
+    # Conformité / opt-out
+    do_not_contact = Column(Boolean, default=False)
+    do_not_contact_reason = Column(Text)
+    consent_status = Column(String, default="unknown")  # unknown, consented, optout, legitimate_interest
+    consent_updated_at = Column(DateTime, nullable=True)
     statut = Column(String, default="nouveau")
     source = Column(String)
     notes = Column(Text)
@@ -275,6 +280,7 @@ class ScrapedListing(Base):
     address = Column(String)
     city = Column(String, index=True)
     canton = Column(String, index=True)
+    npa = Column(String)  # Code postal
     price = Column(Float)
     rooms = Column(Float)
     surface = Column(Float)
@@ -283,10 +289,30 @@ class ScrapedListing(Base):
     agency_name = Column(String)
     agency_phone = Column(String)
     agency_email = Column(String)
+    details = Column(JSON)  # Détails additionnels JSON
+    
+    # Matching propriétaire
+    match_status = Column(String, default="pending")  # pending, matched, no_match, manual
+    match_score = Column(Float)
+    matched_prospect_id = Column(String, index=True)
+    matched_at = Column(DateTime)
+    match_meta = Column(JSON)  # Métadonnées du matching
+    
+    # Informations propriétaire (si trouvées)
+    owner_name = Column(String)
+    owner_phone = Column(String)
+    owner_mobile = Column(String)
+    
+    # Pipeline brochure / "doublage"
     brochure_requested = Column(Boolean, default=False)
     brochure_request_id = Column(Integer)
+    response_email_id = Column(Integer)  # Lien vers email_responses
+    extracted_address = Column(String)  # Adresse extraite de la réponse brochure
+    doubling_status = Column(String)  # pending, contacted, success, failed
+    
     scraped_at = Column(DateTime, default=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
 class MassScrapingJob(Base):
@@ -306,6 +332,100 @@ class MassScrapingJob(Base):
     error_message = Column(Text)
     started_at = Column(DateTime)
     completed_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class BackgroundJob(Base):
+    """Jobs génériques (batch matching, pipeline brochures, enrichissements, etc.)."""
+    __tablename__ = "background_jobs"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    job_type = Column(String, index=True)  # ex: brochure_pipeline, biens_batch_match, prospection_batch_match
+    status = Column(String, default="pending", index=True)  # pending, running, completed, error
+
+    total = Column(Integer, default=0)
+    processed = Column(Integer, default=0)
+
+    meta = Column(JSON, default=dict)  # paramètres, contexte
+    result = Column(JSON)  # résultat final (stats)
+    error_message = Column(Text)
+
+    started_at = Column(DateTime)
+    completed_at = Column(DateTime)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class EmailResponse(Base):
+    """Réponses emails reçues (brochures, etc.)."""
+    __tablename__ = "email_responses"
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    email_account_id = Column(Integer, index=True)  # Compte email qui a reçu
+    brochure_request_id = Column(Integer, index=True)  # Demande de brochure liée
+    
+    # Métadonnées email
+    message_id = Column(String, unique=True)
+    subject = Column(String)
+    sender = Column(String)
+    received_at = Column(DateTime)
+    
+    # Contenu
+    body_text = Column(Text)
+    body_html = Column(Text)
+    
+    # Extraction automatique
+    extracted_address = Column(String)
+    extracted_npa = Column(String)
+    extracted_city = Column(String)
+    extracted_price = Column(Float)
+    extracted_rooms = Column(Float)
+    extracted_surface = Column(Float)
+    extracted_details = Column(JSON)  # Autres infos extraites
+    
+    # Pièces jointes
+    attachments = Column(JSON)  # [{filename, content_type, size}]
+    has_pdf_brochure = Column(Boolean, default=False)
+    
+    # Traitement
+    portal_detected = Column(String)  # comparis, immoscout24, etc.
+    confidence = Column(Float, default=0.0)
+    processed = Column(Boolean, default=False)
+    processed_at = Column(DateTime)
+    
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class MobileLookup(Base):
+    """Historique des recherches de numéros mobiles."""
+    __tablename__ = "mobile_lookups"
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    prospect_id = Column(String, index=True)  # Prospect concerné
+    
+    # Requête
+    query_name = Column(String)
+    query_city = Column(String)
+    query_canton = Column(String)
+    
+    # Résultat
+    source = Column(String)  # truecaller, linkedin, facebook, searchch, etc.
+    mobile_found = Column(String)
+    phone_type = Column(String)  # mobile, landline
+    confidence = Column(Float, default=0.0)
+    
+    # Métadonnées
+    raw_response = Column(JSON)
+    search_duration_ms = Column(Float)
+    
+    # Statut
+    status = Column(String, default="success")  # success, not_found, error
+    error_message = Column(Text)
+    
+    # Si le mobile a été appliqué au prospect
+    applied_to_prospect = Column(Boolean, default=False)
+    applied_at = Column(DateTime)
+    
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
@@ -353,6 +473,52 @@ async def init_db():
         await _ensure_index(conn, "idx_prospects_statut", "CREATE INDEX IF NOT EXISTS idx_prospects_statut ON prospects (statut)")
         await _ensure_index(conn, "idx_prospects_ville", "CREATE INDEX IF NOT EXISTS idx_prospects_ville ON prospects (ville)")
         await _ensure_index(conn, "idx_prospects_quality_score", "CREATE INDEX IF NOT EXISTS idx_prospects_quality_score ON prospects (quality_score)")
+
+        # Conformité / opt-out (prospects)
+        if IS_POSTGRES:
+            await _ensure_column(conn, "prospects", "do_not_contact", "do_not_contact BOOLEAN DEFAULT false")
+        else:
+            await _ensure_column(conn, "prospects", "do_not_contact", "do_not_contact BOOLEAN DEFAULT 0")
+        await _ensure_column(conn, "prospects", "do_not_contact_reason", "do_not_contact_reason TEXT")
+        await _ensure_column(conn, "prospects", "consent_status", "consent_status VARCHAR DEFAULT 'unknown'")
+        await _ensure_column(conn, "prospects", "consent_updated_at", "consent_updated_at TIMESTAMP")
+
+        await _ensure_index(conn, "idx_prospects_do_not_contact", "CREATE INDEX IF NOT EXISTS idx_prospects_do_not_contact ON prospects (do_not_contact)")
+        await _ensure_index(conn, "idx_prospects_consent_status", "CREATE INDEX IF NOT EXISTS idx_prospects_consent_status ON prospects (consent_status)")
+
+        # Colonnes scraped_listings (matching + propriétaire)
+        await _ensure_column(conn, "scraped_listings", "npa", "npa VARCHAR")
+        await _ensure_column(conn, "scraped_listings", "details", "details JSON")
+        await _ensure_column(conn, "scraped_listings", "match_status", "match_status VARCHAR DEFAULT 'pending'")
+        await _ensure_column(conn, "scraped_listings", "match_score", "match_score FLOAT")
+        await _ensure_column(conn, "scraped_listings", "matched_prospect_id", "matched_prospect_id VARCHAR")
+        await _ensure_column(conn, "scraped_listings", "matched_at", "matched_at TIMESTAMP")
+        await _ensure_column(conn, "scraped_listings", "match_meta", "match_meta JSON")
+        await _ensure_column(conn, "scraped_listings", "owner_name", "owner_name VARCHAR")
+        await _ensure_column(conn, "scraped_listings", "owner_phone", "owner_phone VARCHAR")
+        await _ensure_column(conn, "scraped_listings", "owner_mobile", "owner_mobile VARCHAR")
+        await _ensure_column(conn, "scraped_listings", "response_email_id", "response_email_id INTEGER")
+        await _ensure_column(conn, "scraped_listings", "extracted_address", "extracted_address VARCHAR")
+        await _ensure_column(conn, "scraped_listings", "doubling_status", "doubling_status VARCHAR")
+        await _ensure_column(conn, "scraped_listings", "updated_at", "updated_at TIMESTAMP")
+
+        # Index scraped_listings
+        await _ensure_index(conn, "idx_scraped_listings_match_status", "CREATE INDEX IF NOT EXISTS idx_scraped_listings_match_status ON scraped_listings (match_status)")
+        await _ensure_index(conn, "idx_scraped_listings_matched_prospect", "CREATE INDEX IF NOT EXISTS idx_scraped_listings_matched_prospect ON scraped_listings (matched_prospect_id)")
+        await _ensure_index(conn, "idx_scraped_listings_doubling_status", "CREATE INDEX IF NOT EXISTS idx_scraped_listings_doubling_status ON scraped_listings (doubling_status)")
+
+        # Index email_responses
+        await _ensure_index(conn, "idx_email_responses_brochure_request", "CREATE INDEX IF NOT EXISTS idx_email_responses_brochure_request ON email_responses (brochure_request_id)")
+        await _ensure_index(conn, "idx_email_responses_account", "CREATE INDEX IF NOT EXISTS idx_email_responses_account ON email_responses (email_account_id)")
+
+        # Index mobile_lookups
+        await _ensure_index(conn, "idx_mobile_lookups_prospect", "CREATE INDEX IF NOT EXISTS idx_mobile_lookups_prospect ON mobile_lookups (prospect_id)")
+        await _ensure_index(conn, "idx_mobile_lookups_source", "CREATE INDEX IF NOT EXISTS idx_mobile_lookups_source ON mobile_lookups (source)")
+
+        # Index background_jobs (jobs génériques)
+        await _ensure_index(conn, "idx_background_jobs_type", "CREATE INDEX IF NOT EXISTS idx_background_jobs_type ON background_jobs (job_type)")
+        await _ensure_index(conn, "idx_background_jobs_status", "CREATE INDEX IF NOT EXISTS idx_background_jobs_status ON background_jobs (status)")
+        await _ensure_index(conn, "idx_background_jobs_created_at", "CREATE INDEX IF NOT EXISTS idx_background_jobs_created_at ON background_jobs (created_at)")
 
 
 async def _ensure_column(conn, table_name: str, column_name: str, column_definition: str):

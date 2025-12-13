@@ -11,18 +11,26 @@ from datetime import datetime
 
 from app.core.database import (
     get_db,
+    AsyncSessionLocal,
     BrochureRequest,
     BrochureSchedule,
     ScrapedListing,
     EmailAccount,
+    BackgroundJob,
 )
 from app.core.websocket import emit_activity
 from app.services.brochure_service import (
     BrochureService,
     get_queue_stats,
     get_brochure_history,
+    process_brochure_responses,
+    run_full_brochure_pipeline,
     BrochureServiceError,
     EmailRotationError,
+)
+from app.services.email_parser_service import (
+    parse_emails_for_addresses,
+    get_parsed_emails_stats,
 )
 
 router = APIRouter()
@@ -110,6 +118,14 @@ class QueueStatsResponse(BaseModel):
     sent_today: int
     by_status: dict
     by_portal: dict
+
+
+class BrochurePipelineRunRequest(BaseModel):
+    """Paramètres d'exécution du pipeline brochure."""
+    days_back: int = 7
+    auto_match: bool = True
+    enrich_mobiles: bool = True
+    canton: Optional[str] = None
 
 
 # =============================================================================
@@ -469,6 +485,169 @@ async def get_stats(db: AsyncSession = Depends(get_db)):
 
 
 # =============================================================================
+# PIPELINE - EMAIL PARSER + MATCHING + ENRICH
+# =============================================================================
+
+@router.post("/parse-emails")
+async def parse_emails(days_back: int = 7):
+    """Parse les emails (tous comptes actifs) et extrait les adresses."""
+    try:
+        stats = await parse_emails_for_addresses(days_back=days_back)
+        return {"status": "ok", "stats": stats}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/pipeline/stats")
+async def brochure_pipeline_stats(db: AsyncSession = Depends(get_db)):
+    """Stats pipeline: réponses, adresses extraites, propriétaires, mobiles."""
+    try:
+        email_stats = await get_parsed_emails_stats()
+
+        # Stats sur les listings
+        extracted_q = await db.execute(
+            select(func.count(ScrapedListing.id)).where(ScrapedListing.extracted_address.isnot(None))
+        )
+        owners_q = await db.execute(
+            select(func.count(ScrapedListing.id)).where(ScrapedListing.owner_name.isnot(None))
+        )
+        mobiles_q = await db.execute(
+            select(func.count(ScrapedListing.id)).where(ScrapedListing.owner_mobile.isnot(None))
+        )
+
+        return {
+            "email": email_stats,
+            "listings": {
+                "addresses_extracted": extracted_q.scalar() or 0,
+                "owners_matched": owners_q.scalar() or 0,
+                "mobiles_found": mobiles_q.scalar() or 0,
+            },
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/pipeline/full")
+async def run_brochure_pipeline(
+    request: BrochurePipelineRunRequest,
+    background_tasks: BackgroundTasks,
+):
+    """Lance le pipeline complet en arrière-plan."""
+
+    # Créer un job persistant
+    steps = ["email_parsing"]
+    if request.auto_match:
+        steps.append("auto_matching")
+    if request.enrich_mobiles:
+        steps.append("mobile_enrichment")
+
+    async with AsyncSessionLocal() as db:
+        job = BackgroundJob(
+            job_type="brochure_pipeline",
+            status="pending",
+            total=len(steps),
+            processed=0,
+            meta={
+                "days_back": request.days_back,
+                "auto_match": request.auto_match,
+                "enrich_mobiles": request.enrich_mobiles,
+                "canton": request.canton,
+                "steps": steps,
+            },
+        )
+        db.add(job)
+        await db.commit()
+        await db.refresh(job)
+
+    async def _run(job_id: int):
+        start = datetime.utcnow()
+        try:
+            async with AsyncSessionLocal() as db:
+                job_db = await db.get(BackgroundJob, job_id)
+                if job_db:
+                    job_db.status = "running"
+                    job_db.started_at = start
+                    job_db.processed = 0
+                    await db.commit()
+
+            await emit_activity(
+                "pipeline",
+                f"Pipeline brochure démarré (days_back={request.days_back}, canton={request.canton or 'ALL'})",
+            )
+
+            # Exécution step-by-step pour pouvoir tracer la progression
+            from app.services.brochure_service import (
+                process_brochure_responses,
+                auto_match_listings_without_owner,
+                batch_enrich_mobiles,
+            )
+
+            result: dict = {"steps": {}, "total_duration_seconds": 0}
+
+            # Step 1
+            result["steps"]["email_parsing"] = await process_brochure_responses(days_back=request.days_back)
+            async with AsyncSessionLocal() as db:
+                job_db = await db.get(BackgroundJob, job_id)
+                if job_db:
+                    job_db.processed = min(job_db.total, (job_db.processed or 0) + 1)
+                    job_db.updated_at = datetime.utcnow()
+                    await db.commit()
+
+            # Step 2
+            if request.auto_match:
+                result["steps"]["auto_matching"] = await auto_match_listings_without_owner(
+                    canton=request.canton,
+                    limit=100,
+                )
+                async with AsyncSessionLocal() as db:
+                    job_db = await db.get(BackgroundJob, job_id)
+                    if job_db:
+                        job_db.processed = min(job_db.total, (job_db.processed or 0) + 1)
+                        job_db.updated_at = datetime.utcnow()
+                        await db.commit()
+
+            # Step 3
+            if request.enrich_mobiles:
+                result["steps"]["mobile_enrichment"] = await batch_enrich_mobiles(
+                    canton=request.canton,
+                    limit=30,
+                )
+                async with AsyncSessionLocal() as db:
+                    job_db = await db.get(BackgroundJob, job_id)
+                    if job_db:
+                        job_db.processed = min(job_db.total, (job_db.processed or 0) + 1)
+                        job_db.updated_at = datetime.utcnow()
+                        await db.commit()
+
+            end = datetime.utcnow()
+            result["total_duration_seconds"] = (end - start).total_seconds()
+
+            async with AsyncSessionLocal() as db:
+                job_db = await db.get(BackgroundJob, job_id)
+                if job_db:
+                    job_db.status = "completed"
+                    job_db.completed_at = end
+                    job_db.result = result
+                    job_db.updated_at = datetime.utcnow()
+                    await db.commit()
+
+            await emit_activity("success", f"Pipeline brochure terminé ({result.get('total_duration_seconds', 0):.1f}s)")
+        except Exception as e:
+            async with AsyncSessionLocal() as db:
+                job_db = await db.get(BackgroundJob, job_id)
+                if job_db:
+                    job_db.status = "error"
+                    job_db.error_message = str(e)
+                    job_db.completed_at = datetime.utcnow()
+                    job_db.updated_at = datetime.utcnow()
+                    await db.commit()
+            await emit_activity("error", f"Pipeline brochure erreur: {e}")
+
+    background_tasks.add_task(_run, job.id)
+    return {"status": "started", "job_id": job.id}
+
+
+# =============================================================================
 # ROUTES - ANNONCES SCRAPÉES
 # =============================================================================
 
@@ -550,3 +729,4 @@ async def request_brochures_for_all(
         "skipped": stats["skipped"],
         "errors": stats["errors"],
     }
+

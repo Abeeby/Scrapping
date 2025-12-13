@@ -220,6 +220,8 @@ async def get_address_from_coords(x: float, y: float) -> str:
     """Obtient l'adresse via Swisstopo API"""
     try:
         url = f"https://api3.geo.admin.ch/rest/services/api/MapServer/identify"
+        # L'endpoint Identify requiert imageDisplay + mapExtent
+        extent = f"{x-200},{y-200},{x+200},{y+200}"
         params = {
             "geometry": f"{x},{y}",
             "geometryType": "esriGeometryPoint",
@@ -227,6 +229,8 @@ async def get_address_from_coords(x: float, y: float) -> str:
             "layers": "all:ch.bfs.gebaeude_wohnungs_register",
             "tolerance": 50,
             "returnGeometry": "false",
+            "imageDisplay": "600,550,96",
+            "mapExtent": extent,
             "f": "json"
         }
         
