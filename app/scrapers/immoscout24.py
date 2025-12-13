@@ -16,6 +16,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 
 from app.core.logger import scraping_logger
+from app.scrapers.antibot import StealthSession, get_stealth_headers, random_delay
 
 
 class Immoscout24Error(Exception):
@@ -155,43 +156,42 @@ class Immoscout24Scraper:
     }
 
     def __init__(self, timeout: int = 30):
-        self.timeout = aiohttp.ClientTimeout(total=timeout)
-        self._session: Optional[aiohttp.ClientSession] = None
+        self.timeout = timeout
+        self._stealth: Optional[StealthSession] = None
 
     async def __aenter__(self):
-        self._session = aiohttp.ClientSession(
+        self._stealth = StealthSession(
             timeout=self.timeout,
-            headers={
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                "Accept-Language": "fr-CH,fr;q=0.9,en;q=0.8",
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-                "Referer": "https://www.immoscout24.ch/",
-            },
+            max_retries=3,
+            base_delay=1.5,  # Plus de délai pour éviter le rate limit
         )
+        await self._stealth.__aenter__()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        if self._session:
-            await self._session.close()
-            self._session = None
+        if self._stealth:
+            await self._stealth.__aexit__(exc_type, exc_val, exc_tb)
+            self._stealth = None
 
     async def _fetch_page(self, url: str) -> str:
-        """Récupère le contenu HTML d'une page."""
-        if not self._session:
+        """Récupère le contenu HTML d'une page avec protection anti-bot."""
+        if not self._stealth:
             raise Immoscout24Error("Session non initialisée. Utilisez 'async with'.")
 
         try:
-            async with self._session.get(url) as response:
-                if response.status == 200:
-                    return await response.text()
-                elif response.status == 403:
-                    raise Immoscout24Error("Accès bloqué par Immoscout24 (anti-bot).", status_code=403)
-                elif response.status == 429:
-                    raise Immoscout24Error("Rate limit Immoscout24 atteint.", status_code=429)
-                else:
-                    raise Immoscout24Error(f"Erreur HTTP {response.status}", status_code=response.status)
-        except aiohttp.ClientError as e:
-            raise Immoscout24Error(f"Erreur réseau: {e}") from e
+            # Utiliser la session stealth avec cookies
+            return await self._stealth.get_with_cookies(
+                url,
+                cookie_url=self.BASE_URL,
+            )
+        except Exception as e:
+            error_msg = str(e).lower()
+            if "403" in error_msg or "bloqué" in error_msg:
+                raise Immoscout24Error("Accès bloqué par Immoscout24 (anti-bot).", status_code=403)
+            elif "429" in error_msg or "rate" in error_msg:
+                raise Immoscout24Error("Rate limit Immoscout24 atteint.", status_code=429)
+            else:
+                raise Immoscout24Error(f"Erreur réseau: {e}")
 
     def _extract_initial_state(self, html: str) -> Optional[Dict]:
         """Extrait le JSON INITIAL_STATE depuis le HTML."""
