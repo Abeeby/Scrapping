@@ -12,8 +12,28 @@ import socketio
 import uvicorn
 import os
 import time
+import sys
+import asyncio
+
+# region agent log
+# Windows: Playwright (async) démarre un subprocess via asyncio.create_subprocess_exec.
+# Sur Windows, ce call échoue si l'event loop est un SelectorEventLoop (NotImplementedError).
+# On force donc Proactor si disponible.
+if sys.platform.startswith("win") and hasattr(asyncio, "WindowsProactorEventLoopPolicy"):
+    try:
+        asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+    except Exception:
+        pass
+# endregion
 
 from app.api import prospects, emails, bots, campaigns, proxies, stats, scraping, export, quality, brochures
+
+# Import conditionnel du scheduler
+try:
+    from app.api import scheduler
+    SCHEDULER_MODULE_AVAILABLE = True
+except ImportError:
+    SCHEDULER_MODULE_AVAILABLE = False
 
 # Import conditionnel du module prospection avancée
 try:
@@ -105,6 +125,11 @@ if PROSPECTION_MODULE_AVAILABLE:
 if BIENS_MODULE_AVAILABLE:
     app.include_router(biens.router)
     logger.info("[OK] Module Biens en Vente chargé")
+
+# Module scheduler (planification scraping automatique)
+if SCHEDULER_MODULE_AVAILABLE:
+    app.include_router(scheduler.router, prefix="/api/scheduler", tags=["Scheduler"])
+    logger.info("[OK] Module Scheduler chargé")
 
 # =============================================================================
 # FRONTEND SERVING

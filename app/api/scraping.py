@@ -10,6 +10,7 @@ from datetime import datetime
 import asyncio
 import aiohttp
 import json
+import time
 
 from app.core.database import get_db, Prospect, async_session
 from app.core.websocket import sio, emit_activity
@@ -22,6 +23,26 @@ from app.scrapers.localch import LocalChScraper
 from app.scrapers.scanner import scrape_neighborhood, get_available_communes, get_rues_for_commune, COMMUNES_GE as SCANNER_COMMUNES_GE, COMMUNES_VD as SCANNER_COMMUNES_VD
 
 router = APIRouter()
+
+# region agent log
+_AGENT_DEBUG_LOG_PATH = r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log"
+
+def _agent_dbg(hypothesisId: str, location: str, message: str, data: dict | None = None, run_id: str = "pre-fix"):
+    try:
+        payload = {
+            "sessionId": "debug-session",
+            "runId": run_id,
+            "hypothesisId": hypothesisId,
+            "location": location,
+            "message": message,
+            "data": data or {},
+            "timestamp": int(time.time() * 1000),
+        }
+        with open(_AGENT_DEBUG_LOG_PATH, "a", encoding="utf-8") as f:
+            f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+# endregion
 
 # =============================================================================
 # UTILS
@@ -1040,6 +1061,116 @@ async def scrape_swiss_addresses(request: PropertySearchRequest):
 
 
 # =============================================================================
+# ANIBIS.CH - Petites annonces suisses (PRIORITAIRE pour particuliers)
+# Plus de 68'000 annonces immobilières, majoritairement de particuliers
+# =============================================================================
+
+class AnibisRequest(BaseModel):
+    canton: Optional[str] = "GE"
+    transaction_type: Optional[str] = "vente"  # vente, location
+    property_type: Optional[str] = ""  # appartement, maison, villa, terrain
+    only_private: Optional[bool] = True  # Ne garder que les particuliers
+    limit: Optional[int] = 50
+
+
+@router.post("/anibis", response_model=ScrapingResponse)
+async def scrape_anibis_endpoint(request: AnibisRequest):
+    """
+    Scrape les annonces immobilières sur anibis.ch.
+    
+    anibis.ch est la plus grande plateforme de petites annonces suisse avec
+    plus de 68'000 annonces immobilières, dont beaucoup de particuliers.
+    
+    Fonctionnalités:
+    - Détection automatique particulier vs agence
+    - Filtrage par canton, type de bien, type de transaction
+    - Extraction des coordonnées vendeur
+    """
+    await emit_activity("scraping", f"Démarrage Anibis - {request.canton} ({request.transaction_type})")
+    
+    try:
+        from app.scrapers.anibis import scrape_anibis
+        
+        results = await scrape_anibis(
+            canton=request.canton or "GE",
+            transaction_type=request.transaction_type or "vente",
+            only_private=request.only_private if request.only_private is not None else True,
+            limit=request.limit or 50,
+        )
+        
+        await emit_activity("success", f"Anibis terminé: {len(results)} annonces (particuliers: {sum(1 for r in results if r.get('is_private', True))})")
+        
+        return ScrapingResponse(
+            status="completed",
+            count=len(results),
+            results=[ScrapingResult(**r) for r in results]
+        )
+        
+    except Exception as e:
+        scraping_logger.error(f"[Anibis] Erreur: {e}")
+        await emit_activity("error", f"Erreur Anibis: {str(e)}")
+        status = getattr(e, "status_code", None)
+        if isinstance(status, int) and status in (403, 429):
+            raise HTTPException(status_code=status, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# =============================================================================
+# TUTTI.CH - Petites annonces suisses (populaire en Suisse alémanique)
+# =============================================================================
+
+class TuttiRequest(BaseModel):
+    canton: Optional[str] = "GE"
+    transaction_type: Optional[str] = "vente"
+    property_type: Optional[str] = "appartement"
+    only_private: Optional[bool] = True
+    limit: Optional[int] = 50
+
+
+@router.post("/tutti", response_model=ScrapingResponse)
+async def scrape_tutti_endpoint(request: TuttiRequest):
+    """
+    Scrape les annonces immobilières sur tutti.ch.
+    
+    tutti.ch est une des plus grandes plateformes de petites annonces suisses,
+    très populaire en Suisse alémanique.
+    
+    Fonctionnalités:
+    - Détection automatique particulier vs agence
+    - Filtrage par canton, type de bien, type de transaction
+    - Extraction des coordonnées vendeur
+    """
+    await emit_activity("scraping", f"Démarrage Tutti - {request.canton} ({request.transaction_type})")
+    
+    try:
+        from app.scrapers.tutti import scrape_tutti
+        
+        results = await scrape_tutti(
+            canton=request.canton or "GE",
+            transaction_type=request.transaction_type or "vente",
+            property_type=request.property_type or "appartement",
+            only_private=request.only_private if request.only_private is not None else True,
+            limit=request.limit or 50,
+        )
+        
+        await emit_activity("success", f"Tutti terminé: {len(results)} annonces (particuliers: {sum(1 for r in results if r.get('is_private', True))})")
+        
+        return ScrapingResponse(
+            status="completed",
+            count=len(results),
+            results=[ScrapingResult(**r) for r in results]
+        )
+        
+    except Exception as e:
+        scraping_logger.error(f"[Tutti] Erreur: {e}")
+        await emit_activity("error", f"Erreur Tutti: {str(e)}")
+        status = getattr(e, "status_code", None)
+        if isinstance(status, int) and status in (403, 429):
+            raise HTTPException(status_code=status, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# =============================================================================
 # STEALTH BROWSER - Scraping avec Playwright anti-détection
 # =============================================================================
 
@@ -1066,6 +1197,20 @@ async def scrape_with_stealth_browser(request: StealthScrapingRequest):
     
     Sources supportées: immoscout24, homegate
     """
+    # region agent log
+    _agent_dbg(
+        hypothesisId="H3",
+        location="app/api/scraping.py:stealth_enter",
+        message="stealth endpoint called",
+        data={
+            "source": request.source,
+            "location": request.location,
+            "transaction_type": request.transaction_type,
+            "limit": request.limit,
+            "proxy_enabled": bool(request.proxy_server),
+        },
+    )
+    # endregion
     await emit_activity("scraping", f"Démarrage Stealth Browser - {request.source} - {request.location}")
     
     try:
@@ -1097,14 +1242,33 @@ async def scrape_with_stealth_browser(request: StealthScrapingRequest):
         )
         
     except ImportError:
+        # region agent log
+        _agent_dbg(
+            hypothesisId="H3",
+            location="app/api/scraping.py:stealth_import_error",
+            message="playwright import error",
+            data={"proxy_enabled": bool(request.proxy_server)},
+        )
+        # endregion
         await emit_activity("error", "Playwright non installé. Exécutez: pip install playwright && playwright install chromium")
         raise HTTPException(
             status_code=501,
             detail="Playwright non installé. Exécutez: pip install playwright && playwright install chromium"
         )
     except Exception as e:
+        # region agent log
+        _agent_dbg(
+            hypothesisId="H4",
+            location="app/api/scraping.py:stealth_exception",
+            message="stealth endpoint exception",
+            data={"exc_type": type(e).__name__, "exc": str(e)[:200]},
+        )
+        # endregion
         scraping_logger.error(f"[StealthBrowser] Erreur: {e}")
         await emit_activity("error", f"Erreur Stealth Browser: {str(e)}")
+        status = getattr(e, "status_code", None)
+        if isinstance(status, int) and status in (403, 404, 429, 501):
+            raise HTTPException(status_code=status, detail=str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 
