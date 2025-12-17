@@ -7,10 +7,22 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
+import json as _json_dbg
+import time as _time_dbg
 
 from app.core.database import get_db
 from app.core.websocket import emit_activity
 from app.services.scheduler_service import scheduler, ScrapingSchedule, ScheduleFrequency, ScheduleStatus
+
+# region agent log
+_DBG_LOG = r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log"
+def _dbg(hid, loc, msg, data=None):
+    try:
+        with open(_DBG_LOG, "a", encoding="utf-8") as f:
+            f.write(_json_dbg.dumps({"hypothesisId": hid, "location": loc, "message": msg, "data": data or {}, "timestamp": int(_time_dbg.time()*1000), "sessionId": "debug-session"}) + "\n")
+    except: pass
+_dbg("H1", "scheduler.py:module_load", "scheduler API module loaded", {})
+# endregion
 
 router = APIRouter()
 
@@ -68,8 +80,20 @@ class ScheduleResponse(BaseModel):
 @router.get("/", response_model=List[ScheduleResponse])
 async def list_schedules(active_only: bool = False):
     """Liste toutes les planifications de scraping."""
-    schedules = await scheduler.get_schedules(active_only=active_only)
-    return schedules
+    # region agent log
+    _dbg("H4", "scheduler.py:list_schedules", "endpoint called", {"active_only": active_only})
+    # endregion
+    try:
+        schedules = await scheduler.get_schedules(active_only=active_only)
+        # region agent log
+        _dbg("H4", "scheduler.py:list_schedules", "success", {"count": len(schedules) if schedules else 0})
+        # endregion
+        return schedules
+    except Exception as e:
+        # region agent log
+        _dbg("H5", "scheduler.py:list_schedules", "error", {"error": str(e), "type": type(e).__name__})
+        # endregion
+        raise
 
 
 @router.post("/", response_model=ScheduleResponse)

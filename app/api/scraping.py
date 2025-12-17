@@ -1077,19 +1077,17 @@ class AnibisRequest(BaseModel):
 async def scrape_anibis_endpoint(request: AnibisRequest):
     """
     Scrape les annonces immobilières sur anibis.ch.
-    
-    anibis.ch est la plus grande plateforme de petites annonces suisse avec
-    plus de 68'000 annonces immobilières, dont beaucoup de particuliers.
-    
-    Fonctionnalités:
-    - Détection automatique particulier vs agence
-    - Filtrage par canton, type de bien, type de transaction
-    - Extraction des coordonnées vendeur
     """
+    # region agent log
+    _agent_dbg("H2", "scraping.py:anibis_entry", "anibis endpoint called", {"canton": request.canton, "limit": request.limit})
+    # endregion
     await emit_activity("scraping", f"Démarrage Anibis - {request.canton} ({request.transaction_type})")
     
     try:
         from app.scrapers.anibis import scrape_anibis
+        # region agent log
+        _agent_dbg("H2", "scraping.py:anibis_import", "anibis import SUCCESS", {})
+        # endregion
         
         results = await scrape_anibis(
             canton=request.canton or "GE",
