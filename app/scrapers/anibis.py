@@ -202,12 +202,26 @@ class AnibisScraper:
 
     BASE_URL = "https://www.anibis.ch"
     
+    # Catégorie immobilier sur Anibis
+    CATEGORY_REAL_ESTATE = "immobilier--c"
+    
     TRANSACTION_TYPES = {
         "vente": "vendre--36",
         "location": "louer--37",
         "sell": "vendre--36",
         "rent": "louer--37",
         "buy": "vendre--36",
+    }
+    
+    PROPERTY_TYPES = {
+        "appartement": "appartement--2",
+        "maison": "maison--4",
+        "villa": "villa--5",
+        "terrain": "terrain--6",
+        "bureau": "bureau--7",
+        "local": "local-commercial--8",
+        "parking": "parking--9",
+        "immeuble": "immeuble--10",
     }
     
     CANTONS = {
