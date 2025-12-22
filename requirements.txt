@@ -22,7 +22,7 @@ psycopg2-binary==2.9.9
 
 # Scraping
 beautifulsoup4==4.12.2
-lxml==4.9.3
+# lxml==4.9.3  # Désactivé - utilise html.parser par défaut
 # playwright==1.40.0  # Désactivé sur Railway - fallback aiohttp utilisé
 
 # Email
@@ -46,7 +46,7 @@ pyyaml==6.0.1
 
 # Authentication
 PyJWT==2.8.0
-supabase==2.3.0
+# supabase==2.3.0  # Désactivé - auth locale utilisée en attendant
 
 # Production server
 gunicorn==21.2.0
