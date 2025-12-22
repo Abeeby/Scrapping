@@ -236,8 +236,11 @@ class AnibisScraper:
         self._context = None
         self._page = None
         self._playwright = None
+        self._use_playwright = False
+        self._session = None
 
     async def __aenter__(self):
+        # Essayer Playwright d'abord, fallback sur aiohttp
         try:
             from playwright.async_api import async_playwright
             self._playwright = await async_playwright().start()
@@ -248,34 +251,59 @@ class AnibisScraper:
                 locale="fr-CH",
             )
             self._page = await self._context.new_page()
-        except ImportError:
-            raise AnibisError("Playwright non installé. Exécutez: pip install playwright && playwright install chromium", status_code=501)
+            self._use_playwright = True
+            scraping_logger.info("[Anibis] Playwright disponible, mode JavaScript activé")
+        except (ImportError, Exception) as e:
+            # Fallback sur aiohttp (moins efficace mais fonctionne)
+            scraping_logger.warning(f"[Anibis] Playwright non disponible ({e}), mode aiohttp activé")
+            self._session = aiohttp.ClientSession(
+                timeout=aiohttp.ClientTimeout(total=self.timeout),
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+                    "Accept-Language": "fr-CH,fr;q=0.9,en;q=0.8",
+                }
+            )
+            self._use_playwright = False
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        if self._page:
-            await self._page.close()
-        if self._context:
-            await self._context.close()
-        if self._browser:
-            await self._browser.close()
-        if self._playwright:
-            await self._playwright.stop()
+        if self._use_playwright:
+            if self._page:
+                await self._page.close()
+            if self._context:
+                await self._context.close()
+            if self._browser:
+                await self._browser.close()
+            if self._playwright:
+                await self._playwright.stop()
+        else:
+            if self._session:
+                await self._session.close()
 
     async def _fetch_page(self, url: str) -> str:
-        """Récupère le contenu HTML après exécution JavaScript."""
-        if not self._page:
-            raise AnibisError("Browser non initialisé. Utilisez 'async with'.")
-
-        try:
-            await self._page.goto(url, wait_until="networkidle", timeout=self.timeout * 1000)
-            await self._page.wait_for_timeout(2000)  # Attendre le rendu
-            return await self._page.content()
-        except Exception as e:
-            error_msg = str(e).lower()
-            if "timeout" in error_msg:
-                raise AnibisError("Timeout lors du chargement", status_code=504)
-            raise AnibisError(f"Erreur navigation: {e}")
+        """Récupère le contenu HTML (Playwright ou aiohttp fallback)."""
+        if self._use_playwright:
+            if not self._page:
+                raise AnibisError("Browser non initialisé.")
+            try:
+                await self._page.goto(url, wait_until="networkidle", timeout=self.timeout * 1000)
+                await self._page.wait_for_timeout(2000)
+                return await self._page.content()
+            except Exception as e:
+                error_msg = str(e).lower()
+                if "timeout" in error_msg:
+                    raise AnibisError("Timeout lors du chargement", status_code=504)
+                raise AnibisError(f"Erreur navigation: {e}")
+        else:
+            # Mode aiohttp (fallback)
+            try:
+                async with self._session.get(url) as response:
+                    if response.status != 200:
+                        raise AnibisError(f"HTTP {response.status}", status_code=response.status)
+                    return await response.text()
+            except aiohttp.ClientError as e:
+                raise AnibisError(f"Erreur réseau: {e}")
 
     def _parse_listing_card(self, card, transaction_type: str = "vente") -> Optional[AnibisListing]:
         """Parse une carte d'annonce depuis la page de résultats."""
