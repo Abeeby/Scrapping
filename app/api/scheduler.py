@@ -7,20 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
-import json as _json_dbg
-import time as _time_dbg
 
 from app.core.database import get_db
 from app.core.websocket import emit_activity
 from app.services.scheduler_service import scheduler, ScrapingSchedule, ScheduleFrequency, ScheduleStatus
-
-# region agent log
-import logging
-_dbg_logger = logging.getLogger("debug_agent")
-def _dbg(hid, loc, msg, data=None):
-    _dbg_logger.info(f"[{hid}] {loc}: {msg} | {data or {}}")
-_dbg("H1", "scheduler.py:module_load", "scheduler API module loaded", {})
-# endregion
 
 router = APIRouter()
 
@@ -78,20 +68,8 @@ class ScheduleResponse(BaseModel):
 @router.get("/", response_model=List[ScheduleResponse])
 async def list_schedules(active_only: bool = False):
     """Liste toutes les planifications de scraping."""
-    # region agent log
-    _dbg("H4", "scheduler.py:list_schedules", "endpoint called", {"active_only": active_only})
-    # endregion
-    try:
-        schedules = await scheduler.get_schedules(active_only=active_only)
-        # region agent log
-        _dbg("H4", "scheduler.py:list_schedules", "success", {"count": len(schedules) if schedules else 0})
-        # endregion
-        return schedules
-    except Exception as e:
-        # region agent log
-        _dbg("H5", "scheduler.py:list_schedules", "error", {"error": str(e), "type": type(e).__name__})
-        # endregion
-        raise
+    schedules = await scheduler.get_schedules(active_only=active_only)
+    return schedules
 
 
 @router.post("/", response_model=ScheduleResponse)

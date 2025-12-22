@@ -24,13 +24,6 @@ from app.scrapers.scanner import scrape_neighborhood, get_available_communes, ge
 
 router = APIRouter()
 
-# region agent log
-import logging
-_agent_dbg_logger = logging.getLogger("debug_agent")
-def _agent_dbg(hypothesisId: str, location: str, message: str, data: dict | None = None, run_id: str = "pre-fix"):
-    _agent_dbg_logger.info(f"[{hypothesisId}] {location}: {message} | {data or {}}")
-# endregion
-
 # =============================================================================
 # UTILS
 # =============================================================================
@@ -1064,17 +1057,12 @@ class AnibisRequest(BaseModel):
 async def scrape_anibis_endpoint(request: AnibisRequest):
     """
     Scrape les annonces immobilières sur anibis.ch.
+    Note: Nécessite Playwright pour fonctionner correctement (protection anti-bot).
     """
-    # region agent log
-    _agent_dbg("H2", "scraping.py:anibis_entry", "anibis endpoint called", {"canton": request.canton, "limit": request.limit})
-    # endregion
     await emit_activity("scraping", f"Démarrage Anibis - {request.canton} ({request.transaction_type})")
     
     try:
         from app.scrapers.anibis import scrape_anibis
-        # region agent log
-        _agent_dbg("H2", "scraping.py:anibis_import", "anibis import SUCCESS", {})
-        # endregion
         
         results = await scrape_anibis(
             canton=request.canton or "GE",
@@ -1181,21 +1169,8 @@ async def scrape_with_stealth_browser(request: StealthScrapingRequest):
     - Support proxy résidentiel
     
     Sources supportées: immoscout24, homegate
+    Note: Nécessite Playwright pour fonctionner.
     """
-    # region agent log
-    _agent_dbg(
-        hypothesisId="H3",
-        location="app/api/scraping.py:stealth_enter",
-        message="stealth endpoint called",
-        data={
-            "source": request.source,
-            "location": request.location,
-            "transaction_type": request.transaction_type,
-            "limit": request.limit,
-            "proxy_enabled": bool(request.proxy_server),
-        },
-    )
-    # endregion
     await emit_activity("scraping", f"Démarrage Stealth Browser - {request.source} - {request.location}")
     
     try:
@@ -1227,28 +1202,12 @@ async def scrape_with_stealth_browser(request: StealthScrapingRequest):
         )
         
     except ImportError:
-        # region agent log
-        _agent_dbg(
-            hypothesisId="H3",
-            location="app/api/scraping.py:stealth_import_error",
-            message="playwright import error",
-            data={"proxy_enabled": bool(request.proxy_server)},
-        )
-        # endregion
         await emit_activity("error", "Playwright non installé. Exécutez: pip install playwright && playwright install chromium")
         raise HTTPException(
             status_code=501,
             detail="Playwright non installé. Exécutez: pip install playwright && playwright install chromium"
         )
     except Exception as e:
-        # region agent log
-        _agent_dbg(
-            hypothesisId="H4",
-            location="app/api/scraping.py:stealth_exception",
-            message="stealth endpoint exception",
-            data={"exc_type": type(e).__name__, "exc": str(e)[:200]},
-        )
-        # endregion
         scraping_logger.error(f"[StealthBrowser] Erreur: {e}")
         await emit_activity("error", f"Erreur Stealth Browser: {str(e)}")
         status = getattr(e, "status_code", None)

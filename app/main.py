@@ -28,31 +28,12 @@ if sys.platform.startswith("win") and hasattr(asyncio, "WindowsProactorEventLoop
 
 from app.api import prospects, emails, bots, campaigns, proxies, stats, scraping, export, quality, brochures
 
-# region agent log - debug imports
-import json as _json_dbg
-import logging
-_dbg_logger = logging.getLogger("debug_agent")
-def _dbg(hid, loc, msg, data=None):
-    _dbg_logger.info(f"[{hid}] {loc}: {msg} | {data or {}}")
-# endregion
-
 # Import conditionnel du scheduler
 try:
     from app.api import scheduler
     SCHEDULER_MODULE_AVAILABLE = True
-    # region agent log
-    _dbg("H1", "main.py:scheduler_import", "scheduler import SUCCESS", {"available": True})
-    # endregion
-except ImportError as e:
+except ImportError:
     SCHEDULER_MODULE_AVAILABLE = False
-    # region agent log
-    _dbg("H1", "main.py:scheduler_import", "scheduler import FAILED", {"error": str(e)})
-    # endregion
-except Exception as e:
-    SCHEDULER_MODULE_AVAILABLE = False
-    # region agent log
-    _dbg("H1", "main.py:scheduler_import", "scheduler import ERROR", {"error": str(e), "type": type(e).__name__})
-    # endregion
 
 # Import conditionnel du module prospection avancée
 try:
@@ -146,19 +127,9 @@ if BIENS_MODULE_AVAILABLE:
     logger.info("[OK] Module Biens en Vente chargé")
 
 # Module scheduler (planification scraping automatique)
-# region agent log
-_dbg("H1", "main.py:scheduler_router", "checking SCHEDULER_MODULE_AVAILABLE", {"available": SCHEDULER_MODULE_AVAILABLE})
-# endregion
 if SCHEDULER_MODULE_AVAILABLE:
     app.include_router(scheduler.router, prefix="/api/scheduler", tags=["Scheduler"])
     logger.info("[OK] Module Scheduler chargé")
-    # region agent log
-    _dbg("H1", "main.py:scheduler_router", "scheduler router REGISTERED", {"prefix": "/api/scheduler"})
-    # endregion
-else:
-    # region agent log
-    _dbg("H1", "main.py:scheduler_router", "scheduler router SKIPPED - module not available", {})
-    # endregion
 
 # =============================================================================
 # FRONTEND SERVING
@@ -210,18 +181,15 @@ async def health_api():
     """Health check (alternative path)"""
     return {"status": "ok", "version": "5.2.0"}
 
-# region agent log
 @app.get("/api/debug/modules")
 async def debug_modules():
     """Debug endpoint to check loaded modules"""
-    _dbg("H3", "main.py:debug_modules", "debug endpoint called", {})
     return {
         "version": "5.2.0",
         "scheduler_available": SCHEDULER_MODULE_AVAILABLE,
         "prospection_available": PROSPECTION_MODULE_AVAILABLE,
         "biens_available": BIENS_MODULE_AVAILABLE,
     }
-# endregion
 
 @app.get("/")
 async def root():
