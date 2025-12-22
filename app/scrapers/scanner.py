@@ -6,6 +6,8 @@ import asyncio
 import uuid
 import json
 import os
+import time
+import unicodedata
 from typing import List, Dict, Optional
 from app.scrapers.searchch import SearchChScraper, SearchChScraperError
 from app.core.websocket import sio, emit_activity
@@ -50,6 +52,49 @@ def load_streets_data():
 
 STREETS_DB = load_streets_data()
 
+# region agent log
+_AGENT_DEBUG_LOG_PATH = r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log"
+
+def _agent_dbg(hypothesisId: str, location: str, message: str, data: dict | None = None, run_id: str = "pre-fix"):
+    try:
+        payload = {
+            "sessionId": "debug-session",
+            "runId": run_id,
+            "hypothesisId": hypothesisId,
+            "location": location,
+            "message": message,
+            "data": data or {},
+            "timestamp": int(time.time() * 1000),
+        }
+        with open(_AGENT_DEBUG_LOG_PATH, "a", encoding="utf-8") as f:
+            f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+# endregion
+
+# =============================================================================
+# NORMALISATION - Tolérance aux problèmes d'encodage (GenÃ¨ve, etc.)
+# =============================================================================
+
+def _repair_mojibake(text: str) -> str:
+    """Répare les cas fréquents de double-encodage (UTF-8 lu en latin-1)."""
+    if not text:
+        return text
+    try:
+        repaired = text.encode("latin-1").decode("utf-8")
+        return repaired if repaired else text
+    except Exception:
+        return text
+
+
+def _normalize_commune_name(text: str) -> str:
+    text = _repair_mojibake(text or "")
+    text = text.replace("\ufffd", "")  # caractère de remplacement
+    text = unicodedata.normalize("NFKD", text)
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    return text.casefold().strip()
+
+
 # Fusion des données pour l'accès facile
 ALL_RUES = {}
 COMMUNES_GE = []
@@ -62,6 +107,12 @@ if "GE" in STREETS_DB:
 if "VD" in STREETS_DB:
     ALL_RUES.update(STREETS_DB["VD"])
     COMMUNES_VD = list(STREETS_DB["VD"].keys())
+
+# Mapping normalisé -> clé canonique
+_COMMUNE_KEY_BY_NORM = {_normalize_commune_name(k): k for k in ALL_RUES.keys()}
+
+def _resolve_commune_key(commune: str) -> str:
+    return _COMMUNE_KEY_BY_NORM.get(_normalize_commune_name(commune), commune)
 
 # Liste de numeros a tester par defaut (1 a 100)
 ALL_NUMEROS = [str(i) for i in range(1, 101)]
@@ -90,6 +141,10 @@ async def scrape_neighborhood(
     error_calls = 0
     last_error: SearchChScraperError | None = None
     
+    # Normaliser/repair entrée utilisateur (accents + mojibake)
+    commune = _resolve_commune_key(_repair_mojibake(commune))
+    rue = _repair_mojibake(rue)
+
     # Determiner le canton si non specifie
     if canton is None:
         canton = get_canton(commune)
@@ -118,6 +173,22 @@ async def scrape_neighborhood(
         total = len(adresses_a_tester)
         
         print(f"[Scanner] {total} adresses a tester")
+        # region agent log
+        _agent_dbg(
+            hypothesisId="H1",
+            location="app/scrapers/scanner.py:scanner_setup",
+            message="scanner prepared",
+            data={
+                "commune": commune,
+                "canton": canton,
+                "rue_mode": "all" if rue == "all" else "single",
+                "limit": limit,
+                "total_addresses": total,
+                "type_recherche": type_recherche,
+                "sleep_s": 0.25,
+            },
+        )
+        # endregion
         
         if total == 0:
             print(f"[Scanner] Aucune rue trouvee pour {commune}")
@@ -192,11 +263,33 @@ async def scrape_neighborhood(
                 break
                 
     # Si tout a échoué côté Search.ch, remonter une erreur explicite (au lieu de 0 résultat silencieux)
-    if len(results) == 0 and success_calls == 0 and error_calls > 0 and last_error is not None:
-        raise SearchChScraperError(
-            f"Scanner: impossible de contacter Search.ch ({last_error})",
-            status_code=getattr(last_error, "status_code", None),
-        )
+    # region agent log
+    _agent_dbg(
+        hypothesisId="H1",
+        location="app/scrapers/scanner.py:scanner_end",
+        message="scanner finished",
+        data={
+            "results_count": len(results),
+            "success_calls": success_calls,
+            "error_calls": error_calls,
+            "last_error_status": getattr(last_error, "status_code", None) if last_error else None,
+            "last_error": str(last_error)[:160] if last_error else None,
+        },
+    )
+    # endregion
+    if len(results) == 0 and error_calls > 0 and last_error is not None:
+        # Si Search.ch nous rate-limit (429) même après quelques appels "OK mais 0 résultat",
+        # on remonte l'erreur au lieu de renvoyer 0 silencieux.
+        if getattr(last_error, "status_code", None) == 429:
+            raise SearchChScraperError(
+                f"Scanner: rate limit Search.ch (429). Réduisez le limit ou attendez 1-2 minutes. ({last_error})",
+                status_code=429,
+            )
+        if success_calls == 0:
+            raise SearchChScraperError(
+                f"Scanner: impossible de contacter Search.ch ({last_error})",
+                status_code=getattr(last_error, "status_code", None),
+            )
 
     print(f"[Scanner] Termine: {len(results)} residents trouves")
     return results

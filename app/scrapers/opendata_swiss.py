@@ -84,3 +84,4 @@ class OpenDataSwissClient:
         """Retourne le détail d'un dataset (resources incluses)."""
         return await self._get("package_show", params={"id": dataset_id})
 
+

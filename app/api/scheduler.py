@@ -257,3 +257,4 @@ async def get_available_sources():
             {"id": "weekly", "name": "Hebdomadaire"},
         ],
     }
+

@@ -677,3 +677,4 @@ async def extract_linkedin_contact(profile_url: str) -> Dict[str, str]:
     
     return result
 
+

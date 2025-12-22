@@ -462,3 +462,4 @@ class ScrapingScheduler:
 
 # Instance globale du scheduler
 scheduler = ScrapingScheduler()
+

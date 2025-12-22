@@ -367,3 +367,4 @@ async def search_commune_addresses(
     async with SwissRealestateClient() as client:
         properties = await client.search_addresses_in_commune(commune, canton, limit)
         return [p.to_prospect_format() for p in properties]
+

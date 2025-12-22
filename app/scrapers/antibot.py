@@ -191,3 +191,4 @@ class StealthSession:
         
         # Ensuite, faire la vraie requête
         return await self.get(url, referer=cookie_url or url)
+

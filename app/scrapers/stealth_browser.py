@@ -13,6 +13,8 @@ from __future__ import annotations
 import asyncio
 import random
 import json
+import time
+import sys
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 
@@ -25,6 +27,34 @@ try:
 except ImportError:
     PLAYWRIGHT_AVAILABLE = False
     scraping_logger.warning("[StealthBrowser] Playwright non installé. pip install playwright && playwright install chromium")
+
+
+class StealthBrowserError(Exception):
+    """Erreur explicite StealthBrowser (blocage, HTTP, environnement)."""
+
+    def __init__(self, message: str, status_code: int | None = None):
+        super().__init__(message)
+        self.status_code = status_code
+
+# region agent log
+_AGENT_DEBUG_LOG_PATH = r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log"
+
+def _agent_dbg(hypothesisId: str, location: str, message: str, data: dict | None = None, run_id: str = "pre-fix"):
+    try:
+        payload = {
+            "sessionId": "debug-session",
+            "runId": run_id,
+            "hypothesisId": hypothesisId,
+            "location": location,
+            "message": message,
+            "data": data or {},
+            "timestamp": int(time.time() * 1000),
+        }
+        with open(_AGENT_DEBUG_LOG_PATH, "a", encoding="utf-8") as f:
+            f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+# endregion
 
 
 # =============================================================================
@@ -222,6 +252,20 @@ class StealthBrowser:
             raise RuntimeError(
                 "Playwright non installé. Exécutez: pip install playwright && playwright install chromium"
             )
+
+        # region agent log
+        _agent_dbg(
+            hypothesisId="H3",
+            location="app/scrapers/stealth_browser.py:StealthBrowser.__aenter__",
+            message="stealth browser enter",
+            data={
+                "playwright_available": PLAYWRIGHT_AVAILABLE,
+                "headless": self.headless,
+                "slow_mo": self.slow_mo,
+                "proxy_enabled": bool(self.proxy),
+            },
+        )
+        # endregion
         
         # Choisir un fingerprint aléatoire
         self._fingerprint = random.choice(BROWSER_FINGERPRINTS)
@@ -360,7 +404,32 @@ class StealthBrowser:
         scraping_logger.info(f"[StealthBrowser] Navigation: {url}")
         
         # Navigation
-        await page.goto(url, wait_until="domcontentloaded", timeout=60000)
+        resp = await page.goto(url, wait_until="domcontentloaded", timeout=60000)
+
+        # region agent log
+        title = ""
+        try:
+            title = await page.title()
+        except Exception:
+            title = ""
+        _agent_dbg(
+            hypothesisId="H4",
+            location="app/scrapers/stealth_browser.py:goto_with_human_behavior",
+            message="goto completed",
+            data={
+                "url": url,
+                "resp_status": getattr(resp, "status", None) if resp else None,
+                "final_url": getattr(page, "url", ""),
+                "title": title[:120],
+            },
+        )
+        # endregion
+
+        status = getattr(resp, "status", None) if resp else None
+        if status in (403, 429):
+            raise StealthBrowserError(f"Navigation bloquée (HTTP {status}) sur {url}", status_code=status)
+        if status == 404:
+            raise StealthBrowserError(f"Page introuvable (HTTP 404) sur {url}", status_code=404)
         
         # Attendre un peu (lecture de la page)
         await human_delay(1000, 2000)
@@ -439,6 +508,8 @@ class StealthPropertyScraper:
                 
                 scraping_logger.info(f"[StealthScraper] Immoscout24: {len(results)} annonces")
                 
+            except StealthBrowserError:
+                raise
             except Exception as e:
                 scraping_logger.error(f"[StealthScraper] Erreur Immoscout24: {e}")
         
@@ -492,8 +563,10 @@ class StealthPropertyScraper:
             
             # Construire l'URL
             location_slug = location.lower().replace(" ", "-").replace("è", "e").replace("é", "e")
-            trans = "louer" if transaction_type == "rent" else "acheter"
-            url = f"https://www.homegate.ch/{trans}/appartement/ville-{location_slug}/liste-annonces"
+            # Homegate utilise une structure en anglais (rent/buy) + matching-list
+            trans = "rent" if (transaction_type or "rent").lower() in ("rent", "louer", "location") else "buy"
+            prop_type = "apartment"
+            url = f"https://www.homegate.ch/{trans}/{prop_type}/city-{location_slug}/matching-list"
             
             try:
                 # Navigation avec comportement humain
@@ -517,6 +590,8 @@ class StealthPropertyScraper:
                 
                 scraping_logger.info(f"[StealthScraper] Homegate: {len(results)} annonces")
                 
+            except StealthBrowserError:
+                raise
             except Exception as e:
                 scraping_logger.error(f"[StealthScraper] Erreur Homegate: {e}")
         
@@ -572,6 +647,170 @@ class StealthPropertyScraper:
 # HELPER FUNCTIONS
 # =============================================================================
 
+def _scrape_with_stealth_sync(
+    source: str,
+    location: str,
+    transaction_type: str = "rent",
+    limit: int = 50,
+    proxy: Optional[ProxyConfig] = None,
+) -> List[Dict[str, Any]]:
+    """
+    Fallback sync (thread) pour Windows+reload (SelectorEventLoop).
+    Évite asyncio.create_subprocess_exec utilisé par async_playwright.
+    """
+    try:
+        from playwright.sync_api import sync_playwright  # type: ignore
+    except Exception as e:
+        raise StealthBrowserError(
+            "Playwright non installé. Exécutez: pip install playwright && playwright install chromium",
+            status_code=501,
+        ) from e
+
+    fingerprint = random.choice(BROWSER_FINGERPRINTS)
+
+    launch_options: Dict[str, Any] = {
+        "headless": True,
+        "slow_mo": 50,
+        "args": [
+            "--disable-blink-features=AutomationControlled",
+            "--disable-dev-shm-usage",
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-infobars",
+            "--window-position=0,0",
+            "--ignore-certifcate-errors",
+            "--ignore-certifcate-errors-spki-list",
+            f"--window-size={fingerprint['viewport']['width']},{fingerprint['viewport']['height']}",
+        ],
+    }
+
+    if proxy:
+        server = proxy.server
+        if not server.startswith(("http://", "https://", "socks5://")):
+            server = f"http://{server}"
+        launch_options["proxy"] = {"server": server}
+        if proxy.username and proxy.password:
+            launch_options["proxy"]["username"] = proxy.username
+            launch_options["proxy"]["password"] = proxy.password
+
+    def _extract_price_sync(text: str) -> Optional[float]:
+        import re
+        if not text:
+            return None
+        digits = re.sub(r"[^\d]", "", text)
+        return float(digits) if digits else None
+
+    def _parse_immoscout_listing_sync(element) -> Optional[Dict[str, Any]]:
+        try:
+            title_el = element.query_selector("h3")
+            title = title_el.inner_text() if title_el else ""
+            price_el = element.query_selector("[data-test='price']")
+            price_text = price_el.inner_text() if price_el else ""
+            price = _extract_price_sync(price_text)
+            address_el = element.query_selector("[data-test='address']")
+            address = address_el.inner_text() if address_el else ""
+            link_el = element.query_selector("a")
+            link = link_el.get_attribute("href") if link_el else ""
+            if link and not link.startswith("http"):
+                link = f"https://www.immoscout24.ch{link}"
+            return {
+                "id": f"immo24-stealth-{hash(link) % 100000}",
+                "titre": title,
+                "prix": price,
+                "adresse": address,
+                "url_annonce": link,
+                "source": "Immoscout24-Stealth",
+            }
+        except Exception:
+            return None
+
+    def _parse_homegate_listing_sync(element) -> Optional[Dict[str, Any]]:
+        try:
+            title_el = element.query_selector("h3, [data-test='title']")
+            title = title_el.inner_text() if title_el else ""
+            price_el = element.query_selector("[data-test='price']")
+            price_text = price_el.inner_text() if price_el else ""
+            price = _extract_price_sync(price_text)
+            address_el = element.query_selector("[data-test='address']")
+            address = address_el.inner_text() if address_el else ""
+            link_el = element.query_selector("a")
+            link = link_el.get_attribute("href") if link_el else ""
+            if link and not link.startswith("http"):
+                link = f"https://www.homegate.ch{link}"
+            return {
+                "id": f"homegate-stealth-{hash(link) % 100000}",
+                "titre": title,
+                "prix": price,
+                "adresse": address,
+                "url_annonce": link,
+                "source": "Homegate-Stealth",
+            }
+        except Exception:
+            return None
+
+    src = (source or "").lower()
+    loc_slug = (location or "").lower().replace(" ", "-").replace("è", "e").replace("é", "e").replace("ü", "u")
+
+    if src == "immoscout24":
+        url = f"https://www.immoscout24.ch/fr/immobilier/{transaction_type}/lieu-{loc_slug}"
+        listing_selector = "article[data-test='result-list-item']"
+        parse_fn = _parse_immoscout_listing_sync
+    elif src == "homegate":
+        trans = "rent" if (transaction_type or "rent").lower() in ("rent", "louer", "location") else "buy"
+        url = f"https://www.homegate.ch/{trans}/apartment/city-{loc_slug}/matching-list"
+        listing_selector = "[data-test='result-list-item']"
+        parse_fn = _parse_homegate_listing_sync
+    else:
+        raise ValueError(f"Source non supportée: {source}")
+
+    results: List[Dict[str, Any]] = []
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(**launch_options)
+        context = browser.new_context(
+            user_agent=fingerprint["user_agent"],
+            viewport=fingerprint["viewport"],
+            locale=fingerprint["locale"],
+            timezone_id=fingerprint["timezone"],
+            permissions=["geolocation"],
+            geolocation={"latitude": 46.2044, "longitude": 6.1432},
+            color_scheme="light",
+            java_script_enabled=True,
+            bypass_csp=True,
+            ignore_https_errors=True,
+        )
+        context.add_init_script(STEALTH_SCRIPTS)
+        context.add_cookies(
+            [
+                {"name": "cookie_consent", "value": "accepted", "domain": ".homegate.ch", "path": "/"},
+                {"name": "cookie_consent", "value": "accepted", "domain": ".immoscout24.ch", "path": "/"},
+                {"name": "cookieConsent", "value": "true", "domain": ".comparis.ch", "path": "/"},
+            ]
+        )
+
+        page = context.new_page()
+        resp = page.goto(url, wait_until="domcontentloaded", timeout=60000)
+        status = resp.status if resp else None
+        if status in (403, 429):
+            raise StealthBrowserError(f"Navigation bloquée (HTTP {status}) sur {url}", status_code=status)
+        if status == 404:
+            raise StealthBrowserError(f"Page introuvable (HTTP 404) sur {url}", status_code=404)
+
+        # Petit délai pour laisser le DOM se stabiliser
+        page.wait_for_timeout(random.randint(800, 1400))
+
+        listings = page.query_selector_all(listing_selector) or []
+        for el in listings[: max(int(limit), 1)]:
+            parsed = parse_fn(el)
+            if parsed:
+                results.append(parsed)
+
+        context.close()
+        browser.close()
+
+    return results
+
+
 async def scrape_with_stealth(
     source: str,
     location: str,
@@ -593,10 +832,68 @@ async def scrape_with_stealth(
         Liste de résultats
     """
     scraper = StealthPropertyScraper(proxy=proxy)
-    
-    if source.lower() == "immoscout24":
-        return await scraper.scrape_immoscout24(location, transaction_type, limit)
-    elif source.lower() == "homegate":
-        return await scraper.scrape_homegate(location, transaction_type, limit)
-    else:
-        raise ValueError(f"Source non supportée: {source}")
+
+    # Windows + uvicorn --reload peut utiliser un SelectorEventLoop (subprocess non supporté),
+    # ce qui casse async_playwright. Dans ce cas, on passe directement au fallback sync.
+    if sys.platform.startswith("win"):
+        try:
+            loop = asyncio.get_running_loop()
+            if "selector" in loop.__class__.__name__.lower():
+                results = await asyncio.to_thread(
+                    _scrape_with_stealth_sync,
+                    source,
+                    location,
+                    transaction_type,
+                    limit,
+                    proxy,
+                )
+                # region agent log
+                _agent_dbg(
+                    hypothesisId="H5",
+                    location="app/scrapers/stealth_browser.py:scrape_with_stealth",
+                    message="scrape completed",
+                    data={
+                        "source": source.lower(),
+                        "transaction_type": transaction_type,
+                        "limit": limit,
+                        "results_count": len(results),
+                    },
+                )
+                # endregion
+                return results
+        except RuntimeError:
+            pass
+
+    try:
+        if source.lower() == "immoscout24":
+            results = await scraper.scrape_immoscout24(location, transaction_type, limit)
+        elif source.lower() == "homegate":
+            results = await scraper.scrape_homegate(location, transaction_type, limit)
+        else:
+            raise ValueError(f"Source non supportée: {source}")
+    except NotImplementedError:
+        # Fallback Windows+reload (SelectorEventLoop -> subprocess non supporté)
+        results = await asyncio.to_thread(
+            _scrape_with_stealth_sync,
+            source,
+            location,
+            transaction_type,
+            limit,
+            proxy,
+        )
+
+    # region agent log
+    _agent_dbg(
+        hypothesisId="H5",
+        location="app/scrapers/stealth_browser.py:scrape_with_stealth",
+        message="scrape completed",
+        data={
+            "source": source.lower(),
+            "transaction_type": transaction_type,
+            "limit": limit,
+            "results_count": len(results),
+        },
+    )
+    # endregion
+    return results
+

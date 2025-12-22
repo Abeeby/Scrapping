@@ -285,3 +285,4 @@ def is_authenticated(request: Request) -> bool:
     
     token = auth_header[7:]  # Retirer "Bearer "
     return verify_jwt(token) is not None
+

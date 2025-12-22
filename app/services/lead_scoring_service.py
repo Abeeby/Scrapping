@@ -568,3 +568,4 @@ async def score_leads(leads: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     scored_leads.sort(key=lambda x: x.get("score", 0), reverse=True)
     
     return scored_leads
+

@@ -590,3 +590,4 @@ async def fosc_to_prospects(
         )
         return [p.to_prospect_dict() for p in pubs]
 
+
