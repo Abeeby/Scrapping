@@ -15,12 +15,10 @@ from app.core.websocket import emit_activity
 from app.services.scheduler_service import scheduler, ScrapingSchedule, ScheduleFrequency, ScheduleStatus
 
 # region agent log
-_DBG_LOG = r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log"
+import logging
+_dbg_logger = logging.getLogger("debug_agent")
 def _dbg(hid, loc, msg, data=None):
-    try:
-        with open(_DBG_LOG, "a", encoding="utf-8") as f:
-            f.write(_json_dbg.dumps({"hypothesisId": hid, "location": loc, "message": msg, "data": data or {}, "timestamp": int(_time_dbg.time()*1000), "sessionId": "debug-session"}) + "\n")
-    except: pass
+    _dbg_logger.info(f"[{hid}] {loc}: {msg} | {data or {}}")
 _dbg("H1", "scheduler.py:module_load", "scheduler API module loaded", {})
 # endregion
 

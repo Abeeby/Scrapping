@@ -25,23 +25,10 @@ from app.scrapers.scanner import scrape_neighborhood, get_available_communes, ge
 router = APIRouter()
 
 # region agent log
-_AGENT_DEBUG_LOG_PATH = r"c:\Users\admin10\Desktop\Scrapping data\.cursor\debug.log"
-
+import logging
+_agent_dbg_logger = logging.getLogger("debug_agent")
 def _agent_dbg(hypothesisId: str, location: str, message: str, data: dict | None = None, run_id: str = "pre-fix"):
-    try:
-        payload = {
-            "sessionId": "debug-session",
-            "runId": run_id,
-            "hypothesisId": hypothesisId,
-            "location": location,
-            "message": message,
-            "data": data or {},
-            "timestamp": int(time.time() * 1000),
-        }
-        with open(_AGENT_DEBUG_LOG_PATH, "a", encoding="utf-8") as f:
-            f.write(json.dumps(payload, ensure_ascii=False) + "\n")
-    except Exception:
-        pass
+    _agent_dbg_logger.info(f"[{hypothesisId}] {location}: {message} | {data or {}}")
 # endregion
 
 # =============================================================================

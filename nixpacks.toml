@@ -1,0 +1,11 @@
+# Configuration Nixpacks pour Railway
+# Installe Playwright avec les dépendances système
+
+[phases.setup]
+nixPkgs = ["chromium", "nodejs"]
+
+[phases.install]
+cmds = ["pip install -r requirements.txt", "playwright install chromium --with-deps"]
+
+[start]
+cmd = "uvicorn app.main:socket_app --host 0.0.0.0 --port $PORT"
